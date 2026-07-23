@@ -19,7 +19,8 @@ const STORAGE_KEYS = {
   WISHLIST: 'ms_wishlist',
   BLOG_POSTS: 'ms_blog_posts',
   SUPPLIER_NOTIF: 'ms_supplier_notifications',
-  VIEW_ACTIVITY: 'ms_view_activity'  // élő készlet/aktivitás
+  VIEW_ACTIVITY: 'ms_view_activity',  // élő készlet/aktivitás
+  COUPONS: 'ms_coupons'
 };
 
 // Supabase módban is böngésző-lokális kulcsok (személyes / kozmetikai adatok)
@@ -115,7 +116,13 @@ export const getAllProducts = () => {
 
   const merged = baseProducts.map(p => {
     const override = overrides[p.id];
-    const merged_p = override ? { ...p, ...override } : p;
+    const merged_p = override ? { ...p, ...override } : { ...p };
+    // Variáns-készletek rávetítése (rendelésekkor csökken, override-ban tárolódik)
+    if (Array.isArray(merged_p.variants) && override && override.variantStock) {
+      merged_p.variants = merged_p.variants.map(v =>
+        override.variantStock[v.code] !== undefined ? { ...v, stock: override.variantStock[v.code] } : v
+      );
+    }
     // Slug generálás (ha nincs)
     if (!merged_p.slug) merged_p.slug = slugify(merged_p.name);
     return merged_p;
@@ -278,7 +285,7 @@ export const addStockBatch = (productId, quantity, unitCost = 0, batchNumber = '
   return newEntry;
 };
 
-export const removeStockFIFO = (productId, quantity, reason = 'Rendelés') => {
+export const removeStockFIFO = (productId, quantity, reason = 'Rendelés', colorCode = null) => {
   const history = safeGet(STORAGE_KEYS.STOCK_HISTORY, []);
   const product = getAllProducts().find(p => p.id === productId);
   if (!product) return false;
@@ -312,7 +319,21 @@ export const removeStockFIFO = (productId, quantity, reason = 'Rendelés') => {
   safeSet(STORAGE_KEYS.STOCK_HISTORY, history);
 
   const newStock = Math.max(0, (product.stock || 0) - parseInt(quantity));
-  updateProduct(productId, { stock: newStock });
+  const updates = { stock: newStock };
+
+  // Variáns (szín) készlet csökkentése is
+  if (colorCode && Array.isArray(product.variants)) {
+    const variant = product.variants.find(v => v.code === colorCode);
+    if (variant) {
+      const overrides = safeGet(STORAGE_KEYS.OVERRIDES, {});
+      const prevVS = (overrides[productId] && overrides[productId].variantStock) || {};
+      updates.variantStock = {
+        ...prevVS,
+        [colorCode]: Math.max(0, (variant.stock || 0) - parseInt(quantity))
+      };
+    }
+  }
+  updateProduct(productId, updates);
 
   // Automatikus beszállító értesítés alacsony készletnél
   if (newStock < 10) {
@@ -534,7 +555,7 @@ export const saveOrder = async (order) => {
 
   if (order.cart && Array.isArray(order.cart)) {
     order.cart.forEach(item => {
-      removeStockFIFO(item.id, item.quantity, `Rendelés: ${orderId}`);
+      removeStockFIFO(item.id, item.quantity, `Rendelés: ${orderId}`, item.colorCode || null);
     });
   }
 
@@ -720,6 +741,68 @@ export const deleteBlogPost = (id) => {
   const posts = getBlogPosts().filter(p => p.id !== id);
   safeSet(STORAGE_KEYS.BLOG_POSTS, posts);
   return true;
+};
+
+// ======================== KUPONOK ========================
+
+export const getCoupons = () => safeGet(STORAGE_KEYS.COUPONS, []);
+
+export const saveCoupon = (coupon) => {
+  const coupons = getCoupons();
+  const code = (coupon.code || '').trim().toUpperCase();
+  if (!code) return { error: 'Hiányzó kuponkód' };
+  const idx = coupons.findIndex(c => c.code === code);
+  const entry = {
+    code,
+    type: coupon.type === 'fixed' ? 'fixed' : 'percent',   // percent: %, fixed: Ft
+    value: Math.max(0, parseFloat(coupon.value) || 0),
+    minOrder: Math.max(0, parseInt(coupon.minOrder) || 0),
+    expiry: coupon.expiry || null,                          // YYYY-MM-DD vagy null
+    active: coupon.active !== false,
+    usedCount: idx >= 0 ? (coupons[idx].usedCount || 0) : 0,
+    createdAt: idx >= 0 ? coupons[idx].createdAt : new Date().toISOString()
+  };
+  if (idx >= 0) coupons[idx] = entry; else coupons.push(entry);
+  safeSet(STORAGE_KEYS.COUPONS, coupons);
+  return entry;
+};
+
+export const deleteCoupon = (code) => {
+  safeSet(STORAGE_KEYS.COUPONS, getCoupons().filter(c => c.code !== code));
+  return true;
+};
+
+// Közös kupon-ellenőrző logika (kliens és szerver azonosan számol)
+export const evaluateCoupon = (coupons, code, productTotal) => {
+  const c = (coupons || []).find(x => x.code === (code || '').trim().toUpperCase());
+  if (!c) return { valid: false, error: 'Ismeretlen kuponkód' };
+  if (c.active === false) return { valid: false, error: 'A kupon már nem aktív' };
+  if (c.expiry && c.expiry < new Date().toISOString().split('T')[0]) {
+    return { valid: false, error: 'A kupon lejárt' };
+  }
+  if (c.minOrder && productTotal < c.minOrder) {
+    return { valid: false, error: `A kupon ${c.minOrder.toLocaleString('hu-HU')} Ft feletti rendelésre érvényes` };
+  }
+  const discount = c.type === 'percent'
+    ? Math.round(productTotal * c.value / 100)
+    : Math.min(Math.round(c.value), productTotal);
+  return { valid: true, code: c.code, discount, type: c.type, value: c.value };
+};
+
+// Kupon beváltás a checkout-on: Supabase módban szerver-oldali ellenőrzés,
+// ha a function nem elérhető (pl. lokális npm start), helyi ellenőrzés
+export const validateCoupon = async (code, productTotal) => {
+  if (isSupabaseEnabled) {
+    try {
+      const res = await fetch('/.netlify/functions/validate-coupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code, total: productTotal })
+      });
+      if (res.ok) return res.json();
+    } catch (e) { /* function nem elérhető → helyi fallback */ }
+  }
+  return evaluateCoupon(getCoupons(), code, productTotal);
 };
 
 // ======================== ÉLŐ AKTIVITÁS ========================

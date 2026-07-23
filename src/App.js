@@ -41,13 +41,22 @@ function App() {
   const handleLogin = async () => {
     if (loggingIn) return;
     setLoggingIn(true);
+    const localCheck = () => {
+      const localPw = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
+      if (passwordInput !== localPw) throw new Error('Hibás jelszó');
+    };
     try {
       if (isSupabaseEnabled) {
         setAdminPassword(passwordInput);
-        await adminApi('login');
+        try {
+          await adminApi('login');
+        } catch (e) {
+          // 401 = rossz jelszó; egyéb (pl. lokális dev, nincs function) → helyi ellenőrzés
+          if ((e.message || '').includes('401') || (e.message || '').includes('Hibás jelszó')) throw e;
+          localCheck();
+        }
       } else {
-        const localPw = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
-        if (passwordInput !== localPw) throw new Error('Hibás jelszó');
+        localCheck();
       }
       sessionStorage.setItem('admin_logged_in', 'true');
       window.location.href = '/admin';

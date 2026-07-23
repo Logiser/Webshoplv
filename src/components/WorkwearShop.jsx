@@ -14,6 +14,7 @@ const WorkwearShop = () => {
   const [cart, setCart] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [selectedColor, setSelectedColor] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [sortBy, setSortBy] = useState('default');
   const [products, setProducts] = useState([]);
@@ -106,15 +107,29 @@ const WorkwearShop = () => {
       alert('Kérjük, válassz méretet!');
       return;
     }
+    // Szín variáns: több színnél kötelező választani, egy színnél automatikus
+    const variants = product.variants || [];
+    let variant = null;
+    if (variants.length === 1) {
+      variant = variants[0];
+    } else if (variants.length > 1) {
+      variant = variants.find(v => v.code === selectedColor);
+      if (!variant) {
+        alert('Kérjük, válassz színt!');
+        return;
+      }
+    }
     const effectivePrice = getEffectivePrice(product);
     const cartItem = {
       id: product.id, name: product.name, price: effectivePrice,
-      quantity, size: selectedSize, image: product.image
+      quantity, size: selectedSize, image: (variant && variant.image) || product.image,
+      color: variant ? variant.color : null, colorCode: variant ? variant.code : null,
+      variantStock: variant ? variant.stock : null
     };
-    const existingItem = cart.find(item => item.id === product.id && item.size === selectedSize);
+    const existingItem = cart.find(item => item.id === product.id && item.size === selectedSize && item.colorCode === cartItem.colorCode);
     if (existingItem) {
       setCart(cart.map(item =>
-        item.id === product.id && item.size === selectedSize
+        item.id === product.id && item.size === selectedSize && item.colorCode === cartItem.colorCode
           ? { ...item, quantity: item.quantity + quantity } : item
       ));
     } else {
@@ -126,8 +141,8 @@ const WorkwearShop = () => {
     trackAddToCart(product, quantity);  // GA4 + FB Pixel
   };
 
-  const removeFromCart = (id, size) => {
-    setCart(cart.filter(item => !(item.id === id && item.size === size)));
+  const removeFromCart = (id, size, colorCode = null) => {
+    setCart(cart.filter(item => !(item.id === id && item.size === size && item.colorCode === colorCode)));
   };
 
   const handleWishlist = (e, productId) => {
@@ -317,14 +332,16 @@ const WorkwearShop = () => {
             ) : (
               <>
                 {cart.map(item => (
-                  <div key={`${item.id}-${item.size}`} style={{
+                  <div key={`${item.id}-${item.size}-${item.colorCode || ''}`} style={{
                     borderBottom: '1px solid #eee', paddingBottom: '1rem',
                     marginBottom: '1rem', display: 'flex', gap: '0.75rem'
                   }}>
                     <img src={item.image} alt={item.name} style={{ width: '60px', height: '60px', objectFit: 'cover', borderRadius: '4px', border: '1px solid #eee' }} />
                     <div style={{ flex: 1 }}>
                       <p style={{ margin: '0 0 0.25rem 0', fontWeight: 'bold', fontSize: '0.9rem' }}>{item.name}</p>
-                      {item.size && <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.8rem', color: '#666' }}>Méret: <strong>{item.size}</strong></p>}
+                      {(item.size || item.color) && <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.8rem', color: '#666' }}>
+                        {item.size && <>Méret: <strong>{item.size}</strong></>}{item.size && item.color && ' · '}{item.color && <>Szín: <strong>{item.color}</strong></>}
+                      </p>}
                       <p style={{ margin: 0, color: '#0F2A1D', fontWeight: 'bold' }}>
                         {item.quantity} × {item.price.toLocaleString('hu-HU')} Ft
                       </p>
@@ -332,7 +349,7 @@ const WorkwearShop = () => {
                         = {(item.quantity * item.price).toLocaleString('hu-HU')} Ft
                       </p>
                     </div>
-                    <button onClick={() => removeFromCart(item.id, item.size)} style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', alignSelf: 'flex-start' }}>
+                    <button onClick={() => removeFromCart(item.id, item.size, item.colorCode)} style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', alignSelf: 'flex-start' }}>
                       <X size={18} />
                     </button>
                   </div>
@@ -607,7 +624,7 @@ const WorkwearShop = () => {
                   <ProductCard
                     key={product.id}
                     product={product}
-                    onSelect={() => setSelectedProduct(product)}
+                    onSelect={() => { setSelectedProduct(product); setSelectedSize(null); setSelectedColor(null); setQuantity(1); }}
                     onWishlist={(e) => handleWishlist(e, product.id)}
                     wished={wishlist.includes(product.id)}
                   />
@@ -625,6 +642,8 @@ const WorkwearShop = () => {
           onClose={() => setSelectedProduct(null)}
           selectedSize={selectedSize}
           setSelectedSize={setSelectedSize}
+          selectedColor={selectedColor}
+          setSelectedColor={setSelectedColor}
           quantity={quantity}
           setQuantity={setQuantity}
           onAddToCart={() => addToCart(selectedProduct)}
@@ -832,7 +851,11 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 // ============================================================
 // PRODUCT MODAL
 // ============================================================
-const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, quantity, setQuantity, onAddToCart, wished, onWishlist }) => {
+const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selectedColor, setSelectedColor, quantity, setQuantity, onAddToCart, wished, onWishlist }) => {
+  const variants = product.variants || [];
+  const activeVariant = variants.find(v => v.code === selectedColor) || (variants.length === 1 ? variants[0] : null);
+  const displayImage = (activeVariant && activeVariant.image) || product.image;
+  const displayStock = activeVariant ? activeVariant.stock : product.stock;
   return (
     <div onClick={onClose} style={{
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -845,7 +868,7 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, quantit
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
       }}>
         <div style={{ padding: '2rem', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img src={product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }} />
+          <img src={displayImage} alt={product.name} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }} />
         </div>
 
         <div style={{ padding: '2rem' }}>
@@ -886,9 +909,27 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, quantit
               </p>
             )}
             <p style={{ color: '#666', fontSize: '0.85rem', margin: '0.25rem 0 0 0' }}>
-              📦 Raktáron: {product.stock} db
+              📦 Raktáron: {displayStock} db{activeVariant ? ` (${activeVariant.color})` : ''}
             </p>
           </div>
+
+          {variants.length > 1 && (
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Szín:</label>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                {variants.map(v => (
+                  <button key={v.code} onClick={() => setSelectedColor(v.code)} disabled={v.stock === 0} style={{
+                    padding: '0.5rem 0.75rem', borderRadius: '4px',
+                    border: `2px solid ${selectedColor === v.code ? '#0F2A1D' : '#ddd'}`,
+                    backgroundColor: selectedColor === v.code ? '#0F2A1D' : 'white',
+                    color: v.stock === 0 ? '#bbb' : (selectedColor === v.code ? 'white' : '#0F2A1D'),
+                    cursor: v.stock === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.85rem',
+                    textDecoration: v.stock === 0 ? 'line-through' : 'none'
+                  }}>{v.color}</button>
+                ))}
+              </div>
+            </div>
+          )}
 
           {product.sizes && product.sizes.length > 0 && (
             <div style={{ marginBottom: '1rem' }}>

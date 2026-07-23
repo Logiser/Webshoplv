@@ -10,7 +10,8 @@ const KV = {
   OVERRIDES: 'ms_product_overrides',
   CUSTOM: 'ms_custom_products',
   STOCK_HISTORY: 'ms_stock_history',
-  SUPPLIER_NOTIF: 'ms_supplier_notifications'
+  SUPPLIER_NOTIF: 'ms_supplier_notifications',
+  COUPONS: 'ms_coupons'
 };
 
 exports.handler = async (event) => {
@@ -112,8 +113,27 @@ exports.handler = async (event) => {
         const startStock = prevStock !== null ? prevStock : (parseInt(item.stock) || 0);
         const newStock = Math.max(0, startStock - qty);
         overrides[item.id] = { ...(overrides[item.id] || {}), stock: newStock };
+
+        // Variáns (szín) készlet csökkentése
+        if (item.colorCode) {
+          const prevVS = overrides[item.id].variantStock || {};
+          const startVS = prevVS[item.colorCode] !== undefined
+            ? prevVS[item.colorCode]
+            : (parseInt(item.variantStock) || 0);
+          overrides[item.id].variantStock = {
+            ...prevVS,
+            [item.colorCode]: Math.max(0, startVS - qty)
+          };
+        }
         maybeAddSupplierNotif(supplierNotifs, item, newStock, now);
       }
+    }
+
+    // Kupon használat-számláló növelése
+    const coupons = kv[KV.COUPONS] || [];
+    if (order.coupon && order.coupon.code) {
+      const ci = coupons.findIndex(c => c.code === order.coupon.code);
+      if (ci >= 0) coupons[ci].usedCount = (coupons[ci].usedCount || 0) + 1;
     }
 
     // Mentés: order sor + KV dokumentumok
@@ -124,7 +144,8 @@ exports.handler = async (event) => {
       { key: KV.OVERRIDES, value: overrides, updated_at: now },
       { key: KV.CUSTOM, value: custom, updated_at: now },
       { key: KV.STOCK_HISTORY, value: stockHistory, updated_at: now },
-      { key: KV.SUPPLIER_NOTIF, value: supplierNotifs, updated_at: now }
+      { key: KV.SUPPLIER_NOTIF, value: supplierNotifs, updated_at: now },
+      { key: KV.COUPONS, value: coupons, updated_at: now }
     ];
     const { error: upErr } = await db.from('kv_store').upsert(upserts);
     if (upErr) throw upErr;

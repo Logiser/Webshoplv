@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Check, AlertCircle } from 'lucide-react';
-import { saveOrder } from '../data/storage';
+import { Check, AlertCircle, Tag } from 'lucide-react';
+import { saveOrder, validateCoupon } from '../data/storage';
 import { openInvoice } from '../utils/invoice';
 import { trackBeginCheckout, trackPurchase } from '../utils/analytics';
 
@@ -24,6 +24,36 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+
+  // Kupon
+  const [couponInput, setCouponInput] = useState('');
+  const [coupon, setCoupon] = useState(null);        // {valid, code, discount}
+  const [couponError, setCouponError] = useState('');
+  const [couponLoading, setCouponLoading] = useState(false);
+
+  const productTotal = total - 1990;
+  const discount = coupon && coupon.valid ? Math.min(coupon.discount, productTotal) : 0;
+  const grandTotal = total - discount;
+
+  const handleApplyCoupon = async () => {
+    if (!couponInput.trim() || couponLoading) return;
+    setCouponLoading(true);
+    setCouponError('');
+    try {
+      const result = await validateCoupon(couponInput, productTotal);
+      if (result.valid) {
+        setCoupon(result);
+      } else {
+        setCoupon(null);
+        setCouponError(result.error || 'Érvénytelen kupon');
+      }
+    } catch (e) {
+      setCoupon(null);
+      setCouponError('Kupon-ellenőrzési hiba, próbáld újra!');
+    } finally {
+      setCouponLoading(false);
+    }
+  };
 
   // Begin checkout tracking - GA4 + FB Pixel
   useEffect(() => {
@@ -63,7 +93,8 @@ const CheckoutPage = () => {
         customer: formData,
         cart: cart,
         items: cart,
-        total: total,
+        total: grandTotal,
+        coupon: coupon && coupon.valid ? { code: coupon.code, discount } : null,
         timestamp: new Date().toISOString()
       });
 
@@ -72,7 +103,8 @@ const CheckoutPage = () => {
         orderId: savedOrder.id,
         customer: formData,
         items: cart,
-        total: total,
+        total: grandTotal,
+        coupon: coupon && coupon.valid ? { code: coupon.code, discount } : null,
         timestamp: new Date().toISOString()
       };
 
@@ -89,7 +121,7 @@ const CheckoutPage = () => {
       setSuccess(true);
       
       // Purchase tracking - GA4 + FB Pixel
-      trackPurchase(savedOrder.id, cart, total);
+      trackPurchase(savedOrder.id, cart, grandTotal);
       
       // Automatikus számla nyitása új ablakban
       setTimeout(() => {
@@ -197,9 +229,9 @@ const CheckoutPage = () => {
                       <p style={{ margin: '0 0 0.25rem 0', fontWeight: 'bold', fontSize: '0.9rem' }}>
                         {item.name}
                       </p>
-                      {item.size && (
+                      {(item.size || item.color) && (
                         <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.8rem', color: '#999' }}>
-                          Méret: {item.size}
+                          {item.size && `Méret: ${item.size}`}{item.size && item.color && ' · '}{item.color && `Szín: ${item.color}`}
                         </p>
                       )}
                     </div>
@@ -214,11 +246,57 @@ const CheckoutPage = () => {
               ))}
             </div>
 
+            {/* Kuponkód */}
+            <div style={{ marginBottom: '1rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D', fontSize: '0.9rem' }}>
+                🎟️ Kuponkód
+              </label>
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input
+                  type="text"
+                  value={couponInput}
+                  onChange={(e) => { setCouponInput(e.target.value.toUpperCase()); setCouponError(''); }}
+                  onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleApplyCoupon(); } }}
+                  placeholder="pl. NYAR10"
+                  disabled={coupon && coupon.valid}
+                  style={{ flex: 1, padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px', textTransform: 'uppercase' }}
+                />
+                {coupon && coupon.valid ? (
+                  <button type="button" onClick={() => { setCoupon(null); setCouponInput(''); }} style={{
+                    padding: '0.6rem 1rem', backgroundColor: '#d32f2f', color: 'white',
+                    border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+                  }}>
+                    Törlés
+                  </button>
+                ) : (
+                  <button type="button" onClick={handleApplyCoupon} disabled={couponLoading} style={{
+                    padding: '0.6rem 1rem', backgroundColor: '#0F2A1D', color: 'white',
+                    border: 'none', borderRadius: '4px', cursor: couponLoading ? 'wait' : 'pointer', fontWeight: 'bold',
+                    display: 'flex', alignItems: 'center', gap: '0.4rem'
+                  }}>
+                    <Tag size={16} /> {couponLoading ? '...' : 'Beváltás'}
+                  </button>
+                )}
+              </div>
+              {couponError && <p style={{ color: '#d32f2f', fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>{couponError}</p>}
+              {coupon && coupon.valid && (
+                <p style={{ color: '#4CAF50', fontSize: '0.85rem', margin: '0.5rem 0 0 0', fontWeight: 'bold' }}>
+                  ✅ {coupon.code} kupon beváltva ({coupon.type === 'percent' ? `-${coupon.value}%` : `-${coupon.value.toLocaleString('hu-HU')} Ft`})
+                </p>
+              )}
+            </div>
+
             <div style={{ backgroundColor: '#f0f0ec', padding: '1rem', borderRadius: '4px', marginBottom: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span>Termékek összesen:</span>
-                <span style={{ fontWeight: 'bold' }}>{(total - 1990).toLocaleString('hu-HU')} Ft</span>
+                <span style={{ fontWeight: 'bold' }}>{productTotal.toLocaleString('hu-HU')} Ft</span>
               </div>
+              {discount > 0 && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', color: '#4CAF50' }}>
+                  <span>Kupon kedvezmény ({coupon.code}):</span>
+                  <span style={{ fontWeight: 'bold' }}>−{discount.toLocaleString('hu-HU')} Ft</span>
+                </div>
+              )}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span>Szállítás:</span>
                 <span style={{ fontWeight: 'bold', color: '#C9A961' }}>1.990 Ft</span>
@@ -233,7 +311,7 @@ const CheckoutPage = () => {
                 color: '#0F2A1D'
               }}>
                 <span>Végösszesen:</span>
-                <span style={{ color: '#C9A961' }}>{total.toLocaleString('hu-HU')} Ft</span>
+                <span style={{ color: '#C9A961' }}>{grandTotal.toLocaleString('hu-HU')} Ft</span>
               </div>
             </div>
           </div>

@@ -68,7 +68,7 @@ exports.handler = async (event) => {
       <tbody>
         ${(items || []).map(item => `
         <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding: 8px; font-size: 0.9rem;">${item.name}</td>
+          <td style="padding: 8px; font-size: 0.9rem;">${item.name}${item.color ? ` (${item.color})` : ''}</td>
           <td style="padding: 8px; text-align: center; font-size: 0.9rem;">${item.size || '-'}</td>
           <td style="padding: 8px; text-align: right; font-size: 0.9rem;">${item.quantity}</td>
           <td style="padding: 8px; text-align: right; font-size: 0.9rem;">${item.price.toLocaleString('hu-HU')} Ft</td>
@@ -129,7 +129,7 @@ exports.handler = async (event) => {
         <tr style="border-bottom: 1px solid #eee;">
           <td style="padding: 8px; font-size: 0.9rem;">
             <strong>${item.name}</strong>
-            ${item.size ? `<br><span style="color: #999; font-size: 0.85rem;">Méret: ${item.size}</span>` : ''}
+            ${item.size || item.color ? `<br><span style="color: #999; font-size: 0.85rem;">${[item.size ? `Méret: ${item.size}` : '', item.color ? `Szín: ${item.color}` : ''].filter(Boolean).join(' · ')}</span>` : ''}
           </td>
           <td style="padding: 8px; text-align: right; font-size: 0.9rem; color: #666;">${item.quantity} db</td>
           <td style="padding: 8px; text-align: right; font-weight: bold; color: #C9A961;">${(item.price * item.quantity).toLocaleString('hu-HU')} Ft</td>

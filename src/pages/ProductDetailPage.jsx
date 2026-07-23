@@ -15,6 +15,7 @@ const ProductDetailPage = () => {
   const [wished, setWished] = useState(false);
   const [activity, setActivity] = useState({ activeViewers: 1 });
   const [imgIdx, setImgIdx] = useState(0);
+  const [selectedColor, setSelectedColor] = useState(null);
   const touchStartX = useRef(null);
 
   useEffect(() => {
@@ -25,6 +26,7 @@ const ProductDetailPage = () => {
     }
     setProduct(p);
     setImgIdx(0);
+    setSelectedColor(null);
     setWished(isInWishlist(p.id));
     recordProductView(p.id);
     setActivity(getProductActivity(p.id));
@@ -115,6 +117,18 @@ const ProductDetailPage = () => {
       alert('Kérjük, válassz méretet!');
       return;
     }
+    // Szín variáns: több színnél kötelező választani, egy színnél automatikus
+    const variants = product.variants || [];
+    let variant = null;
+    if (variants.length === 1) {
+      variant = variants[0];
+    } else if (variants.length > 1) {
+      variant = variants.find(v => v.code === selectedColor);
+      if (!variant) {
+        alert('Kérjük, válassz színt!');
+        return;
+      }
+    }
     // Beletesszük a kosárba (sessionStorage-en keresztül a főoldal kosarához)
     const cartData = JSON.parse(sessionStorage.getItem('temp_cart') || '[]');
     cartData.push({
@@ -123,7 +137,10 @@ const ProductDetailPage = () => {
       price: effectivePrice,
       quantity,
       size: selectedSize,
-      image: product.image
+      image: (variant && variant.image) || product.image,
+      color: variant ? variant.color : null,
+      colorCode: variant ? variant.code : null,
+      variantStock: variant ? variant.stock : null
     });
     sessionStorage.setItem('temp_cart', JSON.stringify(cartData));
     trackAddToCart(product, quantity);  // GA4 + FB Pixel
@@ -291,6 +308,35 @@ const ProductDetailPage = () => {
             </div>
 
             {/* Méret választás */}
+            {product.variants && product.variants.length > 1 && (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
+                  Szín:{selectedColor ? ` ${(product.variants.find(v => v.code === selectedColor) || {}).color || ''}` : ''}
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  {product.variants.map(v => (
+                    <button key={v.code} disabled={v.stock === 0}
+                      onClick={() => {
+                        setSelectedColor(v.code);
+                        const imgs = getProductImages(product);
+                        const idx = imgs.indexOf(v.image);
+                        if (idx >= 0) setImgIdx(idx);
+                      }}
+                      style={{
+                        padding: '0.5rem 0.75rem', borderRadius: '4px',
+                        border: `2px solid ${selectedColor === v.code ? '#C9A961' : '#ddd'}`,
+                        backgroundColor: selectedColor === v.code ? '#0F2A1D' : 'white',
+                        color: v.stock === 0 ? '#bbb' : (selectedColor === v.code ? 'white' : '#0F2A1D'),
+                        cursor: v.stock === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.85rem',
+                        textDecoration: v.stock === 0 ? 'line-through' : 'none'
+                      }}>
+                      {v.color}{v.stock > 0 && v.stock < 10 ? ` (${v.stock} db)` : ''}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {product.sizes && product.sizes.length > 0 && (
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>

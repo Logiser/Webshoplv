@@ -14,7 +14,8 @@ import {
   parseCSV, parseXML, exportToCSV, cleanExpiredSales, getOrders,
   updateOrderStatus, ORDER_STATUSES, getSalesReport, bulkUpdateProducts,
   getSupplierNotifications, removeSupplierNotification,
-  getBlogPosts, saveBlogPost, deleteBlogPost, generateGoogleShoppingFeed
+  getBlogPosts, saveBlogPost, deleteBlogPost, generateGoogleShoppingFeed,
+  getCoupons, saveCoupon, deleteCoupon
 } from '../data/storage';
 import { openInvoice } from '../utils/invoice';
 
@@ -46,6 +47,7 @@ const AdminPanel = () => {
     { id: 'add', name: 'Új Termék', icon: Plus },
     { id: 'import', name: 'CSV/XML Import', icon: Upload },
     { id: 'orders', name: 'Rendelések', icon: ShoppingBag },
+    { id: 'coupons', name: 'Kuponok', icon: Tag },
     { id: 'reports', name: 'Riportok', icon: BarChart3 },
     { id: 'supplier', name: 'Beszállító ⓘ', icon: Bell },
     { id: 'blog', name: 'Blog', icon: BookOpen },
@@ -157,6 +159,7 @@ const AdminPanel = () => {
         {activeTab === 'add' && <AddProduct onChange={triggerRefresh} setTab={setActiveTab} />}
         {activeTab === 'import' && <ImportProducts onChange={triggerRefresh} setTab={setActiveTab} />}
         {activeTab === 'orders' && <OrdersList key={refreshKey} onChange={triggerRefresh} />}
+        {activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'reports' && <ReportsTab key={refreshKey} />}
         {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'blog' && <BlogManager key={refreshKey} onChange={triggerRefresh} />}
@@ -1850,6 +1853,150 @@ const StatCard = ({ title, value, color, icon }) => (
 // ============================================================
 // SUPPLIER TAB - Beszállító értesítések
 // ============================================================
+const CouponsManager = ({ onChange }) => {
+  const [coupons, setCoupons] = useState([]);
+  const [form, setForm] = useState({ code: '', type: 'percent', value: '', minOrder: '', expiry: '' });
+
+  useEffect(() => {
+    setCoupons(getCoupons());
+  }, []);
+
+  const refresh = () => {
+    setCoupons(getCoupons());
+    if (onChange) onChange();
+  };
+
+  const handleCreate = () => {
+    if (!form.code.trim()) { alert('Adj meg kuponkódot!'); return; }
+    if (!form.value || parseFloat(form.value) <= 0) { alert('Adj meg érvényes kedvezményt!'); return; }
+    if (form.type === 'percent' && parseFloat(form.value) > 100) { alert('A százalékos kedvezmény max. 100% lehet!'); return; }
+    const result = saveCoupon(form);
+    if (result.error) { alert(result.error); return; }
+    setForm({ code: '', type: 'percent', value: '', minOrder: '', expiry: '' });
+    refresh();
+    alert(`✅ ${result.code} kupon elmentve!`);
+  };
+
+  const handleToggle = (c) => {
+    saveCoupon({ ...c, active: !c.active });
+    refresh();
+  };
+
+  const handleDelete = (code) => {
+    if (window.confirm(`Biztosan törlöd a(z) ${code} kupont?`)) {
+      deleteCoupon(code);
+      refresh();
+    }
+  };
+
+  const today = new Date().toISOString().split('T')[0];
+  const inputStyle = { padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.9rem' };
+
+  return (
+    <div>
+      <h1 style={{ margin: '0 0 1.5rem 0', color: '#0F2A1D' }}>🎟️ Kuponkódok</h1>
+
+      {/* Új kupon */}
+      <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+        <h3 style={{ marginTop: 0, color: '#0F2A1D' }}>➕ Új kupon létrehozása</h3>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem', alignItems: 'end' }}>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Kuponkód</label>
+            <input style={{ ...inputStyle, width: '100%', boxSizing: 'border-box', textTransform: 'uppercase' }} value={form.code}
+              onChange={e => setForm({ ...form, code: e.target.value.toUpperCase() })} placeholder="pl. NYAR10" />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Típus</label>
+            <select style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }} value={form.type}
+              onChange={e => setForm({ ...form, type: e.target.value })}>
+              <option value="percent">Százalék (%)</option>
+              <option value="fixed">Fix összeg (Ft)</option>
+            </select>
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>
+              Kedvezmény {form.type === 'percent' ? '(%)' : '(Ft)'}
+            </label>
+            <input type="number" min="1" style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }} value={form.value}
+              onChange={e => setForm({ ...form, value: e.target.value })} placeholder={form.type === 'percent' ? '10' : '2000'} />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Min. rendelés (Ft)</label>
+            <input type="number" min="0" style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }} value={form.minOrder}
+              onChange={e => setForm({ ...form, minOrder: e.target.value })} placeholder="0" />
+          </div>
+          <div>
+            <label style={{ display: 'block', fontSize: '0.8rem', color: '#666', marginBottom: '0.25rem' }}>Lejárat (opcionális)</label>
+            <input type="date" style={{ ...inputStyle, width: '100%', boxSizing: 'border-box' }} value={form.expiry}
+              onChange={e => setForm({ ...form, expiry: e.target.value })} />
+          </div>
+          <button onClick={handleCreate} style={{
+            padding: '0.65rem 1rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+            borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+          }}>
+            <Save size={16} style={{ verticalAlign: 'middle', marginRight: '0.4rem' }} />Mentés
+          </button>
+        </div>
+      </div>
+
+      {/* Kupon lista */}
+      {coupons.length === 0 ? (
+        <div style={{ backgroundColor: 'white', padding: '3rem', borderRadius: '8px', textAlign: 'center', color: '#999' }}>
+          <Tag size={64} style={{ color: '#ddd', marginBottom: '1rem' }} />
+          <p>Még nincs kupon. Hozd létre az elsőt fent! 🎟️</p>
+        </div>
+      ) : (
+        <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#0F2A1D', color: 'white', textAlign: 'left' }}>
+                <th style={{ padding: '0.75rem 1rem' }}>Kód</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Kedvezmény</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Min. rendelés</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Lejárat</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Beváltva</th>
+                <th style={{ padding: '0.75rem 1rem' }}>Státusz</th>
+                <th style={{ padding: '0.75rem 1rem' }}></th>
+              </tr>
+            </thead>
+            <tbody>
+              {coupons.map(c => {
+                const expired = c.expiry && c.expiry < today;
+                return (
+                  <tr key={c.code} style={{ borderBottom: '1px solid #eee', opacity: (!c.active || expired) ? 0.55 : 1 }}>
+                    <td style={{ padding: '0.75rem 1rem', fontWeight: 'bold', color: '#0F2A1D' }}>{c.code}</td>
+                    <td style={{ padding: '0.75rem 1rem', color: '#C9A961', fontWeight: 'bold' }}>
+                      {c.type === 'percent' ? `${c.value}%` : `${c.value.toLocaleString('hu-HU')} Ft`}
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>{c.minOrder ? `${c.minOrder.toLocaleString('hu-HU')} Ft` : '—'}</td>
+                    <td style={{ padding: '0.75rem 1rem', color: expired ? '#d32f2f' : 'inherit' }}>
+                      {c.expiry || '—'}{expired ? ' (lejárt)' : ''}
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem' }}>{c.usedCount || 0}×</td>
+                    <td style={{ padding: '0.75rem 1rem' }}>
+                      <button onClick={() => handleToggle(c)} style={{
+                        padding: '0.3rem 0.7rem', borderRadius: '12px', border: 'none', cursor: 'pointer',
+                        backgroundColor: c.active ? '#4CAF50' : '#999', color: 'white', fontSize: '0.8rem', fontWeight: 'bold'
+                      }}>
+                        {c.active ? 'Aktív' : 'Inaktív'}
+                      </button>
+                    </td>
+                    <td style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>
+                      <button onClick={() => handleDelete(c.code)} style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer' }}>
+                        <Trash2 size={16} />
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const SupplierTab = ({ onChange }) => {
   const [notifs, setNotifs] = useState([]);
 
