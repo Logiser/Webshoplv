@@ -10,6 +10,8 @@ import BlogPostPage from './pages/BlogPostPage';
 import { TermsPage, PrivacyPage, ImpressumPage, ShippingPage, ContactPage, AboutPage } from './pages/StaticPages';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
+import { initStorage } from './data/storage';
+import { isSupabaseEnabled, adminApi, setAdminPassword } from './data/supabaseClient';
 
 // Route változás követése GA4 + FB Pixel számára
 const RouteTracker = () => {
@@ -21,15 +23,52 @@ const RouteTracker = () => {
 };
 
 function App() {
-  const [adminPassword, setAdminPassword] = React.useState('');
   const [passwordInput, setPasswordInput] = React.useState('');
+  const [loggingIn, setLoggingIn] = React.useState(false);
+  const [storageReady, setStorageReady] = React.useState(!isSupabaseEnabled);
 
   React.useEffect(() => {
-    // Admin jelszó beállítása (development: admin123)
-    setAdminPassword(process.env.REACT_APP_ADMIN_PASSWORD || 'admin123');
     // Analytics indítás
     initAnalytics();
+    // Supabase módban: adatok betöltése a memória-cache-be render előtt
+    if (isSupabaseEnabled) {
+      initStorage().finally(() => setStorageReady(true));
+    }
   }, []);
+
+  // Admin bejelentkezés: Supabase módban szerver-oldali jelszó-ellenőrzés
+  // (a jelszó nincs benne a kliens bundle-ben), localStorage módban a régi env-összevetés
+  const handleLogin = async () => {
+    if (loggingIn) return;
+    setLoggingIn(true);
+    try {
+      if (isSupabaseEnabled) {
+        setAdminPassword(passwordInput);
+        await adminApi('login');
+      } else {
+        const localPw = process.env.REACT_APP_ADMIN_PASSWORD || 'admin123';
+        if (passwordInput !== localPw) throw new Error('Hibás jelszó');
+      }
+      sessionStorage.setItem('admin_logged_in', 'true');
+      window.location.href = '/admin';
+    } catch (e) {
+      setAdminPassword('');
+      alert('Hibás jelszó!');
+      setPasswordInput('');
+      setLoggingIn(false);
+    }
+  };
+
+  if (!storageReady) {
+    return (
+      <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#fafaf8', fontFamily: 'Arial, sans-serif', color: '#0F2A1D' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>🛡️</div>
+          <div>Betöltés...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <BrowserRouter>
@@ -69,15 +108,7 @@ function App() {
                 value={passwordInput}
                 onChange={(e) => setPasswordInput(e.target.value)}
                 onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    if (passwordInput === adminPassword) {
-                      sessionStorage.setItem('admin_logged_in', 'true');
-                      window.location.href = '/admin';
-                    } else {
-                      alert('Hibás jelszó!');
-                      setPasswordInput('');
-                    }
-                  }
+                  if (e.key === 'Enter') handleLogin();
                 }}
                 style={{
                   width: '100%',
@@ -91,15 +122,8 @@ function App() {
               />
 
               <button
-                onClick={() => {
-                  if (passwordInput === adminPassword) {
-                    sessionStorage.setItem('admin_logged_in', 'true');
-                    window.location.href = '/admin';
-                  } else {
-                    alert('Hibás jelszó!');
-                    setPasswordInput('');
-                  }
-                }}
+                onClick={handleLogin}
+                disabled={loggingIn}
                 style={{
                   width: '100%',
                   backgroundColor: '#0F2A1D',

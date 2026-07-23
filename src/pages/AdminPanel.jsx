@@ -34,6 +34,7 @@ const AdminPanel = () => {
 
   const handleLogout = () => {
     sessionStorage.removeItem('admin_logged_in');
+    sessionStorage.removeItem('ms_admin_pw');
     navigate('/');
   };
 

@@ -1,7 +1,15 @@
-// Storage Helper - bővített verzió
+// Storage Helper - Supabase háttérrel (localStorage fallback)
 // Termékek, FIFO, akciók, statisztikák + wishlist, blog, beszállító értesítések, rendelés workflow
+//
+// Két üzemmód:
+//  - Supabase mód (REACT_APP_SUPABASE_URL beállítva): a szinkron olvasások memória-
+//    cache-ből mennek, amit az app indulásakor az initStorage() tölt fel. Az admin
+//    írások az admin-api function-ön, a rendelés a place-order function-ön keresztül
+//    kerülnek az adatbázisba. A wishlist és a nézettség böngésző-lokális marad.
+//  - localStorage mód (nincs Supabase env): minden pontosan úgy működik, mint eddig.
 
 import { products as baseProducts } from './productData';
+import { supabase, isSupabaseEnabled, adminApi, getAdminPassword } from './supabaseClient';
 
 const STORAGE_KEYS = {
   OVERRIDES: 'ms_product_overrides',
@@ -14,9 +22,16 @@ const STORAGE_KEYS = {
   VIEW_ACTIVITY: 'ms_view_activity'  // élő készlet/aktivitás
 };
 
+// Supabase módban is böngésző-lokális kulcsok (személyes / kozmetikai adatok)
+const LOCAL_ONLY_KEYS = [STORAGE_KEYS.WISHLIST, STORAGE_KEYS.VIEW_ACTIVITY];
+// Anon kulccsal is olvasható (publikus) kulcsok
+const PUBLIC_KEYS = [STORAGE_KEYS.OVERRIDES, STORAGE_KEYS.CUSTOM, STORAGE_KEYS.BLOG_POSTS];
+
 // ======================== ALAP HELPERS ========================
 
-const safeGet = (key, defaultValue = null) => {
+const memCache = {};
+
+const localGet = (key, defaultValue = null) => {
   try {
     const data = localStorage.getItem(key);
     return data ? JSON.parse(data) : defaultValue;
@@ -26,13 +41,56 @@ const safeGet = (key, defaultValue = null) => {
   }
 };
 
-const safeSet = (key, value) => {
+const localSet = (key, value) => {
   try {
     localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (e) {
     console.error(`Save error ${key}:`, e);
     return false;
+  }
+};
+
+const safeGet = (key, defaultValue = null) => {
+  if (isSupabaseEnabled && !LOCAL_ONLY_KEYS.includes(key)) {
+    return memCache[key] !== undefined ? memCache[key] : defaultValue;
+  }
+  return localGet(key, defaultValue);
+};
+
+const safeSet = (key, value) => {
+  if (isSupabaseEnabled && !LOCAL_ONLY_KEYS.includes(key)) {
+    memCache[key] = value;
+    // A rendeléseket a place-order / update_order kezeli, KV-ba nem kerülnek
+    if (key !== STORAGE_KEYS.ORDERS) {
+      adminApi('set_kv', { key, value }).catch(e =>
+        console.error(`Supabase mentési hiba (${key}):`, e.message)
+      );
+    }
+    return true;
+  }
+  return localSet(key, value);
+};
+
+// App-indításkor hívandó: feltölti a memória-cache-t Supabase-ből.
+// Publikus kulcsok anon kulccsal; admin bejelentkezés után minden (+ rendelések).
+export const initStorage = async () => {
+  if (!isSupabaseEnabled) return;
+  try {
+    if (getAdminPassword()) {
+      const { kv, orders } = await adminApi('get_all');
+      Object.entries(kv || {}).forEach(([k, v]) => { memCache[k] = v; });
+      memCache[STORAGE_KEYS.ORDERS] = orders || [];
+    } else {
+      const { data, error } = await supabase
+        .from('kv_store')
+        .select('key, value')
+        .in('key', PUBLIC_KEYS);
+      if (error) throw error;
+      (data || []).forEach(r => { memCache[r.key] = r.value; });
+    }
+  } catch (e) {
+    console.error('Supabase betöltési hiba (üres cache-sel indulunk):', e.message);
   }
 };
 
@@ -441,7 +499,25 @@ export const ORDER_STATUSES = [
   { id: 'cancelled', name: 'Lemondva', color: '#d32f2f', icon: '❌' }
 ];
 
-export const saveOrder = (order) => {
+export const saveOrder = async (order) => {
+  // Supabase mód: a teljes rendelés-mentés (FIFO + számlaszám) szerver-oldalon fut
+  if (isSupabaseEnabled) {
+    const res = await fetch('/.netlify/functions/place-order', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(order)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Rendelés mentési hiba');
+    }
+    const { order: newOrder } = await res.json();
+    // Friss készletadatok visszatöltése (a szerver módosította az override-okat)
+    initStorage().catch(() => {});
+    return newOrder;
+  }
+
+  // localStorage mód: minden a böngészőben történik (eredeti viselkedés)
   const orders = safeGet(STORAGE_KEYS.ORDERS, []);
   const orderId = 'ORD-' + Date.now();
   const newOrder = {
@@ -479,7 +555,15 @@ export const updateOrderStatus = (orderId, newStatus, note = '', trackingNumber 
   });
   if (trackingNumber) orders[idx].trackingNumber = trackingNumber;
 
-  safeSet(STORAGE_KEYS.ORDERS, orders);
+  if (isSupabaseEnabled) {
+    // Optimista cache-frissítés + aszinkron mentés soronként
+    memCache[STORAGE_KEYS.ORDERS] = orders;
+    adminApi('update_order', { id: orderId, data: orders[idx] }).catch(e =>
+      console.error('Rendelés státusz mentési hiba:', e.message)
+    );
+  } else {
+    safeSet(STORAGE_KEYS.ORDERS, orders);
+  }
   return orders[idx];
 };
 
@@ -593,7 +677,13 @@ const defaultBlogPosts = [
 export const getBlogPosts = () => {
   let posts = safeGet(STORAGE_KEYS.BLOG_POSTS, null);
   if (!posts) {
-    safeSet(STORAGE_KEYS.BLOG_POSTS, defaultBlogPosts);
+    if (isSupabaseEnabled) {
+      // Látogató nem írhat az adatbázisba: az alapcikkeket memóriából szolgáljuk ki.
+      // Az admin első blog-mentése menti majd őket véglegesen.
+      memCache[STORAGE_KEYS.BLOG_POSTS] = defaultBlogPosts;
+    } else {
+      safeSet(STORAGE_KEYS.BLOG_POSTS, defaultBlogPosts);
+    }
     posts = defaultBlogPosts;
   }
   return posts.sort((a, b) => new Date(b.date) - new Date(a.date));

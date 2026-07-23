@@ -57,8 +57,8 @@ const CheckoutPage = () => {
     }
 
     try {
-      // Rendelés mentése localStorage-ba (FIFO csökkentés automatikus)
-      const savedOrder = saveOrder({
+      // Rendelés mentése (Supabase módban szerver-oldalon, egyébként localStorage-ba)
+      const savedOrder = await saveOrder({
         customerName: `${formData.firstName || ''} ${formData.lastName || ''}`.trim(),
         customer: formData,
         cart: cart,
