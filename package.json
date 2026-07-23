@@ -12,6 +12,7 @@
     "react-scripts": "5.0.1"
   },
   "scripts": {
+    "prebuild": "node scripts/gen-feed-data.mjs",
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",

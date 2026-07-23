@@ -2,10 +2,10 @@
 // Endpoint: /.netlify/functions/google-shopping-feed
 // Vagy redirect-tel: /google-shopping-feed.xml
 
-// Megj.: ez a függvény a beépített termékadatokból dolgozik.
-// Production-ben Supabase / DB-ből kellene húzni a friss adatokat.
+// Megj.: a termékadatok build-kor generált JSON pillanatképből jönnek
+// (scripts/gen-feed-data.mjs, npm prebuild) — a runtime nem tud ESM-et betölteni.
 
-const BASE_PRODUCTS = require('../../src/data/productData');
+const PRODUCTS = require('./products-data.json');
 
 const slugify = (text) => {
   return (text || '').toLowerCase()
@@ -20,7 +20,7 @@ const slugify = (text) => {
 exports.handler = async (event, context) => {
   try {
     const baseUrl = process.env.URL || 'https://munkavedelmiszaki.hu';
-    const products = BASE_PRODUCTS.products || [];
+    const products = PRODUCTS || [];
 
     const items = products.filter(p => p.stock > 0).map(p => {
       const slug = p.slug || slugify(p.name);
