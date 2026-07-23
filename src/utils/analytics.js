@@ -8,9 +8,23 @@ const FB_PIXEL_ID = process.env.REACT_APP_FB_PIXEL_ID;
 
 let initialized = false;
 
+// ============ Cookie hozzájárulás (GDPR) ============
+// 'all' = marketing/statisztikai sütik engedélyezve, 'necessary' = csak szükségesek
+export const COOKIE_CONSENT_KEY = 'ms_cookie_consent';
+
+export const getCookieConsent = () => {
+  try { return localStorage.getItem(COOKIE_CONSENT_KEY); } catch (e) { return null; }
+};
+
+export const setCookieConsent = (value) => {
+  try { localStorage.setItem(COOKIE_CONSENT_KEY, value); } catch (e) {}
+};
+
 // ============ Inicializálás ============
 export const initAnalytics = () => {
   if (initialized) return;
+  // GDPR: analytics csak kifejezett hozzájárulás után töltődik be
+  if (getCookieConsent() !== 'all') return;
   initialized = true;
 
   // ===== Google Analytics 4 =====

@@ -8,6 +8,7 @@ import ProductDetailPage from './pages/ProductDetailPage';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import { TermsPage, PrivacyPage, ImpressumPage, ShippingPage, ContactPage, AboutPage } from './pages/StaticPages';
+import CookieConsent from './components/CookieConsent';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
@@ -82,6 +83,7 @@ function App() {
   return (
     <BrowserRouter>
       <RouteTracker />
+      <CookieConsent />
       <Routes>
         {/* Admin Login */}
         <Route path="/admin-login" element={

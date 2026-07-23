@@ -24,13 +24,15 @@ exports.handler = async (event, context) => {
 
     const items = products.filter(p => p.stock > 0).map(p => {
       const slug = p.slug || slugify(p.name);
+      // Relatív képútvonal (pl. /images/products/...) abszolúttá alakítása
+      const imageUrl = (p.image || '').startsWith('http') ? p.image : `${baseUrl}${p.image}`;
       return `
     <item>
       <g:id>${p.id}</g:id>
       <g:title><![CDATA[${p.name}]]></g:title>
       <g:description><![CDATA[${p.description || p.name}]]></g:description>
       <g:link>${baseUrl}/termek/${slug}</g:link>
-      <g:image_link>${p.image}</g:image_link>
+      <g:image_link>${imageUrl}</g:image_link>
       <g:availability>${p.stock > 0 ? 'in stock' : 'out of stock'}</g:availability>
       <g:price>${p.price}.00 HUF</g:price>
       <g:brand><![CDATA[${p.brand || 'MunkavédelmiShop'}]]></g:brand>

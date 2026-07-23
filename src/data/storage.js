@@ -640,7 +640,7 @@ const defaultBlogPosts = [
 <p>Az új cipő bejáratása minimum 1 hét. Mindennapi viseléshez vegyél 2 párat, és váltogasd! Tisztítsd rendszeresen, kezeld bőrápolóval.</p>`,
     author: 'MunkavédelmiShop',
     date: '2024-11-15',
-    image: 'https://images.unsplash.com/photo-1542329194-e65e5c9a8a9e?w=800&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1512374382149-233c42b6a83b?w=800&h=400&fit=crop',
     tags: ['munkacipo', 'utmutato', 'tanacsok']
   },
   {
@@ -664,7 +664,7 @@ const defaultBlogPosts = [
 <p>Konvektív hideg + kontakthideg + vízhatlanság jelölése. Téli kültéri munkához.</p>`,
     author: 'MunkavédelmiShop',
     date: '2024-11-22',
-    image: 'https://images.unsplash.com/photo-1551431009-381d36ac3a14?w=800&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?w=800&h=400&fit=crop',
     tags: ['kesztyu', 'szabvany', 'utmutato']
   },
   {
@@ -690,7 +690,7 @@ const defaultBlogPosts = [
 <p>Fluoreszcens sárga, narancs vagy piros háttér + retroreflektív (visszaverő) csíkok. A reflexcsík minimum 50 mm széles, és mosás után is meg kell őriznie funkcióját.</p>`,
     author: 'MunkavédelmiShop',
     date: '2024-12-01',
-    image: 'https://images.unsplash.com/photo-1539571696357-5a69c006a4c5?w=800&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
     tags: ['hi-vis', 'jogszabaly', 'kotelezo']
   }
 ];
