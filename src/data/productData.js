@@ -1092,3 +1092,41 @@ export const products = [
     sizes: ['4-6 év', '8-10 év', '10-12 év']
   }
 ];
+
+// ======================== TERMÉK GALÉRIA ========================
+// Kategóriánkénti kiegészítő képek a termékoldal galériájához.
+// Éles termékfotóknál a termék `images: [...]` mezője felülírja ezeket.
+
+const categoryGalleryImages = {
+  munkaruha: [
+    'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=600&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1551028719-00167b16eac5?w=600&h=600&fit=crop'
+  ],
+  munkacipo: [
+    'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=600&h=600&fit=crop'
+  ],
+  bakancs: [
+    'https://images.unsplash.com/photo-1520639888713-7851133b1ed0?w=600&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1608667508764-33cf0726b13a?w=600&h=600&fit=crop'
+  ],
+  kesztyu: [
+    'https://images.unsplash.com/photo-1583394838336-acd977736f90?w=600&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=600&h=600&fit=crop'
+  ],
+  kiegeszitok: [
+    'https://images.unsplash.com/photo-1581092160562-40aa08e78837?w=600&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=600&h=600&fit=crop'
+  ]
+};
+
+// A termék összes képe: saját images mező, vagy főkép + kategória-képek
+export const getProductImages = (product) => {
+  if (!product) return [];
+  if (Array.isArray(product.images) && product.images.length > 0) {
+    return product.images;
+  }
+  const extras = (categoryGalleryImages[product.categoryId] || [])
+    .filter(url => url !== product.image);
+  return [product.image, ...extras].filter(Boolean);
+};

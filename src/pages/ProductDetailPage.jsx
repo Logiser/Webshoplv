@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, Eye, ChevronRight } from 'lucide-react';
-import { productCategories, productSubcategories } from '../data/productData';
+import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, Eye, ChevronRight, ChevronLeft } from 'lucide-react';
+import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, getProductActivity } from '../data/storage';
 import { trackViewItem, trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 
@@ -14,6 +14,8 @@ const ProductDetailPage = () => {
   const [related, setRelated] = useState([]);
   const [wished, setWished] = useState(false);
   const [activity, setActivity] = useState({ activeViewers: 1 });
+  const [imgIdx, setImgIdx] = useState(0);
+  const touchStartX = useRef(null);
 
   useEffect(() => {
     const p = getProductBySlug(slug);
@@ -22,6 +24,7 @@ const ProductDetailPage = () => {
       return;
     }
     setProduct(p);
+    setImgIdx(0);
     setWished(isInWishlist(p.id));
     recordProductView(p.id);
     setActivity(getProductActivity(p.id));
@@ -175,20 +178,68 @@ const ProductDetailPage = () => {
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflow: 'hidden'
         }}>
           
-          {/* Kép */}
-          <div style={{ padding: '2rem', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative' }}>
-            <img src={product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '450px', objectFit: 'contain' }} />
-            {product.sale && product.sale.active && (
-              <span style={{
-                position: 'absolute', top: '1rem', right: '1rem',
-                backgroundColor: '#d32f2f', color: 'white',
-                padding: '0.5rem 1rem', borderRadius: '4px', fontWeight: 'bold',
-                boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
-              }}>
-                {product.sale.label || 'AKCIÓ'}
-              </span>
-            )}
-          </div>
+          {/* Kép galéria */}
+          {(() => {
+            const images = getProductImages(product);
+            const prevImg = () => setImgIdx(i => (i - 1 + images.length) % images.length);
+            const nextImg = () => setImgIdx(i => (i + 1) % images.length);
+            const arrowStyle = {
+              position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+              backgroundColor: 'rgba(15,42,29,0.75)', color: 'white', border: 'none',
+              borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2
+            };
+            return (
+              <div style={{ padding: '2rem', backgroundColor: '#f9f9f9' }}>
+                <div
+                  style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '350px' }}
+                  onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+                  onTouchEnd={(e) => {
+                    if (touchStartX.current === null) return;
+                    const delta = e.changedTouches[0].clientX - touchStartX.current;
+                    if (delta > 50) prevImg();
+                    if (delta < -50) nextImg();
+                    touchStartX.current = null;
+                  }}
+                >
+                  <img src={images[imgIdx]} alt={`${product.name} - ${imgIdx + 1}. kép`} style={{ maxWidth: '100%', maxHeight: '420px', objectFit: 'contain' }} />
+                  {images.length > 1 && (
+                    <>
+                      <button onClick={prevImg} aria-label="Előző kép" style={{ ...arrowStyle, left: '0.5rem' }}>
+                        <ChevronLeft size={22} />
+                      </button>
+                      <button onClick={nextImg} aria-label="Következő kép" style={{ ...arrowStyle, right: '0.5rem' }}>
+                        <ChevronRight size={22} />
+                      </button>
+                    </>
+                  )}
+                  {product.sale && product.sale.active && (
+                    <span style={{
+                      position: 'absolute', top: '1rem', right: '1rem',
+                      backgroundColor: '#d32f2f', color: 'white',
+                      padding: '0.5rem 1rem', borderRadius: '4px', fontWeight: 'bold',
+                      boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+                    }}>
+                      {product.sale.label || 'AKCIÓ'}
+                    </span>
+                  )}
+                </div>
+                {images.length > 1 && (
+                  <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'center', marginTop: '1rem', flexWrap: 'wrap' }}>
+                    {images.map((img, i) => (
+                      <button key={i} onClick={() => setImgIdx(i)} aria-label={`${i + 1}. kép megnyitása`} style={{
+                        padding: 0, border: i === imgIdx ? '2px solid #C9A961' : '2px solid #ddd',
+                        borderRadius: '4px', cursor: 'pointer', backgroundColor: 'white',
+                        opacity: i === imgIdx ? 1 : 0.7, transition: 'all 0.2s'
+                      }}>
+                        <img src={img} alt="" style={{ width: '64px', height: '64px', objectFit: 'cover', display: 'block', borderRadius: '2px' }} />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
 
           {/* Részletek */}
           <div style={{ padding: '2rem' }}>
