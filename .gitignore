@@ -34,3 +34,6 @@ yarn-error.log*
 # IDE
 .vscode/
 .idea/
+
+# Claude Code (gépspecifikus launch config)
+.claude/
