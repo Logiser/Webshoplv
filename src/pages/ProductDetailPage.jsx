@@ -129,6 +129,16 @@ const ProductDetailPage = () => {
         return;
       }
     }
+    // Méret-szintű készlet ellenőrzése (szín×méret mátrix)
+    if (variant && variant.sizeStock && selectedSize) {
+      const avail = variant.sizeStock[selectedSize] || 0;
+      if (avail < quantity) {
+        alert(avail === 0
+          ? `A(z) ${variant.color} színből ${selectedSize} méretben elfogyott!`
+          : `A(z) ${variant.color} / ${selectedSize} méretből csak ${avail} db van raktáron!`);
+        return;
+      }
+    }
     // Beletesszük a kosárba (sessionStorage-en keresztül a főoldal kosarához)
     const cartData = JSON.parse(sessionStorage.getItem('temp_cart') || '[]');
     cartData.push({
@@ -140,7 +150,8 @@ const ProductDetailPage = () => {
       image: (variant && variant.image) || product.image,
       color: variant ? variant.color : null,
       colorCode: variant ? variant.code : null,
-      variantStock: variant ? variant.stock : null
+      variantStock: variant ? variant.stock : null,
+      sizeStockAtAdd: (variant && variant.sizeStock && selectedSize) ? (variant.sizeStock[selectedSize] || 0) : null
     });
     sessionStorage.setItem('temp_cart', JSON.stringify(cartData));
     trackAddToCart(product, quantity);  // GA4 + FB Pixel
@@ -337,27 +348,39 @@ const ProductDetailPage = () => {
               </div>
             )}
 
-            {product.sizes && product.sizes.length > 0 && (
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                  Méret:
-                </label>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-                  {product.sizes.map(size => (
-                    <button key={size} onClick={() => setSelectedSize(size)}
-                      style={{
-                        padding: '0.5rem', borderRadius: '4px',
-                        border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
-                        backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
-                        color: selectedSize === size ? 'white' : '#0F2A1D',
-                        cursor: 'pointer', fontWeight: 'bold'
-                      }}>
-                      {size}
-                    </button>
-                  ))}
+            {product.sizes && product.sizes.length > 0 && (() => {
+              // Méret-szintű készlet a kiválasztott színnél (ha a variáns mátrixot használ)
+              const activeVariant = (product.variants || []).find(v => v.code === selectedColor)
+                || ((product.variants || []).length === 1 ? product.variants[0] : null);
+              const sizeStock = activeVariant && activeVariant.sizeStock ? activeVariant.sizeStock : null;
+              return (
+                <div style={{ marginBottom: '1rem' }}>
+                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
+                    Méret:
+                  </label>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                    {product.sizes.map(size => {
+                      const qty = sizeStock ? (sizeStock[size] || 0) : null;
+                      const out = qty !== null && qty === 0;
+                      return (
+                        <button key={size} onClick={() => !out && setSelectedSize(size)} disabled={out}
+                          title={out ? 'Ebből a méretből elfogyott' : (qty !== null && qty < 10 ? `${qty} db raktáron` : '')}
+                          style={{
+                            padding: '0.5rem', borderRadius: '4px',
+                            border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
+                            backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
+                            color: out ? '#bbb' : (selectedSize === size ? 'white' : '#0F2A1D'),
+                            cursor: out ? 'not-allowed' : 'pointer', fontWeight: 'bold',
+                            textDecoration: out ? 'line-through' : 'none'
+                          }}>
+                          {size}{qty !== null && qty > 0 && qty < 10 ? ` (${qty})` : ''}
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {/* Mennyiség */}
             <div style={{ marginBottom: '1rem' }}>

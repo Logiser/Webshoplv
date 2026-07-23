@@ -123,6 +123,18 @@ export const getAllProducts = () => {
         override.variantStock[v.code] !== undefined ? { ...v, stock: override.variantStock[v.code] } : v
       );
     }
+    // Méret-szintű készletek rávetítése (szín×méret mátrix)
+    if (Array.isArray(merged_p.variants) && override && override.variantSizeStock) {
+      merged_p.variants = merged_p.variants.map(v => {
+        const vss = override.variantSizeStock[v.code];
+        if (v.sizeStock && vss) {
+          const sizeStock = { ...v.sizeStock, ...vss };
+          const total = Object.values(sizeStock).reduce((s, n) => s + (parseInt(n) || 0), 0);
+          return { ...v, sizeStock, stock: total };
+        }
+        return v;
+      });
+    }
     // Slug generálás (ha nincs)
     if (!merged_p.slug) merged_p.slug = slugify(merged_p.name);
     return merged_p;
@@ -285,7 +297,7 @@ export const addStockBatch = (productId, quantity, unitCost = 0, batchNumber = '
   return newEntry;
 };
 
-export const removeStockFIFO = (productId, quantity, reason = 'Rendelés', colorCode = null) => {
+export const removeStockFIFO = (productId, quantity, reason = 'Rendelés', colorCode = null, size = null) => {
   const history = safeGet(STORAGE_KEYS.STOCK_HISTORY, []);
   const product = getAllProducts().find(p => p.id === productId);
   if (!product) return false;
@@ -331,6 +343,17 @@ export const removeStockFIFO = (productId, quantity, reason = 'Rendelés', color
         ...prevVS,
         [colorCode]: Math.max(0, (variant.stock || 0) - parseInt(quantity))
       };
+      // Méret-szintű készlet csökkentése (ha a variáns mátrixot használ)
+      if (size && variant.sizeStock && variant.sizeStock[size] !== undefined) {
+        const prevVSS = (overrides[productId] && overrides[productId].variantSizeStock) || {};
+        updates.variantSizeStock = {
+          ...prevVSS,
+          [colorCode]: {
+            ...(prevVSS[colorCode] || {}),
+            [size]: Math.max(0, (variant.sizeStock[size] || 0) - parseInt(quantity))
+          }
+        };
+      }
     }
   }
   updateProduct(productId, updates);
@@ -555,7 +578,7 @@ export const saveOrder = async (order) => {
 
   if (order.cart && Array.isArray(order.cart)) {
     order.cart.forEach(item => {
-      removeStockFIFO(item.id, item.quantity, `Rendelés: ${orderId}`, item.colorCode || null);
+      removeStockFIFO(item.id, item.quantity, `Rendelés: ${orderId}`, item.colorCode || null, item.size || null);
     });
   }
 
@@ -616,6 +639,36 @@ export const toggleWishlist = (productId) => {
 
 export const isInWishlist = (productId) => {
   return getWishlist().includes(productId);
+};
+
+// Kedvencek felülírása (email-alapú betöltéskor)
+export const setWishlist = (ids) => {
+  safeSet(STORAGE_KEYS.WISHLIST, Array.isArray(ids) ? ids : []);
+  return getWishlist();
+};
+
+// Email-alapú mentés/betöltés a wishlist-api function-ön keresztül (csak Supabase módban)
+export const saveWishlistToCloud = async (email) => {
+  const res = await fetch('/.netlify/functions/wishlist-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ op: 'save', email, items: getWishlist() })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Mentési hiba');
+  return data;
+};
+
+export const loadWishlistFromCloud = async (email) => {
+  const res = await fetch('/.netlify/functions/wishlist-api', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ op: 'load', email })
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Betöltési hiba');
+  setWishlist(data.items || []);
+  return data.items || [];
 };
 
 // ======================== BLOG ========================

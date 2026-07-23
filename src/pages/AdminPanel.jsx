@@ -684,6 +684,107 @@ const bulkBtnStyle = (color) => ({
 });
 
 // ============================================================
+// VARIÁNS SZERKESZTŐ (szín + kép + készlet, opcionális méret-mátrix)
+// ============================================================
+const VariantsEditor = ({ variants, onChange, sizes }) => {
+  const rows = variants || [];
+
+  const updateRow = (idx, updates) => {
+    const next = rows.map((v, i) => i === idx ? { ...v, ...updates } : v);
+    onChange(next);
+  };
+
+  const addRow = () => {
+    onChange([...rows, { code: '', color: '', image: '', stock: 0 }]);
+  };
+
+  const removeRow = (idx) => {
+    onChange(rows.filter((_, i) => i !== idx));
+  };
+
+  const toggleSizeStock = (idx) => {
+    const v = rows[idx];
+    if (v.sizeStock) {
+      // Mátrix kikapcsolása: az összeg marad a variáns készlete
+      const total = Object.values(v.sizeStock).reduce((s, n) => s + (parseInt(n) || 0), 0);
+      onChange(rows.map((row, i) => {
+        if (i !== idx) return row;
+        const { sizeStock, ...rest } = row;
+        return { ...rest, stock: total };
+      }));
+    } else {
+      // Bekapcsolás: a jelenlegi készlet egyenletes elosztása a méretek között
+      const sizeStock = {};
+      const per = sizes.length > 0 ? Math.floor((v.stock || 0) / sizes.length) : 0;
+      sizes.forEach((s, i) => { sizeStock[s] = per + (i < (v.stock || 0) % sizes.length ? 1 : 0); });
+      updateRow(idx, { sizeStock });
+    }
+  };
+
+  const setSizeQty = (idx, size, qty) => {
+    const v = rows[idx];
+    const sizeStock = { ...(v.sizeStock || {}), [size]: Math.max(0, parseInt(qty) || 0) };
+    const total = Object.values(sizeStock).reduce((s, n) => s + (parseInt(n) || 0), 0);
+    updateRow(idx, { sizeStock, stock: total });
+  };
+
+  const smallInput = { padding: '0.4rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem', boxSizing: 'border-box' };
+
+  return (
+    <div style={{ border: '1px solid #eee', borderRadius: '4px', padding: '0.75rem', backgroundColor: '#fafaf8' }}>
+      {rows.length === 0 && (
+        <p style={{ color: '#999', fontSize: '0.85rem', margin: '0 0 0.5rem 0' }}>
+          Nincs színvariáns — a termék szín nélkül, a fő képpel jelenik meg.
+        </p>
+      )}
+      {rows.map((v, idx) => (
+        <div key={idx} style={{ borderBottom: idx < rows.length - 1 ? '1px solid #eee' : 'none', paddingBottom: '0.75rem', marginBottom: '0.75rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '70px 1fr 1fr 80px 32px', gap: '0.5rem', alignItems: 'center' }}>
+            <input style={{ ...smallInput, textTransform: 'uppercase' }} placeholder="KÓD" value={v.code}
+              onChange={e => updateRow(idx, { code: e.target.value.toUpperCase() })} title="Színkód (pl. BK)" />
+            <input style={smallInput} placeholder="Színnév (pl. Fekete)" value={v.color}
+              onChange={e => updateRow(idx, { color: e.target.value })} />
+            <input style={smallInput} placeholder="/images/products/xxx_bk.webp" value={v.image}
+              onChange={e => updateRow(idx, { image: e.target.value })} />
+            <input style={smallInput} type="number" min="0" placeholder="db" value={v.stock}
+              disabled={!!v.sizeStock} title={v.sizeStock ? 'A méretenkénti készletek összege' : 'Készlet (db)'}
+              onChange={e => updateRow(idx, { stock: Math.max(0, parseInt(e.target.value) || 0) })} />
+            <button onClick={() => removeRow(idx)} title="Szín törlése" style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer' }}>
+              <Trash2 size={16} />
+            </button>
+          </div>
+          <div style={{ marginTop: '0.4rem' }}>
+            <label style={{ fontSize: '0.8rem', color: '#666', cursor: 'pointer' }}>
+              <input type="checkbox" checked={!!v.sizeStock} onChange={() => toggleSizeStock(idx)} disabled={sizes.length === 0}
+                style={{ marginRight: '0.4rem', verticalAlign: 'middle' }} />
+              Méretenkénti készlet {sizes.length === 0 ? '(előbb adj meg méreteket)' : ''}
+            </label>
+            {v.sizeStock && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem', marginTop: '0.4rem' }}>
+                {sizes.map(s => (
+                  <div key={s} style={{ textAlign: 'center' }}>
+                    <div style={{ fontSize: '0.7rem', color: '#999' }}>{s}</div>
+                    <input type="number" min="0" value={v.sizeStock[s] !== undefined ? v.sizeStock[s] : 0}
+                      onChange={e => setSizeQty(idx, s, e.target.value)}
+                      style={{ ...smallInput, width: '52px', textAlign: 'center' }} />
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      ))}
+      <button onClick={addRow} style={{
+        padding: '0.4rem 0.75rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+        borderRadius: '4px', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 'bold'
+      }}>
+        + Új szín
+      </button>
+    </div>
+  );
+};
+
+// ============================================================
 // EDIT PRODUCT MODAL
 // ============================================================
 const EditProductModal = ({ product, onClose, onSave }) => {
@@ -698,19 +799,39 @@ const EditProductModal = ({ product, onClose, onSave }) => {
     subcategoryId: product.subcategoryId,
     sizes: (product.sizes || []).join(', ')
   });
+  const [variants, setVariants] = useState(product.variants || []);
+
+  const sizesArr = form.sizes.split(',').map(s => s.trim()).filter(Boolean);
 
   const handleSave = () => {
     if (!form.name || !form.price) {
       alert('Név és ár kötelező!');
       return;
     }
-    const sizesArr = form.sizes.split(',').map(s => s.trim()).filter(Boolean);
+    const cleanVariants = variants.filter(v => v.code && v.color);
+    if (variants.length > 0 && cleanVariants.length < variants.length) {
+      alert('Minden színvariánsnál kötelező a KÓD és a színnév!');
+      return;
+    }
+    const codes = cleanVariants.map(v => v.code);
+    if (new Set(codes).size !== codes.length) {
+      alert('A színkódok nem ismétlődhetnek!');
+      return;
+    }
+    // Variánsokkal a termék készlete a variánsok összege
+    const totalStock = cleanVariants.length > 0
+      ? cleanVariants.reduce((s, v) => s + (parseInt(v.stock) || 0), 0)
+      : parseInt(form.stock);
     updateProduct(product.id, {
       ...form,
       price: parseFloat(form.price),
-      stock: parseInt(form.stock),
+      stock: totalStock,
       rating: parseFloat(form.rating),
-      sizes: sizesArr
+      sizes: sizesArr,
+      variants: cleanVariants,
+      // A korábbi rendelés-csökkentések felülírása: az admin által beírt érték a friss
+      variantStock: null,
+      variantSizeStock: null
     });
     onSave();
   };
@@ -761,6 +882,10 @@ const EditProductModal = ({ product, onClose, onSave }) => {
 
         <FormField label="Méretek (vesszővel)">
           <input type="text" value={form.sizes} onChange={e => setForm({...form, sizes: e.target.value})} placeholder="S, M, L, XL" style={inputStyle} />
+        </FormField>
+
+        <FormField label={`Színvariánsok${variants.length > 0 ? ` (össz. készlet: ${variants.reduce((s, v) => s + (parseInt(v.stock) || 0), 0)} db)` : ''}`}>
+          <VariantsEditor variants={variants} onChange={setVariants} sizes={sizesArr} />
         </FormField>
 
         <FormField label="Leírás">
@@ -1172,24 +1297,36 @@ const AddProduct = ({ onChange, setTab }) => {
     name: '', price: '', description: '', stock: '', image: '', rating: 4.5,
     categoryId: 'munkaruha', subcategoryId: '', sizes: ''
   });
+  const [variants, setVariants] = useState([]);
+
+  const sizesArr = form.sizes.split(',').map(s => s.trim()).filter(Boolean);
 
   const handleSubmit = () => {
     if (!form.name || !form.price || !form.categoryId || !form.subcategoryId) {
       alert('Név, ár, kategória és alkategória kötelező!');
       return;
     }
+    const cleanVariants = variants.filter(v => v.code && v.color);
+    if (variants.length > 0 && cleanVariants.length < variants.length) {
+      alert('Minden színvariánsnál kötelező a KÓD és a színnév!');
+      return;
+    }
     const product = {
       ...form,
       price: parseFloat(form.price),
-      stock: parseInt(form.stock) || 0,
+      stock: cleanVariants.length > 0
+        ? cleanVariants.reduce((s, v) => s + (parseInt(v.stock) || 0), 0)
+        : (parseInt(form.stock) || 0),
       rating: parseFloat(form.rating) || 4.5,
-      sizes: form.sizes.split(',').map(s => s.trim()).filter(Boolean),
-      image: form.image || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop'
+      sizes: sizesArr,
+      variants: cleanVariants,
+      image: form.image || (cleanVariants[0] && cleanVariants[0].image) || 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400&h=400&fit=crop'
     };
     addCustomProduct(product);
     onChange();
     alert('✅ Termék hozzáadva!');
     setForm({ name: '', price: '', description: '', stock: '', image: '', rating: 4.5, categoryId: 'munkaruha', subcategoryId: '', sizes: '' });
+    setVariants([]);
     setTab('products');
   };
 
@@ -1227,6 +1364,10 @@ const AddProduct = ({ onChange, setTab }) => {
 
         <FormField label="Méretek (vesszővel)">
           <input type="text" value={form.sizes} onChange={e => setForm({...form, sizes: e.target.value})} placeholder="S, M, L, XL" style={inputStyle} />
+        </FormField>
+
+        <FormField label="Színvariánsok (opcionális)">
+          <VariantsEditor variants={variants} onChange={setVariants} sizes={sizesArr} />
         </FormField>
 
         <FormField label="Kép URL (opcionális)">

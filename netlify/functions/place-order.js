@@ -124,6 +124,22 @@ exports.handler = async (event) => {
             ...prevVS,
             [item.colorCode]: Math.max(0, startVS - qty)
           };
+
+          // Méret-szintű készlet csökkentése (szín×méret mátrix)
+          if (item.size && item.sizeStockAtAdd !== undefined && item.sizeStockAtAdd !== null) {
+            const prevVSS = overrides[item.id].variantSizeStock || {};
+            const prevColorSS = prevVSS[item.colorCode] || {};
+            const startSS = prevColorSS[item.size] !== undefined
+              ? prevColorSS[item.size]
+              : (parseInt(item.sizeStockAtAdd) || 0);
+            overrides[item.id].variantSizeStock = {
+              ...prevVSS,
+              [item.colorCode]: {
+                ...prevColorSS,
+                [item.size]: Math.max(0, startSS - qty)
+              }
+            };
+          }
         }
         maybeAddSupplierNotif(supplierNotifs, item, newStock, now);
       }

@@ -1,13 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Heart, X, ArrowLeft } from 'lucide-react';
+import { Heart, X, ArrowLeft, UploadCloud, DownloadCloud } from 'lucide-react';
 import { productCategories } from '../data/productData';
-import { getWishlist, toggleWishlist, getAllProducts } from '../data/storage';
+import { getWishlist, toggleWishlist, getAllProducts, saveWishlistToCloud, loadWishlistFromCloud } from '../data/storage';
+import { isSupabaseEnabled } from '../data/supabaseClient';
 
 const WishlistPage = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [refresh, setRefresh] = useState(0);
+  const [syncEmail, setSyncEmail] = useState(() => localStorage.getItem('ms_wishlist_email') || '');
+  const [syncMsg, setSyncMsg] = useState(null);   // {type: 'ok'|'err', text}
+  const [syncBusy, setSyncBusy] = useState(false);
+
+  const handleSync = async (op) => {
+    const email = syncEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setSyncMsg({ type: 'err', text: 'Adj meg érvényes email címet!' });
+      return;
+    }
+    setSyncBusy(true);
+    setSyncMsg(null);
+    try {
+      localStorage.setItem('ms_wishlist_email', email);
+      if (op === 'save') {
+        const r = await saveWishlistToCloud(email);
+        setSyncMsg({ type: 'ok', text: `✅ ${r.count} kedvenc elmentve ehhez: ${email}` });
+      } else {
+        const items = await loadWishlistFromCloud(email);
+        setRefresh(r => r + 1);
+        setSyncMsg({ type: 'ok', text: `✅ ${items.length} kedvenc betöltve` });
+      }
+    } catch (e) {
+      setSyncMsg({ type: 'err', text: e.message || 'Hiba történt, próbáld újra!' });
+    } finally {
+      setSyncBusy(false);
+    }
+  };
 
   useEffect(() => {
     document.title = 'Kedvencek - MunkavédelmiShop';
@@ -41,9 +70,45 @@ const WishlistPage = () => {
         <h1 style={{ color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <Heart size={32} fill="#d32f2f" color="#d32f2f" /> Kedvenceim
         </h1>
-        <p style={{ color: '#666', marginBottom: '2rem' }}>
+        <p style={{ color: '#666', marginBottom: '1.5rem' }}>
           {products.length} mentett termék
         </p>
+
+        {isSupabaseEnabled && (
+          <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '2rem', borderLeft: '4px solid #C9A961' }}>
+            <p style={{ margin: '0 0 0.75rem 0', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem' }}>
+              ☁️ Kedvencek mentése email-címhez — így bármelyik eszközödről elérheted
+            </p>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <input
+                type="email"
+                value={syncEmail}
+                onChange={(e) => { setSyncEmail(e.target.value); setSyncMsg(null); }}
+                placeholder="email@cimed.hu"
+                style={{ flex: '1 1 220px', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px' }}
+              />
+              <button onClick={() => handleSync('save')} disabled={syncBusy} style={{
+                padding: '0.6rem 1rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+                borderRadius: '4px', cursor: syncBusy ? 'wait' : 'pointer', fontWeight: 'bold',
+                display: 'flex', alignItems: 'center', gap: '0.4rem'
+              }}>
+                <UploadCloud size={16} /> Mentés
+              </button>
+              <button onClick={() => handleSync('load')} disabled={syncBusy} style={{
+                padding: '0.6rem 1rem', backgroundColor: 'white', color: '#0F2A1D', border: '2px solid #0F2A1D',
+                borderRadius: '4px', cursor: syncBusy ? 'wait' : 'pointer', fontWeight: 'bold',
+                display: 'flex', alignItems: 'center', gap: '0.4rem'
+              }}>
+                <DownloadCloud size={16} /> Betöltés
+              </button>
+            </div>
+            {syncMsg && (
+              <p style={{ margin: '0.75rem 0 0 0', fontSize: '0.85rem', fontWeight: 'bold', color: syncMsg.type === 'ok' ? '#4CAF50' : '#d32f2f' }}>
+                {syncMsg.text}
+              </p>
+            )}
+          </div>
+        )}
 
         {products.length === 0 ? (
           <div style={{ backgroundColor: 'white', padding: '4rem 2rem', borderRadius: '8px', textAlign: 'center' }}>

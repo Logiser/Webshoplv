@@ -119,12 +119,23 @@ const WorkwearShop = () => {
         return;
       }
     }
+    // Méret-szintű készlet ellenőrzése (szín×méret mátrix)
+    if (variant && variant.sizeStock && selectedSize) {
+      const avail = variant.sizeStock[selectedSize] || 0;
+      if (avail < quantity) {
+        alert(avail === 0
+          ? `A(z) ${variant.color} színből ${selectedSize} méretben elfogyott!`
+          : `A(z) ${variant.color} / ${selectedSize} méretből csak ${avail} db van raktáron!`);
+        return;
+      }
+    }
     const effectivePrice = getEffectivePrice(product);
     const cartItem = {
       id: product.id, name: product.name, price: effectivePrice,
       quantity, size: selectedSize, image: (variant && variant.image) || product.image,
       color: variant ? variant.color : null, colorCode: variant ? variant.code : null,
-      variantStock: variant ? variant.stock : null
+      variantStock: variant ? variant.stock : null,
+      sizeStockAtAdd: (variant && variant.sizeStock && selectedSize) ? (variant.sizeStock[selectedSize] || 0) : null
     };
     const existingItem = cart.find(item => item.id === product.id && item.size === selectedSize && item.colorCode === cartItem.colorCode);
     if (existingItem) {
@@ -931,22 +942,32 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             </div>
           )}
 
-          {product.sizes && product.sizes.length > 0 && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Méret:</label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-                {product.sizes.map(size => (
-                  <button key={size} onClick={() => setSelectedSize(size)} style={{
-                    padding: '0.5rem', borderRadius: '4px',
-                    border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
-                    backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
-                    color: selectedSize === size ? 'white' : '#0F2A1D',
-                    cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
-                  }}>{size}</button>
-                ))}
+          {product.sizes && product.sizes.length > 0 && (() => {
+            const sizeStock = activeVariant && activeVariant.sizeStock ? activeVariant.sizeStock : null;
+            return (
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Méret:</label>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+                  {product.sizes.map(size => {
+                    const qty = sizeStock ? (sizeStock[size] || 0) : null;
+                    const out = qty !== null && qty === 0;
+                    return (
+                      <button key={size} onClick={() => !out && setSelectedSize(size)} disabled={out}
+                        title={out ? 'Ebből a méretből elfogyott' : ''}
+                        style={{
+                          padding: '0.5rem', borderRadius: '4px',
+                          border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
+                          backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
+                          color: out ? '#bbb' : (selectedSize === size ? 'white' : '#0F2A1D'),
+                          cursor: out ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.85rem',
+                          textDecoration: out ? 'line-through' : 'none'
+                        }}>{size}{qty !== null && qty > 0 && qty < 10 ? ` (${qty})` : ''}</button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Mennyiség:</label>
