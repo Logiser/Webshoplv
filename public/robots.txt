@@ -4,4 +4,23 @@ Disallow: /admin
 Disallow: /admin-login
 Disallow: /checkout
 
-Sitemap: /sitemap.xml
+# AI keresők / asszisztensek engedélyezése (GEO)
+User-agent: GPTBot
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+
+User-agent: ClaudeBot
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /checkout
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://munkavedelmiszaki.hu/sitemap.xml

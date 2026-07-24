@@ -54,32 +54,46 @@ const ProductDetailPage = () => {
     const desc = p.description ? p.description.substring(0, 160) : `${p.name} - ${cat?.name || ''} - MunkavédelmiShop webshopjából`;
     setMeta('description', desc);
     setMeta('keywords', `${p.name}, ${p.brand || ''}, ${cat?.name || ''}, munkavédelem`);
+    // Relatív képútvonal abszolúttá alakítása (OG + schema.org kötelező)
+    const absImage = (p.image || '').startsWith('http') ? p.image : `${window.location.origin}${p.image}`;
     setMeta('og:title', p.name, true);
     setMeta('og:description', desc, true);
-    setMeta('og:image', p.image, true);
+    setMeta('og:image', absImage, true);
     setMeta('og:type', 'product', true);
 
-    // Schema.org Product markup
-    const schema = {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      "name": p.name,
-      "image": p.image,
-      "description": p.description,
-      "brand": { "@type": "Brand", "name": p.brand || 'MunkavédelmiShop' },
-      "offers": {
-        "@type": "Offer",
-        "url": window.location.href,
-        "priceCurrency": "HUF",
-        "price": (p.sale && p.sale.active) ? p.sale.price : p.price,
-        "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+    // Schema.org Product + BreadcrumbList markup
+    const schema = [
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        "name": p.name,
+        "sku": p.articleNo || String(p.id),
+        "image": absImage,
+        "description": p.description,
+        "brand": { "@type": "Brand", "name": p.brand || 'MunkavédelmiShop' },
+        "offers": {
+          "@type": "Offer",
+          "url": window.location.href,
+          "priceCurrency": "HUF",
+          "price": (p.sale && p.sale.active) ? p.sale.price : p.price,
+          "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
+        },
+        "aggregateRating": p.rating ? {
+          "@type": "AggregateRating",
+          "ratingValue": p.rating,
+          "reviewCount": Math.floor(Math.random() * 50) + 10
+        } : undefined
       },
-      "aggregateRating": p.rating ? {
-        "@type": "AggregateRating",
-        "ratingValue": p.rating,
-        "reviewCount": Math.floor(Math.random() * 50) + 10
-      } : undefined
-    };
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          { "@type": "ListItem", "position": 1, "name": "Főoldal", "item": window.location.origin },
+          { "@type": "ListItem", "position": 2, "name": cat?.name || 'Termékek', "item": window.location.origin },
+          { "@type": "ListItem", "position": 3, "name": p.name, "item": window.location.href }
+        ]
+      }
+    ];
 
     let schemaScript = document.querySelector('script[type="application/ld+json"][data-product]');
     if (!schemaScript) {

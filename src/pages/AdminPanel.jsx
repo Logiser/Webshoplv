@@ -2173,9 +2173,40 @@ iroda@tuz-munkavedelmiszaki.hu
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
 
+  const handleDepiendSync = async () => {
+    if (!window.confirm('Lekérjük a Depiend aktuális árait és frissítjük a webshop-árakat (árrés-szabállyal). Indulhat?')) return;
+    try {
+      const res = await fetch('/.netlify/functions/depiend-sync', {
+        method: 'POST',
+        headers: { 'x-admin-password': sessionStorage.getItem('ms_admin_pw') || '' }
+      });
+      const r = await res.json();
+      if (!res.ok) throw new Error(r.error || 'Szinkron hiba');
+      const lines = (r.changed || []).map(c => `${c.articleNo}: ${c.oldPrice.toLocaleString('hu-HU')} → ${c.newPrice.toLocaleString('hu-HU')} Ft`);
+      alert(`✅ Depiend szinkron kész!\n${r.checked} termék ellenőrizve, ${(r.changed || []).length} árváltozás.\n${lines.slice(0, 10).join('\n')}${(r.errors || []).length ? `\n⚠️ ${r.errors.length} hiba` : ''}`);
+      if (onChange) onChange();
+    } catch (e) {
+      alert(`❌ Szinkron hiba: ${e.message}\n(Lokális fejlesztésnél a function csak "netlify dev" alatt fut.)`);
+    }
+  };
+
   return (
     <div>
       <h1 style={{ margin: '0 0 1.5rem 0', color: '#0F2A1D' }}>🔔 Beszállító Értesítések</h1>
+      <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', borderLeft: '4px solid #C9A961' }}>
+        <div style={{ flex: '1 1 300px' }}>
+          <p style={{ margin: 0, fontWeight: 'bold', color: '#0F2A1D' }}>🔄 Depiend ár-szinkron</p>
+          <p style={{ margin: '0.25rem 0 0 0', color: '#666', fontSize: '0.85rem' }}>
+            Naponta automatikusan fut (hajnali 4-kor). Kézzel is indítható — a beszállítói árakból árrés-szabállyal számolja a webshop-árakat.
+          </p>
+        </div>
+        <button onClick={handleDepiendSync} style={{
+          padding: '0.6rem 1.2rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+          borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '0.4rem'
+        }}>
+          <RefreshCw size={16} /> Szinkron most
+        </button>
+      </div>
       <p style={{ color: '#666', marginBottom: '1.5rem' }}>
         Az alábbi termékek készlete kritikusan alacsony — érdemes utánrendelni a beszállítótól.
       </p>

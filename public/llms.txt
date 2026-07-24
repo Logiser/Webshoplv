@@ -1,0 +1,27 @@
+# MunkavédelmiShop (munkavedelmiszaki.hu)
+
+> Magyar munkavédelmi webshop: Portwest munkaruházat, biztonsági cipők és
+> bakancsok (EN ISO 20345), munkavédelmi kesztyűk, védősisakok, védőszemüvegek
+> és jól láthatósági ruházat (EN ISO 20471). Üzemeltető: Trident Shield Group
+> Kft. (márkanév: MunkavédelmiSzaki), 6600 Szentes, Magyarország.
+> Országos kiszállítás 2-3 munkanapon belül, 30 000 Ft felett ingyenes.
+
+## Fő oldalak
+
+- [Webshop főoldal](https://munkavedelmiszaki.hu/): teljes terméklista szűrőkkel
+- [Blog](https://munkavedelmiszaki.hu/blog): munkavédelmi útmutatók, szabvány-magyarázatok
+- [Szállítási feltételek](https://munkavedelmiszaki.hu/shipping)
+- [Kapcsolat](https://munkavedelmiszaki.hu/contact): +36 30 272 2571, iroda@tuz-munkavedelmiszaki.hu
+
+## Termékkategóriák
+
+- Munkaruházat: munkanadrágok, dzsekik, télikabátok, overálok, hi-vis pulóverek
+- Munkavédelmi cipők: S1, S1P, S2, S3, S3S és ESD kategóriák
+- Bakancsok: S1P és S3 védőbakancsok, téli bélelt kivitelek
+- Munkavédelmi kesztyűk: latex, PU és nitril bevonatú, téli kivitelek
+- Kiegészítők: védősisakok (EN 397), védőszemüvegek, láthatósági mellények, sapkák
+
+## Kapcsolódó szolgáltatások
+
+A Trident Shield Group Kft. munkavédelmi és tűzvédelmi szolgáltatásokat is nyújt:
+kockázatértékelés, oktatás, tűzvédelmi szabályzat készítés magyar KKV-knak.

@@ -31,10 +31,12 @@ const BlogPostPage = () => {
       tag.content = content;
     };
 
+    // Relatív képútvonal abszolúttá alakítása (OG + schema.org kötelező)
+    const absImage = p.image ? ((p.image.startsWith('http') ? p.image : `${window.location.origin}${p.image}`)) : null;
     setMeta('description', p.excerpt);
     setMeta('og:title', p.title, true);
     setMeta('og:description', p.excerpt, true);
-    if (p.image) setMeta('og:image', p.image, true);
+    if (absImage) setMeta('og:image', absImage, true);
     setMeta('og:type', 'article', true);
 
     // Schema.org Article markup
@@ -42,7 +44,7 @@ const BlogPostPage = () => {
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": p.title,
-      "image": p.image,
+      "image": absImage,
       "datePublished": p.date,
       "author": { "@type": "Organization", "name": p.author },
       "publisher": { "@type": "Organization", "name": "MunkavédelmiShop" }

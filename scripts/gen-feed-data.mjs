@@ -17,6 +17,7 @@ const slugify = (text) => (text || '')
 
 const snapshot = products.map(p => ({
   id: p.id,
+  articleNo: p.articleNo || '',
   name: p.name,
   slug: p.slug || slugify(p.name),
   description: p.description || '',

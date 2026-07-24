@@ -3,10 +3,20 @@
   publish = "build"
   environment = { CI = "false" }
 
+# Depiend ár-szinkron: naponta hajnali 4-kor (UTC)
+[functions."depiend-sync"]
+  schedule = "0 4 * * *"
+
 # Google Shopping feed redirect
 [[redirects]]
   from = "/google-shopping-feed.xml"
   to = "/.netlify/functions/google-shopping-feed"
+  status = 200
+
+# Árukereső feed redirect
+[[redirects]]
+  from = "/arukereso-feed.xml"
+  to = "/.netlify/functions/arukereso-feed"
   status = 200
 
 # SPA fallback - MINDIG az utolsó!

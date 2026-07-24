@@ -745,6 +745,229 @@ const defaultBlogPosts = [
     date: '2024-12-01',
     image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
     tags: ['hi-vis', 'jogszabaly', 'kotelezo']
+  },
+  {
+    id: 4,
+    slug: 'teli-munkavedelmi-bakancs-valasztas',
+    title: 'Téli munkavédelmi bakancs: mire figyelj a hideg szezonban?',
+    excerpt: 'CI jelölés, bélés, talpszigetelés — így válassz bakancsot fagypont alatti munkához.',
+    content: `<h2>Mit jelent a CI jelölés?</h2>
+<p>Az EN ISO 20345 szabványban a <strong>CI (Cold Insulation)</strong> a talp hidegszigetelését jelöli: a bakancs -17°C-on, 30 percen át tesztelve legfeljebb 10°C-ot engedhet hűlni a belső térben. Ha rendszeresen dolgozol kültéren télen, ez az első jelölés, amit keress.</p>
+<h2>Bélés típusok</h2>
+<ul>
+<li><strong>Szőrmebélés:</strong> a legmelegebb megoldás, pl. a Portwest FC12 Compositelite típusnál. Kültéri, tartósan hideg munkakörnyezethez.</li>
+<li><strong>Thinsulate / textil bélés:</strong> vékonyabb, jól szellőzik — váltakozó kültéri-beltéri munkához praktikus.</li>
+</ul>
+<h2>Gyakori hiba: a túl szoros méret</h2>
+<p>Télen vastagabb zoknit viselünk — ha a bakancs szoros, a láb hamarabb fázik, mert a vérkeringés romlik és nincs szigetelő légréteg. Fél mérettel nagyobbat válassz, mint a nyári lábbelid.</p>
+<h2>Talp és csúszásvédelem</h2>
+<p>Jeges felületen az SRC jelölésű, mélyprofilos talp a minimum. A hőálló (HRO) talpgumi hidegben is rugalmasabb marad, kevésbé keményedik meg.</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-01-14',
+    image: '/images/products/fc12_bk.jpg',
+    tags: ['bakancs', 'teli', 'utmutato']
+  },
+  {
+    id: 5,
+    slug: 'latex-nitril-pu-kesztyu-bevonatok',
+    title: 'Latex, nitril vagy PU? Munkakesztyű bevonatok összehasonlítása',
+    excerpt: 'Melyik bevonat mire való? Gyakorlati összehasonlítás fogás, kopásállóság és ár szerint.',
+    content: `<h2>Latex bevonat</h2>
+<p>Kiváló rugalmasság és fogásbiztonság, nedves felületen is. Érdesített változata (pl. Portwest A100) építőipari és rakodási munkák kedvence. Hátránya: latex-allergiát okozhat, és olajokkal szemben gyenge.</p>
+<h2>Nitril bevonat</h2>
+<p>Olaj- és vegyszerálló, nagyon kopásálló — műhelyben, autószerelésben, olajos alkatrészekhez ez a nyerő. Mikrohabosított (foam) változata lélegzik és tapadós marad olajos felületen is.</p>
+<h2>PU (poliuretán) bevonat</h2>
+<p>A legvékonyabb, legérzékenyebb fogást adó bevonat (pl. Portwest A120). Precíziós szereléshez, elektronikai munkához, csomagoláshoz ideális. Cserébe kevésbé tartós durva felületeken.</p>
+<h2>Gyors választó</h2>
+<ul>
+<li>Építkezés, rakodás → <strong>érdesített latex</strong></li>
+<li>Olajos alkatrészek, műhely → <strong>nitril</strong></li>
+<li>Precíziós munka, szerelés → <strong>PU</strong></li>
+<li>Téli kültéri munka → <strong>bélelt latex/nitril</strong> (pl. A140, A146)</li>
+</ul>
+<p>Tipp: az EN 388 kód 4 számjegye (kopás, vágás, tépés, átszúrás) alapján hasonlítsd össze a konkrét modelleket.</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-02-20',
+    image: '/images/products/a100_gn.jpg',
+    tags: ['kesztyu', 'osszehasonlitas', 'utmutato']
+  },
+  {
+    id: 6,
+    slug: 'vedosisak-szabalyok-en397-kihordas',
+    title: 'Védősisak szabályok: EN 397, kihordási idő, karbantartás',
+    excerpt: 'Meddig használható egy védősisak? Mit ír elő az EN 397, és mikor kell azonnal cserélni?',
+    content: `<h2>EN 397 — az ipari védősisak szabványa</h2>
+<p>Az EN 397 a sisakhéj ütéscsillapítását és átszúrás-állóságát vizsgálja. Opcionális jelölések: <strong>-30°C</strong> (hidegállóság), <strong>440 V a.c.</strong> (elektromos szigetelés), <strong>LD</strong> (oldalirányú deformáció), <strong>MM</strong> (fémfröccsenés).</p>
+<h2>Kihordási idő</h2>
+<p>A gyártók jellemzően a <strong>gyártástól számított 5-7 évet</strong> adnak meg (a Portwest PS55-nél 7 év). A gyártási dátum a sisakhéjba nyomva található. A kihordási idő akkor is érvényes, ha a sisak "jól néz ki" — a műanyag UV-fénytől és hőtől öregszik.</p>
+<h2>Mikor kell AZONNAL cserélni?</h2>
+<ul>
+<li>Bármilyen ütés érte — akkor is, ha nem látszik rajta sérülés</li>
+<li>Repedés, mélyebb karc a héjon</li>
+<li>Kifakult, krétásodó felület (UV-öregedés jele)</li>
+<li>Sérült vagy hiányzó sisakkosár</li>
+</ul>
+<h2>Karbantartás</h2>
+<p>Langyos szappanos vízzel tisztítsd, oldószerrel soha. Ne tárold autó műszerfalán vagy tűző napon. A sisakkosár és izzadságpánt külön is cserélhető — érdemes évente frissíteni.</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-03-18',
+    image: '/images/products/ps55_wh.jpg',
+    tags: ['sisak', 'szabvany', 'karbantartas']
+  },
+  {
+    id: 7,
+    slug: 'munkanadrag-valasztas-zsebek-anyagok',
+    title: 'Hogyan válassz munkanadrágot? Anyagok, zsebek, szabás',
+    excerpt: 'Pamut vagy kevertszálas? Lengőzseb vagy térdvédő? Gyakorlati szempontok munkanadrág vásárláshoz.',
+    content: `<h2>Anyagválasztás</h2>
+<p>A klasszikus <strong>65/35 poliészter-pamut</strong> keverék (pl. Kingsmill szövet) jó kompromisszum: strapabíró, gyorsan szárad, kevésbé gyűrődik. A magas pamuttartalom kényelmesebb és jobban szellőzik, de lassabban szárad. A modern stretch anyagok (pl. WX2 széria) mozgáskövetőek — sokat hajolgató munkához érdemes választani.</p>
+<h2>Zsebkiosztás</h2>
+<ul>
+<li><strong>Combzseb (cargo):</strong> telefonnak, mérőszalagnak — az alap munkás-kiosztás (pl. C701)</li>
+<li><strong>Lengőzseb (holster):</strong> szerszámoknak, csavaroknak, gyors hozzáféréssel (pl. C720) — burkolóknak, villanyszerelőknek</li>
+<li><strong>Térdvédő zseb:</strong> ha sokat térdelsz, EN 14404 térdpárnával kombinálva kötelező darab</li>
+</ul>
+<h2>Méret és szabás</h2>
+<p>A munkanadrág akkor jó, ha guggolásnál nem húz és nem csúszik le. Hosszított szárú változatok magasabb (185 cm+) testalkathoz elérhetők a legtöbb Portwest modellnél.</p>
+<h2>UV védelem</h2>
+<p>Kültéri munkánál figyeld az UPF jelölést — a C701 például az UV sugárzás 96%-át blokkolja (50+ UPF).</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-04-22',
+    image: '/images/products/c701_bk.jpg',
+    tags: ['munkaruha', 'nadrag', 'utmutato']
+  },
+  {
+    id: 8,
+    slug: 'teli-munkaruha-retegezes',
+    title: 'Téli munkaruházat: a rétegezés művészete',
+    excerpt: 'Aláöltözet, polár, télikabát — így öltözz rétegesen, hogy se meg ne fázz, se le ne izzadj.',
+    content: `<h2>Miért rétegezz?</h2>
+<p>A hideg elleni védelem kulcsa nem egyetlen vastag kabát, hanem a <strong>rétegek közötti levegő</strong>. A rétegezés ráadásul rugalmas: fizikai munkánál levehetsz, pihenőben visszavehetsz egy réteget.</p>
+<h2>A három réteg</h2>
+<ul>
+<li><strong>1. aláöltözet (base layer):</strong> nedvességelvezető funkcionális réteg — a pamut pólót izzadós munkánál kerüld, mert nedvesen hűt</li>
+<li><strong>2. szigetelő réteg:</strong> polár pulóver vagy dzseki (pl. Portwest CD871 WX2 Eco polár) — ez tartja a meleget</li>
+<li><strong>3. külső réteg:</strong> szél- és vízálló télikabát (pl. CD864, ragasztott varratokkal) — ez zárja ki az időjárást</li>
+</ul>
+<h2>Amire még figyelj</h2>
+<p>A hőveszteség jelentős része a fejnél és a végtagoknál történik: kötött, bélelt sapka (pl. B013 Insulatex), téli kesztyű (A140/A146) és CI jelölésű bakancs nélkül a legjobb kabát sem elég. Munkavédelmi szempont: a külső réteg legyen jól látható vagy viselj rá hi-vis mellényt, ha forgalom közelében dolgozol.</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-10-15',
+    image: '/images/products/cd864_bk.jpg',
+    tags: ['munkaruha', 'teli', 'retegezes']
+  },
+  {
+    id: 9,
+    slug: 'vedoszemuveg-tipusok-bevonatok',
+    title: 'Védőszemüveg típusok: lencsék, bevonatok, színek',
+    excerpt: 'Víztiszta, füst, sárga vagy tükrös? Mikor melyik lencsét válaszd, és mit tudnak a bevonatok?',
+    content: `<h2>Lencseszínek és felhasználásuk</h2>
+<ul>
+<li><strong>Víztiszta:</strong> általános beltéri munka — az alapfelszerelés</li>
+<li><strong>Füst (sötétített):</strong> kültéri munka napsütésben, UV védelemmel</li>
+<li><strong>Sárga (borostyán):</strong> gyenge fényviszonyoknál kontrasztnövelés — hajnali/esti kültéri munka</li>
+<li><strong>Tükrös:</strong> erős napfény, visszaverődő felületek (pl. üveg, fém, víz mellett)</li>
+</ul>
+<h2>Bevonatok</h2>
+<p>A <strong>karcolásgátló</strong> bevonat a lencse élettartamát nyújtja, a <strong>párásodásgátló</strong> pedig hideg-meleg váltásnál és maszkviselésnél nélkülözhetetlen. A jó védőszemüvegen (pl. Portwest PR01) mindkettő megvan.</p>
+<h2>Szabványok</h2>
+<p>Az EN 166 az alapszabvány: az 1-es optikai osztály tartós viselésre való. Az F jelölés kis energiájú ütés elleni védelmet jelent (45 m/s) — forgácsoló, köszörülő munkához a minimum.</p>
+<h2>Illeszkedés</h2>
+<p>A wrap-around (körbeölelő) forma oldalról is véd és kevésbé enged be port. Ha dioptriás szemüveget hordasz, keress ráhelyezhető (overspec) modellt vagy dioptriás betétes változatot.</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-06-10',
+    image: '/images/products/pr01_cl.jpg',
+    tags: ['szemuveg', 'utmutato', 'szabvany']
+  },
+  {
+    id: 10,
+    slug: 'en-iso-20345-2022-valtozasok',
+    title: 'EN ISO 20345:2022 — mi változott a munkacipő szabványban?',
+    excerpt: 'S3S, SC, SR és társai: az új lábbeli-szabvány jelölések magyarázata közérthetően.',
+    content: `<h2>Miért újult meg a szabvány?</h2>
+<p>Az EN ISO 20345:2022 a 2011-es verziót váltja, pontosabb vizsgálati módszerekkel és új jelölésekkel. Az átállás fokozatos — a boltokban még párhuzamosan találkozol régi és új jelölésű lábbelikkel, mindkettő megfelelő védelmet ad.</p>
+<h2>A legfontosabb új jelölések</h2>
+<ul>
+<li><strong>S3S:</strong> az S3 új változata, ahol a talpátszúrás elleni védelmet fémmentes (textil) lemezzel, új vizsgálattal igazolják (pl. Portwest FC19 Apex)</li>
+<li><strong>SC (Scuff Cap):</strong> orrborítás-kopásállóság — térdelve dolgozóknál (burkolók!) hasznos</li>
+<li><strong>SR:</strong> csúszásállóság kerámialapon, glicerinnel vizsgálva — a korábbi SRA/SRB/SRC rendszert váltja</li>
+<li><strong>FO:</strong> üzemanyagálló talp — az új szabványban már opcionális jelölés</li>
+</ul>
+<h2>Mit jelent ez vásárláskor?</h2>
+<p>Semmi pánik: az alapkategóriák (SB, S1, S1P, S2, S3) megmaradtak. Ha új jelölésű cipőt látsz (pl. "S3S SC FO SR"), az a legfrissebb vizsgálatok szerint tanúsított termék. A régi készletek 2011-es jelöléssel is teljesen legálisan forgalmazhatók.</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-08-05',
+    image: '/images/products/fc19_bkb.jpg',
+    tags: ['munkacipo', 'szabvany', 'valtozas']
+  },
+  {
+    id: 11,
+    slug: 'overal-vagy-ketreszes-munkaruha',
+    title: 'Overál vagy kétrészes munkaruha? Előnyök és hátrányok',
+    excerpt: 'Melyik a praktikusabb: az egybeszabott overál vagy a nadrág + kabát kombináció?',
+    content: `<h2>Az overál előnyei</h2>
+<p>Az egybeszabott overál (pl. Portwest 2802) teljes törzsvédelmet ad: nincs kicsúszó ing, nem megy be a por, forgács vagy festék a derékrésznél. Hajolgatásnál a hát mindig fedett marad. Festéshez, szereléshez, poros munkához klasszikus választás.</p>
+<h2>Az overál hátrányai</h2>
+<p>A hőszabályozás nehezebb — melegben nem tudod "levenni a felsőt". A mosdóhasználat körülményesebb, és a méretezés is trükkösebb: a felsőtest és a láb arányának is stimmelnie kell.</p>
+<h2>A kétrészes előnyei</h2>
+<p>Rugalmasság: a nadrág + dzseki (pl. C701 + CD110) kombináció rétegezhető, a részek külön cserélhetők, ha az egyik hamarabb kopik. Fizikai munkánál könnyebb a hőháztartást kezelni.</p>
+<h2>Melyiket válaszd?</h2>
+<ul>
+<li>Festés, poros-forgácsos munka, autószerelés → <strong>overál</strong></li>
+<li>Változó intenzitású, vegyes munkakörök → <strong>kétrészes</strong></li>
+<li>Kültéri egész éves munka → <strong>kétrészes</strong>, téli kiegészítőkkel</li>
+</ul>`,
+    author: 'MunkavédelmiShop',
+    date: '2025-09-12',
+    image: '/images/products/2802_na.jpg',
+    tags: ['munkaruha', 'overal', 'osszehasonlitas']
+  },
+  {
+    id: 12,
+    slug: 'munkaltatoi-vedoeszkoz-juttatas-kotelezettsegek',
+    title: 'Egyéni védőeszköz juttatás: a munkáltató kötelezettségei röviden',
+    excerpt: 'Ki fizeti a munkaruhát? Mit ír elő a munkavédelmi törvény az EV juttatásról?',
+    content: `<h2>Az alapszabály</h2>
+<p>A munkavédelmi törvény (1993. évi XCIII. tv.) szerint az egyéni védőeszközt a <strong>munkáltató köteles biztosítani, saját költségén</strong> — a védőeszközért a dolgozótól pénz nem kérhető, és az elhasználódott eszközt cserélni kell.</p>
+<h2>Írásbeli EV juttatási rend</h2>
+<p>2024. január 1-től a védőeszköz-juttatás rendjét <strong>írásban</strong> kell meghatározni: munkakörönként rögzíteni kell, milyen védőeszköz jár (pl. S3 bakancs, vágásbiztos kesztyű, védősisak), milyen szabvány szerint, és milyen kihordási idővel.</p>
+<h2>A kockázatértékelés a kiindulópont</h2>
+<p>Hogy mely munkakörhöz mi kell, azt a munkahelyi kockázatértékelés alapozza meg — enélkül a juttatási rend csak találgatás. A védőeszközöknek CE jelöléssel és EU-megfelelőségi nyilatkozattal kell rendelkezniük ((EU) 2016/425 rendelet).</p>
+<h2>A dolgozó kötelezettségei</h2>
+<p>A munkavállaló köteles a védőeszközt rendeltetésszerűen használni és az észlelt hibát jelezni. A használat megtagadása munkajogi következményekkel járhat — de csak akkor, ha a munkáltató a megfelelő eszközt biztosította.</p>
+<p><em>Tipp: cégünk, a Trident Shield Group Kft. munkavédelmi szolgáltatásként EV juttatási rend készítésében is segít — keress minket elérhetőségeinken!</em></p>`,
+    author: 'MunkavédelmiShop',
+    date: '2026-01-20',
+    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
+    tags: ['jogszabaly', 'munkaltato', 'vedoeszkoz']
+  },
+  {
+    id: 13,
+    slug: 'munkavedelmi-labbeli-apolas-elettartam',
+    title: 'Így él tovább a munkavédelmi lábbelid: ápolás és tárolás',
+    excerpt: 'Egyszerű szokások, amikkel hónapokkal nyújtható a bakancs élettartama — és a védelme.',
+    content: `<h2>A védelem is öregszik</h2>
+<p>A munkavédelmi lábbeli nem csak "elkopik" — a talp csúszásgátló képessége, az energiaelnyelő sarok és a vízállóság is romlik idővel. Az ápolás tehát nem esztétikai kérdés, hanem munkavédelmi.</p>
+<h2>Napi rutin</h2>
+<ul>
+<li>Munkanap végén töröld le a sarat — a rászáradt szennyeződés szárítja és repeszti a bőrt</li>
+<li>Vedd ki a talpbetétet és hagyd szellőzni — a nedves belső a gombásodás melegágya</li>
+<li>Két pár váltogatása drasztikusan növeli mindkettő élettartamát</li>
+</ul>
+<h2>Heti-havi teendők</h2>
+<p>Bőr felsőrésznél (pl. FD03, FC11) havonta bőrápoló balzsam; nubuknál (FC17 Montana Hiker) speciális nubuk-impregnáló. A fűzőt és a varrásokat ilyenkor ellenőrizd is.</p>
+<h2>Amit SOHA ne csinálj</h2>
+<ul>
+<li>Radiátoron, kályha mellett szárítás — a bőr kiszárad, a ragasztás enged</li>
+<li>Mosógépben mosás — a védőelemek károsodhatnak</li>
+<li>Átázott lábbeli másnapi újrahasználata szárítás nélkül</li>
+</ul>
+<h2>Mikor kell cserélni?</h2>
+<p>Ha a talpprofil 1,5 mm alá kopott, az orrmerevítő ütést kapott, vagy a felsőrész-talp ragasztás enged — a cipő munkavédelmi szempontból elhasználódott, akkor is, ha még "hordható".</p>`,
+    author: 'MunkavédelmiShop',
+    date: '2026-03-08',
+    image: '/images/products/fc17_br.jpg',
+    tags: ['munkacipo', 'karbantartas', 'tippek']
   }
 ];
 
