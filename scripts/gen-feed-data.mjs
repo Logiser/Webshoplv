@@ -44,6 +44,7 @@ const staticUrls = [
   { loc: '/shipping', freq: 'monthly', pri: '0.6' },
   { loc: '/contact', freq: 'monthly', pri: '0.6' },
   { loc: '/blog', freq: 'weekly', pri: '0.8' },
+  { loc: '/gyik', freq: 'monthly', pri: '0.7' },
   { loc: '/terms', freq: 'yearly', pri: '0.3' },
   { loc: '/privacy', freq: 'yearly', pri: '0.3' },
   { loc: '/impressum', freq: 'yearly', pri: '0.3' }
@@ -64,3 +65,24 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://w
 ].join('\n')}\n</urlset>\n`;
 writeFileSync(join(root, 'public', 'sitemap.xml'), sitemap);
 console.log(`✅ sitemap.xml generálva (${staticUrls.length + blogSlugs.length + snapshot.length} URL)`);
+
+// ============ llms-full.txt: teljes katalógus AI-keresőknek (GEO) ============
+const catNames = {
+  munkaruha: 'Munkaruházat', munkacipo: 'Munkavédelmi cipők',
+  bakancs: 'Bakancsok és csizmák', kesztyu: 'Munkavédelmi kesztyűk',
+  kiegeszitok: 'Kiegészítők és védőfelszerelés'
+};
+const byCat = {};
+snapshot.forEach(p => { (byCat[p.categoryId] = byCat[p.categoryId] || []).push(p); });
+const llmsFull = `# MunkavédelmiShop - Teljes termékkatalógus
+# Frissítve: ${today} | Árak bruttó Ft-ban | Minden termék eredeti Portwest, CE minősítéssel
+# Üzemeltető: Trident Shield Group Kft., 4030 Debrecen, Keleti Ipartelep utca 4.
+# Rendelés: ${SITE} | +36 30 272 2571 | iroda@tuz-munkavedelmiszaki.hu
+# Szállítás: 2-3 munkanap, 1990 Ft (30 000 Ft felett ingyenes)
+
+${Object.entries(byCat).map(([cat, items]) => `## ${catNames[cat] || cat}
+
+${items.map(p => `- ${p.name} (${p.articleNo}) — ${p.price.toLocaleString('hu-HU')} Ft — ${SITE}/termek/${p.slug}`).join('\n')}`).join('\n\n')}
+`;
+writeFileSync(join(root, 'public', 'llms-full.txt'), llmsFull);
+console.log(`✅ llms-full.txt generálva (${snapshot.length} termék)`);

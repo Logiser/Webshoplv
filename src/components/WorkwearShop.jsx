@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, X, Search, Phone, Mail, MapPin, Lock, Truck, Shield, Award, ChevronRight, Home, Filter, Star, Heart, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
-import { productCategories, productSubcategories } from '../data/productData';
+import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, getProductActivity } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 
@@ -720,6 +720,7 @@ const WorkwearShop = () => {
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/blog" style={{ color: '#bbb', textDecoration: 'none' }}>📝 Blog</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/wishlist" style={{ color: '#bbb', textDecoration: 'none' }}>❤️ Kedvenceim</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/gyik" style={{ color: '#bbb', textDecoration: 'none' }}>❓ Gyakori kérdések</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/about" style={{ color: '#bbb', textDecoration: 'none' }}>Rólunk</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/shipping" style={{ color: '#bbb', textDecoration: 'none' }}>Szállítási feltételek</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/terms" style={{ color: '#bbb', textDecoration: 'none' }}>ÁSZF</Link></li>
@@ -866,8 +867,23 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selectedColor, setSelectedColor, quantity, setQuantity, onAddToCart, wished, onWishlist }) => {
   const variants = product.variants || [];
   const activeVariant = variants.find(v => v.code === selectedColor) || (variants.length === 1 ? variants[0] : null);
-  const displayImage = (activeVariant && activeVariant.image) || product.image;
   const displayStock = activeVariant ? activeVariant.stock : product.stock;
+
+  // Galéria: szín választásakor csak az adott szín nézetei
+  const galleryColor = selectedColor || (variants.length === 1 ? variants[0].code : null);
+  const images = getProductImages(product, galleryColor);
+  const [imgIdx, setImgIdx] = useState(0);
+  useEffect(() => { setImgIdx(0); }, [galleryColor, product.id]);
+  const safeIdx = Math.min(imgIdx, images.length - 1);
+  const prevImg = () => setImgIdx(i => (i - 1 + images.length) % images.length);
+  const nextImg = () => setImgIdx(i => (i + 1) % images.length);
+  const arrowStyle = {
+    position: 'absolute', top: '50%', transform: 'translateY(-50%)',
+    backgroundColor: 'rgba(15,42,29,0.75)', color: 'white', border: 'none',
+    borderRadius: '50%', width: '36px', height: '36px', cursor: 'pointer',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2
+  };
+
   return (
     <div onClick={onClose} style={{
       position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
@@ -879,8 +895,29 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
         maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto',
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
       }}>
-        <div style={{ padding: '2rem', backgroundColor: '#f9f9f9', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <img src={displayImage} alt={product.name} style={{ maxWidth: '100%', maxHeight: '400px', objectFit: 'contain' }} />
+        <div style={{ padding: '1.5rem', backgroundColor: '#f9f9f9' }}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
+            <img src={images[safeIdx] || product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '360px', objectFit: 'contain' }} />
+            {images.length > 1 && (
+              <>
+                <button onClick={prevImg} aria-label="Előző kép" style={{ ...arrowStyle, left: '0.25rem' }}>‹</button>
+                <button onClick={nextImg} aria-label="Következő kép" style={{ ...arrowStyle, right: '0.25rem' }}>›</button>
+              </>
+            )}
+          </div>
+          {images.length > 1 && (
+            <div style={{ display: 'flex', gap: '0.4rem', justifyContent: 'center', marginTop: '0.75rem', flexWrap: 'wrap' }}>
+              {images.map((img, i) => (
+                <button key={img} onClick={() => setImgIdx(i)} aria-label={`${i + 1}. kép`} style={{
+                  padding: 0, border: i === safeIdx ? '2px solid #C9A961' : '2px solid #ddd',
+                  borderRadius: '4px', cursor: 'pointer', backgroundColor: 'white',
+                  opacity: i === safeIdx ? 1 : 0.7
+                }}>
+                  <img src={img} alt="" style={{ width: '48px', height: '48px', objectFit: 'cover', display: 'block', borderRadius: '2px' }} />
+                </button>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{ padding: '2rem' }}>

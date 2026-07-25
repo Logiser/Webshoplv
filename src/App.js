@@ -9,6 +9,7 @@ import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
 import { TermsPage, PrivacyPage, ImpressumPage, ShippingPage, ContactPage, AboutPage } from './pages/StaticPages';
 import CookieConsent from './components/CookieConsent';
+import FaqPage from './pages/FaqPage';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
@@ -177,6 +178,7 @@ function App() {
         <Route path="/shipping" element={<ShippingPage />} />
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/gyik" element={<FaqPage />} />
 
         {/* Új v6.0 route-ok */}
         <Route path="/termek/:slug" element={<ProductDetailPage />} />

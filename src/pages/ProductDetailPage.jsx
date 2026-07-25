@@ -220,9 +220,9 @@ const ProductDetailPage = () => {
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflow: 'hidden'
         }}>
           
-          {/* Kép galéria */}
+          {/* Kép galéria - szín választásakor csak az adott szín nézetei */}
           {(() => {
-            const images = getProductImages(product);
+            const images = getProductImages(product, selectedColor);
             const prevImg = () => setImgIdx(i => (i - 1 + images.length) % images.length);
             const nextImg = () => setImgIdx(i => (i + 1) % images.length);
             const arrowStyle = {
@@ -343,9 +343,7 @@ const ProductDetailPage = () => {
                     <button key={v.code} disabled={v.stock === 0}
                       onClick={() => {
                         setSelectedColor(v.code);
-                        const imgs = getProductImages(product);
-                        const idx = imgs.indexOf(v.image);
-                        if (idx >= 0) setImgIdx(idx);
+                        setImgIdx(0);   // a galéria innentől csak ezt a színt mutatja
                       }}
                       style={{
                         padding: '0.5rem 0.75rem', borderRadius: '4px',

@@ -9,6 +9,8 @@
 ## Fő oldalak
 
 - [Webshop főoldal](https://munkavedelmiszaki.hu/): teljes terméklista szűrőkkel
+- [Teljes termékkatalógus géppel olvasható formában](https://munkavedelmiszaki.hu/llms-full.txt)
+- [Gyakori kérdések](https://munkavedelmiszaki.hu/gyik): szállítás, méretválasztás, cipő-kategóriák, garancia
 - [Blog](https://munkavedelmiszaki.hu/blog): munkavédelmi útmutatók, szabvány-magyarázatok
 - [Szállítási feltételek](https://munkavedelmiszaki.hu/shipping)
 - [Kapcsolat](https://munkavedelmiszaki.hu/contact): +36 30 272 2571, iroda@tuz-munkavedelmiszaki.hu
