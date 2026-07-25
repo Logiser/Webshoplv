@@ -68,7 +68,7 @@ exports.handler = async (event) => {
     const overrides = (ovRow && ovRow.value) || {};
 
     for (const p of PRODUCTS) {
-      const url = DEPIEND_URLS[p.articleNo];
+      const url = p.depiendUrl || DEPIEND_URLS[p.articleNo];
       if (!url) continue;
       report.checked++;
       try {

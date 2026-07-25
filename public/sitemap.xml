@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://munkavedelmiszaki.hu/</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -27,6 +27,21 @@
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://munkavedelmiszaki.hu/terms</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/privacy</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/impressum</loc>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
     <loc>https://munkavedelmiszaki.hu/blog/hogyan-valassz-munkacipot</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
@@ -42,168 +57,653 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://munkavedelmiszaki.hu/blog/teli-munkavedelmi-bakancs-valasztas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/latex-nitril-pu-kesztyu-bevonatok</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/vedosisak-szabalyok-en397-kihordas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/munkanadrag-valasztas-zsebek-anyagok</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/teli-munkaruha-retegezes</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/vedoszemuveg-tipusok-bevonatok</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/en-iso-20345-2022-valtozasok</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/overal-vagy-ketreszes-munkaruha</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/munkaltatoi-vedoeszkoz-juttatas-kotelezettsegek</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/blog/munkavedelmi-labbeli-apolas-elettartam</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-c701-combat-munkanadrag</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-c720-tradesman-lengozsebes-nadrag</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-cd110-wx1-kettonusu-dzseki</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-cd871-wx2-eco-polar-dzseki</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-cd864-wx2-eco-telikabat</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-b303-jol-lathatosagi-pulover</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/termek/portwest-2802-munkavedelmi-overal</loc>
-    <lastmod>2026-07-23</lastmod>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-tk50-kabat-3l</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc08-compositelite-eco-runner-s1p-cipo</loc>
-    <lastmod>2026-07-23</lastmod>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-s507-argo-3-az-1-ben-kabat</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft16-olymflex-london-s1p-cipo</loc>
-    <lastmod>2026-07-23</lastmod>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-dx444-dx4-lengozsebes-rovidnadrag</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc64-compositelite-trekker-s1-vedocipo</loc>
-    <lastmod>2026-07-23</lastmod>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ks18-granite-rovidnadrag</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd61-compositelite-s2-munkavedelmi-cipo</loc>
-    <lastmod>2026-07-23</lastmod>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ks32-pewter-kabat</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-t704-wx3-kantaros-nadrag</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-dx440-dx4-lengozsebes-nadrag</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-s766-essential-5-az-1-ben-munkavedelmi-kabat</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-s843-zsebes-koteny</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-bz30-bizweld-hegeszto-nadrag</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-c875-burnley-mellesnadrag</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-c099-noi-combat-nadrag</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-cd844-wx2-eco-service-nadrag</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-st60-biztex-microporous-overal-456-os</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-fc19-apex-s3s-esd-munkavedelmi-felcipo</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fw42-steelite-obra-munkavedelmi-szandal-s1-src</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft50-steelite-mersey-trainer-s1-munkavedelmi-cipo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft08-compositelite-onbefuzos-munkavedelmi-cipo-s1p</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc32-composite-textile-trainer-munkavedelmi-cipo-s1ps-esd-sr-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc06-fx2-eco-fly-composite-trainer-s1ps-sr-fo-munkavedelmi-cipo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc72-kompozit-vedolabbeli-s3s-sr-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft22-munkacipo-esd-o1-sr</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft32-munkavedelmi-cipo-kompozit-orrmerevitovel-s1ps-esd-sr-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft15-steelite-tove-trainer-munkavedelmi-cipo-s1p</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc20-munkavedelmi-bakancs-kompozit-orrmerevitovel-s1pl-sr-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc39-munkavedelmi-bakancs-s3-hro-sr-fo-sc</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc08-compositelite-eco-runner-s1p-cipo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft16-olymflex-london-s1p-cipo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc64-compositelite-trekker-s1-vedocipo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd61-compositelite-s2-munkavedelmi-cipo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd37-protector-munkavedelmi-bakancs-s3-esd</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fw43-steelite-kumo-munkavedelmi-labbeli-s3</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fw80-magasabb-vizallo-kepessegu-fuzos-munkavedelmi-cipo-s2</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fe07-munkavedelmi-cipo-s1-src-esd</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc18-apex-bakancs-s3s-esd-hro-sr-sc-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc60-compositelite-operis-vedobakancs-s3</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd15-eden-vedobakancs-s3-hro-ci-hi-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc24-munkavedelmi-bakancs-kompozit-orrmerevitovel-s1-sr-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd22-munkavedelmi-bakancs-s3s-hro-fo-sc-hi-ci-an-lg-sr</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd04-wheat-apex-kompozit-bakancs-s3s-hro-sr</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd80-composite-eva-wellington-munkavedelmi-csizma-s5s-sr-ci</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ft23-steel-leather-rigger-munkavedelmi-csizma-s3-ci</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fw95-total-munkavedelmi-wellington-csizma-s5</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-fc10-compositelite-s1p-vedobakancs</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-fc11-compositelite-thor-s3-vedobakancs</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-fd03-protector-plus-s3-hro-bakancs</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-fc12-szormebeleses-teli-vedobakancs-s3-ci</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-fc17-compositelite-montana-hiker-s3-bakancs</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fw17-steelite-vedobakancs-sb</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd18-acel-bor-vezetocipo-s3-sr-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc80-kompozit-csuszobetet-az-s3s-sr-fo-n</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fd10-clyde-vedobakancs-s3-hro-ci-hi-fo</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc71-composite-teli-munkavedelmi-bakancs-s3l-hro</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-fc57-compositelite-all-weather-vedobakancs-s3-wr</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-a100-martott-latex-vedokesztyu</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-a120-pu-tenyermartott-kesztyu</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-a140-teli-latex-vedokesztyu</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-a146-arctic-teli-vedokesztyu</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a620-pu-tenyermartott-vagasbiztos-vedokesztyu-cut-3</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a340-hi-vis-grip-martott-latex-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a175-duo-flex-munkavedelmi-kesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a185-duo-term-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a198-esd-ujjveg-bevont-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a145-hutohazi-kesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a150-martott-latex-munkavedelmi-kesztyu-a100-oko-verzio</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a110-nylon-pvc-pontozott-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a121-pu-ujjvegmartott-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ac01-lanckesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a622-pu-tenyermartott-vedokesztyu-cut-5</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a353-dermiflex-ultra-plus-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a350-dermiflex-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ap50-aqua-cut-pro-kesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a540-ultra-hegeszto-kesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-a197-bevonat-nelkuli-esd-vedokesztyu</loc>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-ps55-endurance-vedosisak</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-pr01-anthracite-vedoszemuveg</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-c370-hi-vis-meshair-melleny</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
     <loc>https://munkavedelmiszaki.hu/termek/portwest-b013-insulatex-kotott-sapka</loc>
-    <lastmod>2026-07-23</lastmod>
+    <lastmod>2026-07-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/terms</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-pw55-endurance-vedosisak-latomezovel-kombinalva</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/privacy</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps61-basic-vedosisak-pp-vedosisak-1000v</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://munkavedelmiszaki.hu/impressum</loc>
-    <changefreq>yearly</changefreq>
-    <priority>0.3</priority>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-pb55-endurance-jelvenytarto-vedosisak</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ph55-endurance-sisak-racsnis-fejpanttal</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-pw50-expertbase-vedosisak-1000v</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps57-expertbase-wheel-safety-sisak</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps73-height-endurance-hegymaszo-sisak</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps63-height-endurance-szellozo-vedosisak</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps54-pw-endurance-plus-vedosisak-1000v</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps53-pw-height-endurance-vedosisak-1000v</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps77-synergy-type-2-nem-szellozo-sisak-1000v</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps87-synergy-type-2-szellozo-sisak</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-pr12-air-vedoszemuveg</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps36-anthracite-vedoszemuveg</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps37-anthracite-vedoszemuveg</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://munkavedelmiszaki.hu/termek/portwest-ps22-ultra-biztonsagos-vedoszemuveg</loc>
+    <lastmod>2026-07-25</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
   </url>
 </urlset>

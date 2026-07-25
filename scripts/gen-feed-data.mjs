@@ -1,9 +1,11 @@
-// Build előtt fut (npm prebuild): a productData.js-ből JSON pillanatképet
-// készít a Netlify Functions számára (a runtime nem tud ESM-et require-olni).
-import { products } from '../src/data/productData.js';
-import { writeFileSync } from 'fs';
+// Build előtt fut (npm prebuild): a products.generated.json-ból pillanatképet
+// készít a Netlify Functions számára + sitemap.xml-t generál.
+import { readFileSync, writeFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+
+const _root = join(dirname(fileURLToPath(import.meta.url)), '..');
+const products = JSON.parse(readFileSync(join(_root, 'src', 'data', 'products.generated.json'), 'utf8'));
 
 const slugify = (text) => (text || '')
   .toLowerCase()
@@ -25,9 +27,40 @@ const snapshot = products.map(p => ({
   image: p.image,
   stock: p.stock,
   brand: p.brand || '',
-  categoryId: p.categoryId
+  categoryId: p.categoryId,
+  depiendUrl: p.depiendUrl || ''
 }));
 
-const out = join(dirname(fileURLToPath(import.meta.url)), '..', 'netlify', 'functions', 'products-data.json');
-writeFileSync(out, JSON.stringify(snapshot, null, 2));
+const root = join(dirname(fileURLToPath(import.meta.url)), '..');
+writeFileSync(join(root, 'netlify', 'functions', 'products-data.json'), JSON.stringify(snapshot, null, 2));
 console.log(`✅ products-data.json generálva (${snapshot.length} termék)`);
+
+// ============ sitemap.xml generálás ============
+const SITE = 'https://munkavedelmiszaki.hu';
+const today = new Date().toISOString().split('T')[0];
+const staticUrls = [
+  { loc: '/', freq: 'daily', pri: '1.0' },
+  { loc: '/about', freq: 'monthly', pri: '0.7' },
+  { loc: '/shipping', freq: 'monthly', pri: '0.6' },
+  { loc: '/contact', freq: 'monthly', pri: '0.6' },
+  { loc: '/blog', freq: 'weekly', pri: '0.8' },
+  { loc: '/terms', freq: 'yearly', pri: '0.3' },
+  { loc: '/privacy', freq: 'yearly', pri: '0.3' },
+  { loc: '/impressum', freq: 'yearly', pri: '0.3' }
+];
+const blogSlugs = [
+  'hogyan-valassz-munkacipot', 'munkavedelmi-kesztyu-kategoriak', 'jol-lathatosagi-ruha-szabvany',
+  'teli-munkavedelmi-bakancs-valasztas', 'latex-nitril-pu-kesztyu-bevonatok', 'vedosisak-szabalyok-en397-kihordas',
+  'munkanadrag-valasztas-zsebek-anyagok', 'teli-munkaruha-retegezes', 'vedoszemuveg-tipusok-bevonatok',
+  'en-iso-20345-2022-valtozasok', 'overal-vagy-ketreszes-munkaruha', 'munkaltatoi-vedoeszkoz-juttatas-kotelezettsegek',
+  'munkavedelmi-labbeli-apolas-elettartam'
+];
+const urlXml = (loc, freq, pri, lastmod) =>
+  `  <url>\n    <loc>${SITE}${loc}</loc>\n${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}    <changefreq>${freq}</changefreq>\n    <priority>${pri}</priority>\n  </url>`;
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[
+  ...staticUrls.map(u => urlXml(u.loc, u.freq, u.pri, u.loc === '/' ? today : null)),
+  ...blogSlugs.map(s => urlXml(`/blog/${s}`, 'monthly', '0.7', null)),
+  ...snapshot.map(p => urlXml(`/termek/${p.slug}`, 'weekly', '0.8', today))
+].join('\n')}\n</urlset>\n`;
+writeFileSync(join(root, 'public', 'sitemap.xml'), sitemap);
+console.log(`✅ sitemap.xml generálva (${staticUrls.length + blogSlugs.length + snapshot.length} URL)`);

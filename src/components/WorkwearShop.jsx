@@ -413,10 +413,11 @@ const WorkwearShop = () => {
         <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: '3rem 1.5rem', textAlign: 'center' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
             <h2 style={{ fontSize: '2.5rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif' }}>
-              Munkavédelmi Termékek Webshop
+              Munkaruha és Munkavédelmi Felszerelés Webshop
             </h2>
             <p style={{ fontSize: '1.1rem', margin: '0 0 2rem 0', opacity: 0.9, maxWidth: '700px', marginLeft: 'auto', marginRight: 'auto' }}>
-              Professzionális munkaruházat, biztonsági cipők és védőeszközök közvetlenül raktárról.
+              Portwest munkanadrágok, munkavédelmi cipők és bakancsok (EN ISO 20345), munkakesztyűk,
+              védősisakok és jól láthatósági ruházat — 100 népszerű termék raktárról, országos kiszállítással Debrecenből.
             </p>
             <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -735,7 +736,7 @@ const WorkwearShop = () => {
                 <Mail size={14} /> iroda@tuz-munkavedelmiszaki.hu
               </p>
               <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MapPin size={14} /> Szentes, Magyarország
+                <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.
               </p>
             </div>
           </div>

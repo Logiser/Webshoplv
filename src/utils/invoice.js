@@ -138,7 +138,7 @@ export const generateInvoiceHTML = (order) => {
     <h1 class="logo">🛡️ MunkavédelmiShop</h1>
     <div class="seller">
       Trident Shield Group Kft.<br>
-      6600 Szentes, Magyarország<br>
+      4030 Debrecen, Keleti Ipartelep utca 4.<br>
       Adószám: 12345678-2-06<br>
       Cégjegyzékszám: 06-09-024xyz<br>
       Bankszámla: 12345678-12345678-12345678
@@ -158,7 +158,7 @@ export const generateInvoiceHTML = (order) => {
   <div class="party">
     <h3>Eladó</h3>
     <p><strong>Trident Shield Group Kft.</strong></p>
-    <p>6600 Szentes, Magyarország</p>
+    <p>4030 Debrecen, Keleti Ipartelep utca 4.</p>
     <p>Adószám: 12345678-2-06</p>
     <p>Email: iroda@tuz-munkavedelmiszaki.hu</p>
     <p>Tel: +36 30 272 2571</p>

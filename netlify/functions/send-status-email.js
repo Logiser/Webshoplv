@@ -88,7 +88,7 @@ exports.handler = async (event) => {
   </div>
 
   <div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; font-size: 0.85rem;">
-    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Szentes | +36 30 272 2571</p>
+    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Debrecen | +36 30 272 2571</p>
     <p style="margin: 8px 0 0 0;"><a href="${SITE_URL}" style="color: #0F2A1D;">www.munkavedelmiszaki.hu</a></p>
   </div>
 </div></body></html>`;
@@ -136,7 +136,7 @@ exports.handler = async (event) => {
   </div>
 
   <div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; font-size: 0.85rem;">
-    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Szentes | +36 30 272 2571</p>
+    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Debrecen | +36 30 272 2571</p>
   </div>
 </div></body></html>`;
 
@@ -181,7 +181,7 @@ exports.handler = async (event) => {
   </div>
 
   <div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; font-size: 0.85rem;">
-    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Szentes | +36 30 272 2571</p>
+    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Debrecen | +36 30 272 2571</p>
   </div>
 </div></body></html>`
       };
@@ -236,7 +236,7 @@ exports.handler = async (event) => {
   </div>
 
   <div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; font-size: 0.85rem;">
-    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Szentes</p>
+    <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Debrecen</p>
   </div>
 </div></body></html>`;
     }
