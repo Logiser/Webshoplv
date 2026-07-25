@@ -971,6 +971,12 @@ const defaultBlogPosts = [
   }
 ];
 
+// Az alapcikkek verziója: emeld, ha a defaultBlogPosts bővül/változik!
+// A régebbi verzióval mentett localStorage-ból automatikusan migrálunk:
+// az alapcikkek frissülnek, az admin által létrehozott cikkek megmaradnak.
+const BLOG_SEED_VERSION = 2;
+const BLOG_SEED_VERSION_KEY = 'ms_blog_seed_version';
+
 export const getBlogPosts = () => {
   let posts = safeGet(STORAGE_KEYS.BLOG_POSTS, null);
   if (!posts) {
@@ -980,8 +986,19 @@ export const getBlogPosts = () => {
       memCache[STORAGE_KEYS.BLOG_POSTS] = defaultBlogPosts;
     } else {
       safeSet(STORAGE_KEYS.BLOG_POSTS, defaultBlogPosts);
+      localSet(BLOG_SEED_VERSION_KEY, BLOG_SEED_VERSION);
     }
     posts = defaultBlogPosts;
+  } else if (!isSupabaseEnabled) {
+    // Elavult seed a localStorage-ban? Alapcikkek frissítése, admin-cikkek megtartása.
+    const storedVersion = parseInt(localGet(BLOG_SEED_VERSION_KEY, 0)) || 0;
+    if (storedVersion < BLOG_SEED_VERSION) {
+      const defaultIds = new Set(defaultBlogPosts.map(p => p.id));
+      const customPosts = posts.filter(p => p.isCustom || !defaultIds.has(p.id));
+      posts = [...defaultBlogPosts, ...customPosts];
+      safeSet(STORAGE_KEYS.BLOG_POSTS, posts);
+      localSet(BLOG_SEED_VERSION_KEY, BLOG_SEED_VERSION);
+    }
   }
   return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
 };
@@ -999,11 +1016,12 @@ export const saveBlogPost = (post) => {
       posts[idx] = { ...posts[idx], ...post, slug: slugify(post.title) };
     }
   } else {
-    // New
-    const maxId = Math.max(...posts.map(p => p.id), 0);
+    // New - isCustom jelöléssel, hogy a seed-migráció soha ne írja felül
+    const maxId = Math.max(...posts.map(p => p.id), 100);
     posts.push({
       ...post,
       id: maxId + 1,
+      isCustom: true,
       slug: slugify(post.title),
       date: post.date || new Date().toISOString().split('T')[0],
       author: post.author || 'MunkavédelmiShop'
