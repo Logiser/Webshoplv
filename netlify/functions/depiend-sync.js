@@ -42,7 +42,7 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0';
 exports.handler = async (event) => {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_PASSWORD } = process.env;
   // Alapértékek env-ből; az adminban mentett ms_pricing (kv) felülírja őket
-  let margin = parseFloat(process.env.DEPIEND_MARGIN) || 1.6;
+  let margin = parseFloat(process.env.DEPIEND_MARGIN) || 1.3;
   // Viszonteladói kedvezmény a publikus listaárhoz képest (2026-07: egységes 23.9%)
   let partnerRatio = parseFloat(process.env.DEPIEND_PARTNER_RATIO) || 0.7608;
 
@@ -101,7 +101,7 @@ exports.handler = async (event) => {
           const listPrice = parseInt(m[1].replace(/[\s ]/g, ''), 10);
           if (!listPrice || listPrice < 50) return;
           const partnerPrice = Math.round(listPrice * partnerRatio);
-          const floorPrice = Math.ceil((partnerPrice * 1.1) / 10) * 10;
+          const floorPrice = Math.ceil((partnerPrice * 1.03) / 10) * 10;
           const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
           report.checked++;
           if (currentPrice < floorPrice) {
