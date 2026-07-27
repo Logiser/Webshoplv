@@ -1,8 +1,11 @@
 // netlify/functions/arukereso-feed.js
 // Árukereső.hu termékfeed (XML) - PPC / ár-összehasonlító integrációhoz
 // Endpoint: /arukereso-feed.xml (redirect a netlify.toml-ban)
-// Formátum: https://www.arukereso.hu/static/tajekoztato.html szerinti alapmezők
+// DINAMIKUS: kérésenként ráolvassa az adatbázis friss ár/készlet-módosításait
+// (a napi Depiend ár-szinkron ide írja a változásokat), így a PPC-oldalak
+// mindig az aktuális árat kapják. 1 órás cache.
 
+const { createClient } = require('@supabase/supabase-js');
 const PRODUCTS = require('./products-data.json');
 
 const CATEGORY_PATHS = {
@@ -17,12 +20,39 @@ const escapeXml = (s) => String(s || '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
+// Adatbázis-módosítások (ár, készlet, rejtés) rávetítése az alapkatalógusra
+async function applyLiveOverrides(products) {
+  const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return products;
+  try {
+    const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const { data } = await db.from('kv_store').select('value')
+      .eq('key', 'ms_product_overrides').maybeSingle();
+    const overrides = (data && data.value) || {};
+    return products.map(p => {
+      const o = overrides[p.id];
+      if (!o) return p;
+      return {
+        ...p,
+        price: (typeof o.price === 'number' && o.price > 0) ? o.price : p.price,
+        stock: (typeof o.stock === 'number') ? o.stock : p.stock,
+        hidden: o.hidden === true
+      };
+    });
+  } catch (e) {
+    console.error('Override betöltési hiba (alapkatalógus megy ki):', e.message);
+    return products;
+  }
+}
+
 exports.handler = async () => {
   try {
     const baseUrl = process.env.URL || 'https://munkavedelmiszaki.hu';
     const shippingCost = parseInt(process.env.REACT_APP_SHIPPING_COST) || 1990;
 
-    const items = PRODUCTS.filter(p => p.stock > 0).map(p => {
+    const products = await applyLiveOverrides(PRODUCTS);
+
+    const items = products.filter(p => p.stock > 0 && !p.hidden).map(p => {
       const imageUrl = (p.image || '').startsWith('http') ? p.image : `${baseUrl}${p.image}`;
       return `
   <product>

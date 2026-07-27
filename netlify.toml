@@ -3,9 +3,9 @@
   publish = "build"
   environment = { CI = "false" }
 
-# Depiend ár-szinkron: naponta hajnali 4-kor (UTC)
+# Depiend ár-szinkron: 6 óránként (a PPC-feedek kérésenként a friss árat adják)
 [functions."depiend-sync"]
-  schedule = "0 4 * * *"
+  schedule = "0 */6 * * *"
 
 # Depiend URL-lista CORS-szal (partner ár-szinkron segédfájl)
 [[headers]]

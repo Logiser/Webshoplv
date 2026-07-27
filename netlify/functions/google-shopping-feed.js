@@ -4,8 +4,36 @@
 
 // Megj.: a termékadatok build-kor generált JSON pillanatképből jönnek
 // (scripts/gen-feed-data.mjs, npm prebuild) — a runtime nem tud ESM-et betölteni.
+// DINAMIKUS: kérésenként ráolvassa az adatbázis friss ár/készlet-módosításait,
+// így a napi Depiend ár-szinkron eredménye azonnal megjelenik a feedben.
 
+const { createClient } = require('@supabase/supabase-js');
 const PRODUCTS = require('./products-data.json');
+
+// Adatbázis-módosítások (ár, készlet, rejtés) rávetítése az alapkatalógusra
+async function applyLiveOverrides(products) {
+  const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) return products;
+  try {
+    const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
+    const { data } = await db.from('kv_store').select('value')
+      .eq('key', 'ms_product_overrides').maybeSingle();
+    const overrides = (data && data.value) || {};
+    return products.map(p => {
+      const o = overrides[p.id];
+      if (!o) return p;
+      return {
+        ...p,
+        price: (typeof o.price === 'number' && o.price > 0) ? o.price : p.price,
+        stock: (typeof o.stock === 'number') ? o.stock : p.stock,
+        hidden: o.hidden === true
+      };
+    });
+  } catch (e) {
+    console.error('Override betöltési hiba (alapkatalógus megy ki):', e.message);
+    return products;
+  }
+}
 
 const slugify = (text) => {
   return (text || '').toLowerCase()
@@ -20,9 +48,9 @@ const slugify = (text) => {
 exports.handler = async (event, context) => {
   try {
     const baseUrl = process.env.URL || 'https://munkavedelmiszaki.hu';
-    const products = PRODUCTS || [];
+    const products = await applyLiveOverrides(PRODUCTS || []);
 
-    const items = products.filter(p => p.stock > 0).map(p => {
+    const items = products.filter(p => p.stock > 0 && !p.hidden).map(p => {
       const slug = p.slug || slugify(p.name);
       // Relatív képútvonal (pl. /images/products/...) abszolúttá alakítása
       const imageUrl = (p.image || '').startsWith('http') ? p.image : `${baseUrl}${p.image}`;
