@@ -173,7 +173,7 @@ exports.handler = async (event) => {
     <p style="margin: 0;">Köszönjük, hogy minket választottál! 🙏</p>
     <p style="margin: 8px 0 0 0;">
       <strong>Trident Shield Group Kft.</strong> | 4030 Debrecen, Keleti Ipartelep utca 4.<br>
-      <a href="https://munkavedelmiszaki.hu" style="color: #0F2A1D;">www.munkavedelmiszaki.hu</a>
+      <a href="https://tridentshop.hu" style="color: #0F2A1D;">www.tridentshop.hu</a>
     </p>
   </div>
 </div>

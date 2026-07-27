@@ -11,7 +11,7 @@ exports.handler = async (event) => {
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
-  const SITE_URL = process.env.SITE_URL || process.env.URL || 'https://munkavedelmiszaki.hu';
+  const SITE_URL = process.env.SITE_URL || process.env.URL || 'https://tridentshop.hu';
 
   if (!RESEND_API_KEY) {
     console.error('RESEND_API_KEY hiányzik!');
@@ -89,7 +89,7 @@ exports.handler = async (event) => {
 
   <div style="background: #f5f5f5; padding: 20px; text-align: center; color: #999; font-size: 0.85rem;">
     <p style="margin: 0;"><strong>Trident Shield Group Kft.</strong> | Debrecen | +36 30 272 2571</p>
-    <p style="margin: 8px 0 0 0;"><a href="${SITE_URL}" style="color: #0F2A1D;">www.munkavedelmiszaki.hu</a></p>
+    <p style="margin: 8px 0 0 0;"><a href="${SITE_URL}" style="color: #0F2A1D;">www.tridentshop.hu</a></p>
   </div>
 </div></body></html>`;
     }

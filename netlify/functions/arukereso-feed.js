@@ -47,7 +47,7 @@ async function applyLiveOverrides(products) {
 
 exports.handler = async () => {
   try {
-    const baseUrl = process.env.URL || 'https://munkavedelmiszaki.hu';
+    const baseUrl = process.env.URL || 'https://tridentshop.hu';
     const shippingCost = parseInt(process.env.REACT_APP_SHIPPING_COST) || 1290;
 
     const products = await applyLiveOverrides(PRODUCTS);

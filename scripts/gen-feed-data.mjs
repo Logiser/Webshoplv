@@ -38,7 +38,7 @@ writeFileSync(join(root, 'netlify', 'functions', 'products-data.json'), JSON.str
 console.log(`✅ products-data.json generálva (${snapshot.length} termék)`);
 
 // ============ sitemap.xml generálás ============
-const SITE = 'https://munkavedelmiszaki.hu';
+const SITE = 'https://tridentshop.hu';
 const today = new Date().toISOString().split('T')[0];
 const staticUrls = [
   { loc: '/', freq: 'daily', pri: '1.0' },

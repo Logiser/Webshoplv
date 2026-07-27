@@ -47,7 +47,7 @@ const slugify = (text) => {
 
 exports.handler = async (event, context) => {
   try {
-    const baseUrl = process.env.URL || 'https://munkavedelmiszaki.hu';
+    const baseUrl = process.env.URL || 'https://tridentshop.hu';
     const products = await applyLiveOverrides(PRODUCTS || []);
 
     const items = products.filter(p => p.stock > 0 && !p.hidden).map(p => {
