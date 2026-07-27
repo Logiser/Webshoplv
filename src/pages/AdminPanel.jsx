@@ -18,6 +18,7 @@ import {
   getCoupons, saveCoupon, deleteCoupon
 } from '../data/storage';
 import { openInvoice } from '../utils/invoice';
+import { adminApi, isSupabaseEnabled } from '../data/supabaseClient';
 
 // Forint-formázás: 1 millió felett "12,45 M Ft", alatta "123 456 Ft"
 const fmtFt = (n) => {
@@ -57,6 +58,7 @@ const AdminPanel = () => {
     { id: 'import', name: 'CSV/XML Import', icon: Upload },
     { id: 'orders', name: 'Rendelések', icon: ShoppingBag },
     { id: 'coupons', name: 'Kuponok', icon: Tag },
+    { id: 'ppc', name: 'PPC Statisztika', icon: TrendingUp },
     { id: 'reports', name: 'Riportok', icon: BarChart3 },
     { id: 'supplier', name: 'Beszállító ⓘ', icon: Bell },
     { id: 'blog', name: 'Blog', icon: BookOpen },
@@ -169,6 +171,7 @@ const AdminPanel = () => {
         {activeTab === 'import' && <ImportProducts onChange={triggerRefresh} setTab={setActiveTab} />}
         {activeTab === 'orders' && <OrdersList key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
+        {activeTab === 'ppc' && <PpcStats key={refreshKey} />}
         {activeTab === 'reports' && <ReportsTab key={refreshKey} />}
         {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'blog' && <BlogManager key={refreshKey} onChange={triggerRefresh} />}
@@ -809,6 +812,7 @@ const EditProductModal = ({ product, onClose, onSave }) => {
     sizes: (product.sizes || []).join(', ')
   });
   const [variants, setVariants] = useState(product.variants || []);
+  const [priceManual, setPriceManual] = useState(product.priceManual === true);
 
   const sizesArr = form.sizes.split(',').map(s => s.trim()).filter(Boolean);
 
@@ -838,6 +842,7 @@ const EditProductModal = ({ product, onClose, onSave }) => {
       rating: parseFloat(form.rating),
       sizes: sizesArr,
       variants: cleanVariants,
+      priceManual,
       // A korábbi rendelés-csökkentések felülírása: az admin által beírt érték a friss
       variantStock: null,
       variantSizeStock: null
@@ -870,6 +875,11 @@ const EditProductModal = ({ product, onClose, onSave }) => {
 
         <FormField label="Ár (Ft)">
           <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} style={inputStyle} />
+          <label style={{ display: 'block', marginTop: '0.4rem', fontSize: '0.85rem', color: '#666', cursor: 'pointer' }}>
+            <input type="checkbox" checked={priceManual} onChange={e => setPriceManual(e.target.checked)}
+              style={{ marginRight: '0.4rem', verticalAlign: 'middle' }} />
+            🔒 Kézi ár — az automatikus Depiend ár-szinkron NEM írja felül
+          </label>
         </FormField>
 
         <FormField label="Készlet (db)">
@@ -2003,6 +2013,132 @@ const StatCard = ({ title, value, color, icon }) => (
 // ============================================================
 // SUPPLIER TAB - Beszállító értesítések
 // ============================================================
+// ============================================================
+// PPC STATISZTIKA (termék-megnyitások forrás szerint)
+// ============================================================
+const SOURCE_LABELS = {
+  arukereso: '🛒 Árukereső', google: '🔎 Google Shopping', organikus: '🌱 Google organikus',
+  facebook: '📘 Facebook', direkt: '🔗 Direkt', egyeb: '❓ Egyéb'
+};
+
+const PpcStats = () => {
+  const [days, setDays] = useState(30);
+  const [daily, setDaily] = useState(null);
+  const [error, setError] = useState('');
+  const products = getAllProducts();
+
+  useEffect(() => {
+    if (!isSupabaseEnabled) { setError('A statisztika csak éles (Supabase) módban érhető el.'); return; }
+    setDaily(null);
+    adminApi('ppc_stats', { days })
+      .then(r => setDaily(r.daily || {}))
+      .catch(e => setError(e.message || 'Betöltési hiba'));
+  }, [days]);
+
+  if (error) return <div><h1 style={{ color: '#0F2A1D' }}>📈 PPC Statisztika</h1><p style={{ color: '#d32f2f' }}>{error}</p></div>;
+  if (daily === null) return <div><h1 style={{ color: '#0F2A1D' }}>📈 PPC Statisztika</h1><p style={{ color: '#999' }}>Betöltés...</p></div>;
+
+  // Aggregálás a napi kötegekből
+  const bySource = {}; const byProduct = {}; let total = 0; let modalTotal = 0;
+  const dayRows = Object.entries(daily).sort((a, b) => b[0].localeCompare(a[0]));
+  dayRows.forEach(([, doc]) => {
+    total += doc.total || 0;
+    modalTotal += doc.modalTotal || 0;
+    Object.entries(doc.bySource || {}).forEach(([s, n]) => { bySource[s] = (bySource[s] || 0) + n; });
+    Object.entries(doc.items || {}).forEach(([key, n]) => {
+      const [pid, src] = key.split('|');
+      if (!byProduct[pid]) byProduct[pid] = { total: 0, sources: {} };
+      byProduct[pid].total += n;
+      byProduct[pid].sources[src] = (byProduct[pid].sources[src] || 0) + n;
+    });
+  });
+  const topProducts = Object.entries(byProduct)
+    .map(([pid, d]) => ({ ...d, product: products.find(p => p.id === parseInt(pid)), pid }))
+    .sort((a, b) => b.total - a.total).slice(0, 25);
+  const ppcTotal = (bySource.arukereso || 0) + (bySource.google || 0) + (bySource.facebook || 0);
+
+  return (
+    <div>
+      <h1 style={{ margin: '0 0 1rem 0', color: '#0F2A1D' }}>📈 PPC Statisztika</h1>
+      <div style={{ marginBottom: '1.5rem', display: 'flex', gap: '0.5rem' }}>
+        {[7, 30, 90].map(d => (
+          <button key={d} onClick={() => setDays(d)} style={{
+            padding: '0.4rem 1rem', borderRadius: '4px', border: '1px solid #ddd', cursor: 'pointer',
+            backgroundColor: days === d ? '#0F2A1D' : 'white', color: days === d ? 'white' : '#333', fontWeight: 'bold'
+          }}>Utolsó {d} nap</button>
+        ))}
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
+        <StatCard title="Összes megnyitás" value={`${total}${modalTotal ? ` (${modalTotal} gyorsnézet)` : ''}`} color="#0F2A1D" icon="👁️" />
+        <StatCard title="PPC-forrásból" value={ppcTotal} color="#C9A961" icon="🎯" />
+        <StatCard title="Árukeresőről" value={bySource.arukereso || 0} color="#2196F3" icon="🛒" />
+        <StatCard title="Google Shoppingról" value={bySource.google || 0} color="#4CAF50" icon="🔎" />
+      </div>
+
+      {/* Forrás-megoszlás */}
+      <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', marginBottom: '1.5rem' }}>
+        <h3 style={{ marginTop: 0, color: '#0F2A1D' }}>Források megoszlása</h3>
+        {total === 0 ? <p style={{ color: '#999' }}>Még nincs adat — a látogatások mostantól gyűlnek.</p> :
+          Object.entries(bySource).sort((a, b) => b[1] - a[1]).map(([s, n]) => (
+            <div key={s} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+              <span style={{ width: '170px', fontSize: '0.9rem' }}>{SOURCE_LABELS[s] || s}</span>
+              <div style={{ flex: 1, backgroundColor: '#f0f0ec', borderRadius: '4px', height: '18px' }}>
+                <div style={{ width: `${Math.max(2, n / total * 100)}%`, backgroundColor: '#C9A961', height: '100%', borderRadius: '4px' }} />
+              </div>
+              <span style={{ width: '90px', textAlign: 'right', fontWeight: 'bold' }}>{n} ({Math.round(n / total * 100)}%)</span>
+            </div>
+          ))}
+      </div>
+
+      {/* Top termékek */}
+      <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', marginBottom: '1.5rem' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+          <thead>
+            <tr style={{ backgroundColor: '#0F2A1D', color: 'white', textAlign: 'left' }}>
+              <th style={{ padding: '0.75rem 1rem' }}>Termék</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Összes</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Árukereső</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Google</th>
+              <th style={{ padding: '0.75rem 1rem', textAlign: 'right' }}>Egyéb/direkt</th>
+            </tr>
+          </thead>
+          <tbody>
+            {topProducts.length === 0 ? (
+              <tr><td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: '#999' }}>Még nincs termék-megnyitás az időszakban.</td></tr>
+            ) : topProducts.map(t => (
+              <tr key={t.pid} style={{ borderBottom: '1px solid #eee' }}>
+                <td style={{ padding: '0.6rem 1rem' }}>{t.product ? t.product.name : `#${t.pid}`}</td>
+                <td style={{ padding: '0.6rem 1rem', textAlign: 'right', fontWeight: 'bold' }}>{t.total}</td>
+                <td style={{ padding: '0.6rem 1rem', textAlign: 'right' }}>{t.sources.arukereso || 0}</td>
+                <td style={{ padding: '0.6rem 1rem', textAlign: 'right' }}>{t.sources.google || 0}</td>
+                <td style={{ padding: '0.6rem 1rem', textAlign: 'right' }}>{t.total - (t.sources.arukereso || 0) - (t.sources.google || 0)}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Napi trend */}
+      <div style={{ backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px' }}>
+        <h3 style={{ marginTop: 0, color: '#0F2A1D' }}>Napi megnyitások</h3>
+        {dayRows.length === 0 ? <p style={{ color: '#999' }}>Nincs adat.</p> : (() => {
+          const maxDay = Math.max(...dayRows.map(([, d]) => d.total || 0), 1);
+          return dayRows.slice(0, 30).map(([day, doc]) => (
+            <div key={day} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.35rem' }}>
+              <span style={{ width: '95px', fontSize: '0.85rem', color: '#666' }}>{day}</span>
+              <div style={{ flex: 1, backgroundColor: '#f0f0ec', borderRadius: '4px', height: '14px' }}>
+                <div style={{ width: `${Math.max(2, (doc.total || 0) / maxDay * 100)}%`, backgroundColor: '#0F2A1D', height: '100%', borderRadius: '4px' }} />
+              </div>
+              <span style={{ width: '50px', textAlign: 'right', fontWeight: 'bold', fontSize: '0.85rem' }}>{doc.total || 0}</span>
+            </div>
+          ));
+        })()}
+      </div>
+    </div>
+  );
+};
+
 const CouponsManager = ({ onChange }) => {
   const [coupons, setCoupons] = useState([]);
   const [form, setForm] = useState({ code: '', type: 'percent', value: '', minOrder: '', expiry: '' });
@@ -2149,10 +2285,32 @@ const CouponsManager = ({ onChange }) => {
 
 const SupplierTab = ({ onChange }) => {
   const [notifs, setNotifs] = useState([]);
+  const [marginPct, setMarginPct] = useState('60');
+  const [pricingMsg, setPricingMsg] = useState('');
 
   useEffect(() => {
     setNotifs(getSupplierNotifications());
+    // Aktuális árrés betöltése az adatbázisból
+    if (isSupabaseEnabled) {
+      adminApi('get_all').then(({ kv }) => {
+        const m = kv && kv.ms_pricing && parseFloat(kv.ms_pricing.margin);
+        if (m > 0) setMarginPct(String(Math.round((m - 1) * 100)));
+      }).catch(() => {});
+    }
   }, []);
+
+  const handleSaveMargin = async () => {
+    const pct = parseFloat(marginPct);
+    if (isNaN(pct) || pct < 0 || pct > 300) { alert('Adj meg érvényes árrést (0-300%)!'); return; }
+    const margin = 1 + pct / 100;
+    if (!window.confirm(`Árrés beállítása: ${pct}% (szorzó: ${margin.toFixed(2)}). A következő ár-szinkron (max. 1 óra) minden nem-kézi árat erre számol át, és a PPC-feedek automatikusan követik. Mehet?`)) return;
+    try {
+      await adminApi('set_kv', { key: 'ms_pricing', value: { margin, updatedAt: new Date().toISOString() } });
+      setPricingMsg(`✅ Árrés elmentve: ${pct}%. A következő szinkronnál (max. 1 óra) érvényesül — vagy indítsd el kézzel lent.`);
+    } catch (e) {
+      alert('Mentési hiba: ' + e.message);
+    }
+  };
 
   const handleResolve = (productId) => {
     if (window.confirm('Megrendelted már a beszállítótól?')) {
@@ -2202,6 +2360,27 @@ iroda@tuz-munkavedelmiszaki.hu
   return (
     <div>
       <h1 style={{ margin: '0 0 1.5rem 0', color: '#0F2A1D' }}>🔔 Beszállító Értesítések</h1>
+
+      {/* Kézzel állítható árrés */}
+      <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #0F2A1D' }}>
+        <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#0F2A1D' }}>💰 Árrés beállítása (a beszerzési árra)</p>
+        <p style={{ margin: '0 0 0.75rem 0', color: '#666', fontSize: '0.85rem' }}>
+          Az eladási ár = Depiend partner-ár × (1 + árrés). Módosítás után az összes nem-kézi ár automatikusan átszámolódik, és a webshop + PPC-feedek azonnal követik.
+        </p>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <input type="number" min="0" max="300" value={marginPct} onChange={e => { setMarginPct(e.target.value); setPricingMsg(''); }}
+            style={{ width: '90px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'right', fontWeight: 'bold' }} />
+          <span style={{ fontWeight: 'bold' }}>%</span>
+          <button onClick={handleSaveMargin} style={{
+            padding: '0.5rem 1.2rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+            borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+          }}>
+            Árrés mentése
+          </button>
+        </div>
+        {pricingMsg && <p style={{ margin: '0.6rem 0 0 0', color: '#4CAF50', fontSize: '0.85rem', fontWeight: 'bold' }}>{pricingMsg}</p>}
+      </div>
+
       <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', borderLeft: '4px solid #C9A961' }}>
         <div style={{ flex: '1 1 300px' }}>
           <p style={{ margin: 0, fontWeight: 'bold', color: '#0F2A1D' }}>🔄 Depiend ár-szinkron</p>

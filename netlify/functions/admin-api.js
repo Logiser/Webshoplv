@@ -12,7 +12,8 @@ const WRITABLE_KEYS = [
   'ms_stock_history',
   'ms_blog_posts',
   'ms_supplier_notifications',
-  'ms_coupons'
+  'ms_coupons',
+  'ms_pricing'
 ];
 
 exports.handler = async (event) => {
@@ -82,6 +83,21 @@ exports.handler = async (event) => {
         const { error } = await db.from('orders').update({ data: body.data }).eq('id', body.id);
         if (error) throw error;
         return { statusCode: 200, body: JSON.stringify({ ok: true }) };
+      }
+
+      case 'ppc_stats': {
+        // Napi PPC-kötegek beolvasása az elmúlt N napra (alap: 30)
+        const days = Math.min(365, Math.max(1, parseInt(body.days) || 30));
+        const keys = [];
+        for (let i = 0; i < days; i++) {
+          const d = new Date(Date.now() - i * 86400000);
+          keys.push(`ms_ppc_${d.toISOString().slice(0, 10)}`);
+        }
+        const { data, error } = await db.from('kv_store').select('key, value').in('key', keys);
+        if (error) throw error;
+        const daily = {};
+        (data || []).forEach(r => { daily[r.key.replace('ms_ppc_', '')] = r.value; });
+        return { statusCode: 200, body: JSON.stringify({ daily }) };
       }
 
       default:

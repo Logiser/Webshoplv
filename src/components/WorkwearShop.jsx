@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronRight, Home, Filter, Star, Heart, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, getProductActivity } from '../data/storage';
+import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, getProductActivity, trackProductOpen } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 
 const WorkwearShop = () => {
@@ -657,7 +657,7 @@ const WorkwearShop = () => {
                   <ProductCard
                     key={product.id}
                     product={product}
-                    onSelect={() => { setSelectedProduct(product); setSelectedSize(null); setSelectedColor(null); setQuantity(1); }}
+                    onSelect={() => { setSelectedProduct(product); setSelectedSize(null); setSelectedColor(null); setQuantity(1); trackProductOpen(product, 'modal'); }}
                     onWishlist={(e) => handleWishlist(e, product.id)}
                     wished={wishlist.includes(product.id)}
                   />

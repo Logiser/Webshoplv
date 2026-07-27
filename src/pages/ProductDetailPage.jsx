@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, Eye, ChevronRight, ChevronLeft } from 'lucide-react';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, getProductActivity } from '../data/storage';
+import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, getProductActivity, trackProductOpen } from '../data/storage';
 import { trackViewItem, trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 
 const ProductDetailPage = () => {
@@ -29,6 +29,7 @@ const ProductDetailPage = () => {
     setSelectedColor(null);
     setWished(isInWishlist(p.id));
     recordProductView(p.id);
+    trackProductOpen(p, 'oldal');   // PPC statisztika
     setActivity(getProductActivity(p.id));
     trackViewItem(p);  // GA4 + FB Pixel
 

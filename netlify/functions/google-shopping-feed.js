@@ -59,7 +59,7 @@ exports.handler = async (event, context) => {
       <g:id>${p.id}</g:id>
       <g:title><![CDATA[${p.name}]]></g:title>
       <g:description><![CDATA[${p.description || p.name}]]></g:description>
-      <g:link>${baseUrl}/termek/${slug}</g:link>
+      <g:link>${baseUrl}/termek/${slug}?utm_source=google&amp;utm_medium=cpc</g:link>
       <g:image_link>${imageUrl}</g:image_link>
       <g:availability>${p.stock > 0 ? 'in stock' : 'out of stock'}</g:availability>
       <g:price>${p.price}.00 HUF</g:price>

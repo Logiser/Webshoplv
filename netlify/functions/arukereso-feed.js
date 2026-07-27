@@ -59,7 +59,7 @@ exports.handler = async () => {
     <identifier>${p.articleNo || p.id}</identifier>
     <manufacturer>${escapeXml(p.brand || 'Portwest')}</manufacturer>
     <name>${escapeXml(p.name)}</name>
-    <product_url>${baseUrl}/termek/${p.slug}</product_url>
+    <product_url>${baseUrl}/termek/${p.slug}?utm_source=arukereso&amp;utm_medium=cpc</product_url>
     <price>${p.price}</price>
     <category>${escapeXml(CATEGORY_PATHS[p.categoryId] || 'Munkavédelem')}</category>
     <image_url>${escapeXml(imageUrl)}</image_url>

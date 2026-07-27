@@ -41,9 +41,10 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0';
 
 exports.handler = async (event) => {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_PASSWORD } = process.env;
-  const margin = parseFloat(process.env.DEPIEND_MARGIN) || 1.6;
+  // Alapértékek env-ből; az adminban mentett ms_pricing (kv) felülírja őket
+  let margin = parseFloat(process.env.DEPIEND_MARGIN) || 1.6;
   // Viszonteladói kedvezmény a publikus listaárhoz képest (2026-07: egységes 23.9%)
-  const partnerRatio = parseFloat(process.env.DEPIEND_PARTNER_RATIO) || 0.7608;
+  let partnerRatio = parseFloat(process.env.DEPIEND_PARTNER_RATIO) || 0.7608;
 
   // Jogosultság: ütemezett hívás (next_run a body-ban) VAGY admin jelszó
   let isScheduled = false;
@@ -69,9 +70,22 @@ exports.handler = async (event) => {
     if (ovErr) throw ovErr;
     const overrides = (ovRow && ovRow.value) || {};
 
+    // Adminban beállított árazás (kézzel állítható árrés) — felülírja az env-et
+    const { data: prRow } = await db.from('kv_store').select('value')
+      .eq('key', 'ms_pricing').maybeSingle();
+    if (prRow && prRow.value) {
+      if (parseFloat(prRow.value.margin) > 0) margin = parseFloat(prRow.value.margin);
+      if (parseFloat(prRow.value.partnerRatio) > 0) partnerRatio = parseFloat(prRow.value.partnerRatio);
+    }
+
     // Párhuzamos feldolgozás 15-ös kötegekben: a teljes futás ~15 mp alatt végez
     // (a Netlify ütemezett function-limitje alatt)
     const checkOne = async (p) => {
+      // Kézi áras termék: az admin által rögzített árat a szinkron NEM írja felül
+      if (overrides[p.id] && overrides[p.id].priceManual === true) {
+        report.manualSkipped = (report.manualSkipped || 0) + 1;
+        return;
+      }
       const url = p.depiendUrl || DEPIEND_URLS[p.articleNo];
       if (!url) return;
       report.checked++;

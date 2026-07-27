@@ -1099,6 +1099,55 @@ export const validateCoupon = async (code, productTotal) => {
   return evaluateCoupon(getCoupons(), code, productTotal);
 };
 
+// ======================== PPC / FORRÁS KÖVETÉS ========================
+
+// Honnan jött a látogató? UTM paraméter az elsődleges (a feedjeink beteszik),
+// utána a referrer domain, végül 'direkt'. Munkamenetenként megjegyezzük,
+// hogy a belső navigáció is a belépési forráshoz számítson.
+const detectTrafficSource = () => {
+  try {
+    const saved = sessionStorage.getItem('ms_traffic_source');
+    if (saved) return saved;
+    const utm = new URLSearchParams(window.location.search).get('utm_source') || '';
+    let source = null;
+    if (/arukereso/i.test(utm)) source = 'arukereso';
+    else if (/google/i.test(utm)) source = 'google';
+    else if (/facebook|fb/i.test(utm)) source = 'facebook';
+    else if (utm) source = 'egyeb';
+    else {
+      const ref = document.referrer || '';
+      if (/arukereso\.hu/i.test(ref)) source = 'arukereso';
+      else if (/google\./i.test(ref)) source = 'organikus';
+      else if (/facebook\.com|fb\.com/i.test(ref)) source = 'facebook';
+      else if (ref && !ref.includes(window.location.host)) source = 'egyeb';
+      else source = 'direkt';
+    }
+    sessionStorage.setItem('ms_traffic_source', source);
+    return source;
+  } catch (e) {
+    return 'direkt';
+  }
+};
+
+// Termék-megnyitás rögzítése (termékoldal vagy gyorsnézet) — nem blokkoló
+export const trackProductOpen = (product, medium = 'oldal') => {
+  if (!isSupabaseEnabled || !product) return;
+  try {
+    fetch('/.netlify/functions/track-visit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        productId: product.id,
+        articleNo: product.articleNo || '',
+        source: detectTrafficSource(),
+        medium,
+        path: window.location.pathname
+      }),
+      keepalive: true
+    }).catch(() => {});
+  } catch (e) { /* statisztika nem blokkolhat semmit */ }
+};
+
 // ======================== ÉLŐ AKTIVITÁS ========================
 
 // Termék nézettsége + utolsó rendelés
