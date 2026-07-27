@@ -396,7 +396,7 @@ const WorkwearShop = () => {
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                       <span>Szállítás:</span>
                       <span style={{ color: cartTotal >= 30000 ? '#4CAF50' : '#C9A961' }}>
-                        {cartTotal >= 30000 ? 'INGYENES' : '+1.990 Ft'}
+                        {cartTotal >= 30000 ? 'INGYENES' : '+1.290 Ft'}
                       </span>
                     </div>
                   </div>
@@ -404,13 +404,13 @@ const WorkwearShop = () => {
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '1.3rem', fontWeight: 'bold', marginBottom: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(255,255,255,0.2)' }}>
                     <span>Összesen:</span>
                     <span style={{ color: '#C9A961' }}>
-                      {(cartTotal + (cartTotal >= 30000 ? 0 : 1990)).toLocaleString('hu-HU')} Ft
+                      {(cartTotal + (cartTotal >= 30000 ? 0 : 1290)).toLocaleString('hu-HU')} Ft
                     </span>
                   </div>
 
                   <button
                     onClick={() => {
-                      navigate('/checkout', { state: { cart, total: cartTotal + (cartTotal >= 30000 ? 0 : 1990) } });
+                      navigate('/checkout', { state: { cart, total: cartTotal + (cartTotal >= 30000 ? 0 : 1290) } });
                       setCartOpen(false);
                     }}
                     style={{

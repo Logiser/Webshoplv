@@ -89,7 +89,7 @@ exports.handler = async (event) => {
       const url = p.depiendUrl || DEPIEND_URLS[p.articleNo];
       if (!url) return;
       // Versenyár-alapú (Árukereső) termék: az árat békén hagyjuk, KIVÉVE ha a
-      // beszerzési ár úgy megnőtt, hogy a jelenlegi ár 10% árrés alá esne —
+      // beszerzési ár úgy megnőtt, hogy a jelenlegi ár 5% árrés alá esne —
       // ilyenkor a padló-árra emelünk (veszteség-védelem)
       if (p.priceSource === 'arukereso') {
         try {
@@ -101,7 +101,7 @@ exports.handler = async (event) => {
           const listPrice = parseInt(m[1].replace(/[\s ]/g, ''), 10);
           if (!listPrice || listPrice < 50) return;
           const partnerPrice = Math.round(listPrice * partnerRatio);
-          const floorPrice = Math.ceil((partnerPrice * 1.03) / 10) * 10;
+          const floorPrice = Math.ceil((partnerPrice * 1.05) / 10) * 10;
           const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
           report.checked++;
           if (currentPrice < floorPrice) {

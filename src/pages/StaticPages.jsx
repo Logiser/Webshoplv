@@ -260,7 +260,7 @@ export const ShippingPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>2. Szállítási Költség</h2>
           <p>
-            <strong>Szállítási díj:</strong> 1.990 Ft (állandó díj az egész ország területén)<br />
+            <strong>Szállítási díj:</strong> 1.290 Ft (állandó díj az egész ország területén)<br />
             <strong>Ingyenes szállítás:</strong> 50.000 Ft feletti rendelés esetén
           </p>
 

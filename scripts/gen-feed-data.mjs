@@ -80,7 +80,7 @@ const llmsFull = `# MunkavédelmiShop - Teljes termékkatalógus
 # Frissítve: ${today} | Árak bruttó Ft-ban | Minden termék eredeti Portwest, CE minősítéssel
 # Üzemeltető: Trident Shield Group Kft., 4030 Debrecen, Keleti Ipartelep utca 4.
 # Rendelés: ${SITE} | +36 30 272 2571 | iroda@tuz-munkavedelmiszaki.hu
-# Szállítás: 2-3 munkanap, 1990 Ft (30 000 Ft felett ingyenes)
+# Szállítás: 2-3 munkanap, 1290 Ft (30 000 Ft felett ingyenes)
 
 ${Object.entries(byCat).map(([cat, items]) => `## ${catNames[cat] || cat}
 

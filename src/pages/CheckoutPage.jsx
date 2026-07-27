@@ -31,7 +31,10 @@ const CheckoutPage = () => {
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
 
-  const productTotal = total - 1990;
+  // Termék-összeg a kosárból számolva (nem a totálból visszafelé — így a
+  // 30 000 Ft feletti ingyenes szállításnál is pontos)
+  const productTotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
+  const shippingCost = total - productTotal;   // 0 vagy 1 290
   const discount = coupon && coupon.valid ? Math.min(coupon.discount, productTotal) : 0;
   const grandTotal = total - discount;
 
@@ -299,7 +302,7 @@ const CheckoutPage = () => {
               )}
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
                 <span>Szállítás:</span>
-                <span style={{ fontWeight: 'bold', color: '#C9A961' }}>1.990 Ft</span>
+                <span style={{ fontWeight: 'bold', color: '#C9A961' }}>{shippingCost > 0 ? `${shippingCost.toLocaleString('hu-HU')} Ft` : 'INGYENES'}</span>
               </div>
               <div style={{
                 display: 'flex',
