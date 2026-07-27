@@ -7,6 +7,12 @@
 [functions."depiend-sync"]
   schedule = "0 4 * * *"
 
+# Depiend URL-lista CORS-szal (partner ár-szinkron segédfájl)
+[[headers]]
+  for = "/depiend-urls.json"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+
 # Google Shopping feed redirect
 [[redirects]]
   from = "/google-shopping-feed.xml"
