@@ -3381,6 +3381,84 @@
   },
   {
     "id": 261,
+    "articleNo": "B967",
+    "name": "Portwest B967 30L-es húzózsinóros hátizsák",
+    "slug": "portwest-b967-30l-es-huzozsinoros-hatizsak",
+    "description": "Tartós 600D poliészter szövet szerkezettel, a talajvíz behatolásának megakadályozására vízálló anyagból készült aljjal, zsinóros záródással, az azonosítókártya jól látható elhelyezéséhez átlátszó zsebbel, állítható pántokkal, PVC-bevonatú hordozófülekkel és a kötelek végeinek vagy felszerelések rögzítéséhez belső hurkokkal rendelkező hátizsák. A hátizsák pontosabb méretei: 30 cm x 30 cm x 37 cm.",
+    "price": 10170,
+    "image": "/images/products/b967_bk.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-30l-es-huzozsinoros-hatizsak-b967"
+  },
+  {
+    "id": 262,
+    "articleNo": "B916",
+    "name": "Portwest B916 Három rekeszes hátizsák",
+    "slug": "portwest-b916-harom-rekeszes-hatizsak",
+    "description": "Ideális hátizsák mindennapos használatra. Tartós 1680D poliészter konstrukció védi a táska tartalmát. Főbb jellemzői: 3 cipzáras rekesz, párnázott laptop tároló, állítható vállpántok.",
+    "price": 17750,
+    "image": "/images/products/b916_bk.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-harom-rekeszes-hatizsak-b916"
+  },
+  {
+    "id": 263,
+    "articleNo": "B905",
+    "name": "Portwest B905 Jól láthatósági hátizsák",
+    "slug": "portwest-b905-jol-lathatosagi-hatizsak",
+    "description": "Teljes, sokoldalú táska választékunk modelljei ideálisak utazáshoz és mindennapi használatra is. Erős és strapabíró anyagokból készülnek, így megbízható minőséget és hosszú élettartamot garantálnak.Javasoljuk kültéri munkavégzéshez, kerékpározáshoz, gyermekeknek és minden területre ahol fontos lehet a jól láthatóság. Beépített MP3/mobiltelefontartóval, többfunkciós zsebekkel. Az alapanyag és a fényvisszaverő csík megfelel az EN ISO 20471 szabványnak.",
+    "price": 23840,
+    "image": "/images/products/b905_or.jpg",
+    "stock": 105,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-jol-lathatosagi-hatizsak-b905"
+  },
+  {
+    "id": 264,
+    "articleNo": "B913",
+    "name": "Portwest B913 Ebéd hűtőtáska 7,5 L-es",
+    "slug": "portwest-b913-ebed-hutotaska-75-l-es",
+    "description": "Tartós 600D poliészter szövet szerkezettel, vizes palack zsebbel, állítható vállpánttal és fogantyúval rendelkező hűtőtáska, amely hűvös körülményeket biztosít az ételek, és italok számára. A táska mérete 24 x 15 x 22 cm, a kapacitása 7,5 liter.",
+    "price": 7630,
+    "image": "/images/products/b913_zgr.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-ebed-hutotaska-7-5-l-es-b913"
+  },
+  {
+    "id": 265,
+    "articleNo": "B035",
+    "name": "Portwest B035 3 részes téli kiegészítő szett",
+    "slug": "portwest-b035-3-reszes-teli-kiegeszito-szett",
+    "description": "3 részes téli kiegészítő szett, amely sapkát, sálat és kesztyűt tartalmaz. A sapka és a kesztyű Insulatex Pro béléssel rendelkeznek és a forma megtartása érdekében 9-es mérettel vannak kötve (knit gauge 9). A sál Texpel Micro antimikrobiális kivitelű, könnyű és kényelmes, rendkívül sokoldalú és többféleképpen is viselhető, kötött mandzsettával és 9-es kötési sűrűséggel rendelkezik. A termék kiskereskedelmi kihelyezést segítő dobozba van csomagolva.",
+    "price": 8930,
+    "image": "/images/products/b035_bk.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-3-reszes-teli-kiegeszito-szett-b035"
+  },
+  {
+    "id": 266,
+    "articleNo": "CV05",
+    "name": "Portwest CV05 Cooling hűsítő kendő",
+    "slug": "portwest-cv05-cooling-husito-kendo",
+    "description": "Portwest CV05 Cooling hűsítő kendő — eredeti Portwest minőség, CE minősítéssel. Kényelmes, strapabíró kialakítás mindennapi munkavégzéshez.",
+    "price": 2480,
+    "image": "/images/products/cv05_blu.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-cooling-husito-kendo-cv05"
+  },
+  {
+    "id": 267,
     "articleNo": "A111",
     "name": "Portwest A111 PVC pontozott védőkesztyű",
     "slug": "portwest-a111-pvc-pontozott-vedokesztyu",
@@ -3393,7 +3471,7 @@
     "depiendUrl": "https://www.depiend.hu/munkaruha/munkavedelmi-kesztyu-latex-kesztyu-nitril-kesztyu/vedokesztyu/portwest-pvc-pontozott-vedokesztyu-a111"
   },
   {
-    "id": 262,
+    "id": 268,
     "articleNo": "A115",
     "name": "Portwest A115 Thermolite kesztyű",
     "slug": "portwest-a115-thermolite-kesztyu",
@@ -3406,7 +3484,7 @@
     "depiendUrl": "https://www.depiend.hu/munkaruha/munkavedelmi-kesztyu-latex-kesztyu-nitril-kesztyu/vedokesztyu/portwest-thermolite-kesztyu-a115"
   },
   {
-    "id": 263,
+    "id": 269,
     "articleNo": "KP40",
     "name": "Portwest KP40 Ultimate gél betétes térdpárna",
     "slug": "portwest-kp40-ultimate-gel-betetes-terdparna",
@@ -3419,7 +3497,7 @@
     "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-ultimate-gel-betetes-terdparna-kp40"
   },
   {
-    "id": 264,
+    "id": 270,
     "articleNo": "KP44",
     "name": "Portwest KP44 Térdpárna",
     "slug": "portwest-kp44-terdparna",
@@ -3432,7 +3510,7 @@
     "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-terdparna-kp44"
   },
   {
-    "id": 265,
+    "id": 271,
     "articleNo": "KP20",
     "name": "Portwest KP20 Könnyű, gél betétes térdpárna",
     "slug": "portwest-kp20-konnyu-gel-betetes-terdparna",
@@ -3445,7 +3523,7 @@
     "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-konnyu-gel-betetes-terdparna-kp20"
   },
   {
-    "id": 266,
+    "id": 272,
     "articleNo": "KP30",
     "name": "Portwest KP30 Super gél betétes térdpárna",
     "slug": "portwest-kp30-super-gel-betetes-terdparna",
@@ -3456,5 +3534,83 @@
     "brand": "Portwest",
     "categoryId": "kiegeszitok",
     "depiendUrl": "https://www.depiend.hu/munkaruha/tabla-taska-szalag/egyeb/portwest-super-gel-betetes-terdparna-kp30"
+  },
+  {
+    "id": 273,
+    "articleNo": "FP52",
+    "name": "Portwest FP52 Kétágú rugalmas hevederes rögzítőkötél energiaelnyelővel, 1,8 m",
+    "slug": "portwest-fp52-ketagu-rugalmas-hevederes-rogzitokotel-energiaelnyelovel-18-m",
+    "description": "Kettős akasztóhorgos végződésű, Y kialakítású, rugalmas poliészter hevederszalag energiaelnyelővel és karabinerrel. Ideális minden Portwest és más zuhanás gátló eszközökhöz. Maximális terhelhetősége: 100 kg. Igényes kiskereskedelmi kihelyezést segítő dobozba csomagolva.",
+    "price": 25680,
+    "image": "/images/products/fp52_ye.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/beulo-testheveder-zuhanasgatlo/kiegeszitok/ketszaru-energiaelnyelovel-ellatott-rugalmas-hevederszalag-karabinerrel-es-ket-zarokapoccsal-fp52"
+  },
+  {
+    "id": 274,
+    "articleNo": "FP40",
+    "name": "Portwest FP40 Automata hevederes zuhanásgátló blokk, 3 m",
+    "slug": "portwest-fp40-automata-hevederes-zuhanasgatlo-blokk-3-m",
+    "description": "Rendkívül erős polietilén anyagból, 3 méter hosszú hevederszalaggal készülő, acél karabinerrel ellátott zuhanásgátló blokk. A zuhanás gátló tartódobja automatikusan fel-, illetve letekercseli a hevedert a munkavégző mozgásának megfelelően. Két acél karabinerrel van ellátva. Könnyen telepíthető. Esés esetén, a blokk rövid távolság után záródik és megállítja az eseményt. Az összes Portwest hevederrel és csatlakozóval együtt használható. Maximális terhelhetősége: 100 kg. Igényes kiskereskedelmi kihelyezést segítő dobozba csomagolva.",
+    "price": 93060,
+    "image": "/images/products/fp40_or.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/beulo-testheveder-zuhanasgatlo/kiegeszitok/portwest-automata-zuhanasgatlo-blokk-3-m-fp40"
+  },
+  {
+    "id": 275,
+    "articleNo": "FP41",
+    "name": "Portwest FP41 Automata drótköteles zuhanásgátló blokk, 10 m",
+    "slug": "portwest-fp41-automata-drotkoteles-zuhanasgatlo-blokk-10-m",
+    "description": "A zuhanásgátló tartódobja automatikusan fel-, illetve letekercseli a sodronykötelet a munkavégző mozgásának megfelelően. Könnyen telepíthető. Esés esetén, a blokk rövid távolság után záródik és megállítja az esést. Dupla biztonsági zárral és egy kapcsos horoggal van ellátva. Leesés indikátort tartalmaz, mely jelzi, ha eseménynek volt kitéve a felhasználója és a hevedert e miatt be kell vizsgálni. Az összes Portwest hevederrel és csatlakozóval együtt használható. Maximális terhelhetősége: 100 kg.",
+    "price": 235960,
+    "image": "/images/products/fp41_bk.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/beulo-testheveder-zuhanasgatlo/kiegeszitok/portwest-automata-zuhanasgatlo-blokk-10-m-fp41"
+  },
+  {
+    "id": 276,
+    "articleNo": "FP22",
+    "name": "Portwest FP22 Állítható hosszúságú korlátozó rögzítőkötél, 2 m",
+    "slug": "portwest-fp22-allithato-hosszusagu-korlatozo-rogzitokotel-2-m",
+    "description": "2 méteres hosszig állítható hosszúságú, zuhanás gátló kötélzet. Akasztóhoroggal és karabinerrel szerelve. Széles körben használható. Ideális minden Portwest és más zuhanás gátló eszközökhöz. Maximális terhelhetősége: 100 kg. Igényes kiskereskedelmi kihelyezést segítő dobozba csomagolva.",
+    "price": 15210,
+    "image": "/images/products/fp22_wh.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/beulo-testheveder-zuhanasgatlo/kiegeszitok/portwest-allithato-hosszusagu-rogzitokotel-fp22"
+  },
+  {
+    "id": 277,
+    "articleNo": "FP35",
+    "name": "Portwest FP35 Állványhorog karabiner",
+    "slug": "portwest-fp35-allvanyhorog-karabiner",
+    "description": "Kovácsolt alumínium horog karabiner, 52 mm nyílással. Ideális kiegészítő minden Portwest és más zuhanás gátló eszközhöz. Mérete 220 mm. Szakítószilárdsága 25 kN.",
+    "price": 13680,
+    "image": "/images/products/fp35_si.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/beulo-testheveder-zuhanasgatlo/kiegeszitok/portwest-akasztohorog-karabiner-fp35"
+  },
+  {
+    "id": 278,
+    "articleNo": "FP05",
+    "name": "Portwest FP05 Acél rögzítőkötél, 1m",
+    "slug": "portwest-fp05-acel-rogzitokotel-1m",
+    "description": "1 méteres, széles körben alkalmazható, acél rögzítő kötél. Egyszerűen rögzíthető és különféle zuhanás gátló rendszerek kikötési pontjainak használható. Gyors és egyszerű üzembe helyezés. Maximális terhelhetősége: 100 kg.",
+    "price": 6100,
+    "image": "/images/products/fp05_si.jpg",
+    "stock": 60,
+    "brand": "Portwest",
+    "categoryId": "kiegeszitok",
+    "depiendUrl": "https://www.depiend.hu/munkaruha/beulo-testheveder-zuhanasgatlo/kiegeszitok/portwest-acel-rogzitokotel-1m-fp05"
   }
 ]

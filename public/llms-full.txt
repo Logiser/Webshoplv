@@ -1,5 +1,5 @@
 # MunkavédelmiShop - Teljes termékkatalógus
-# Frissítve: 2026-07-25 | Árak bruttó Ft-ban | Minden termék eredeti Portwest, CE minősítéssel
+# Frissítve: 2026-07-27 | Árak bruttó Ft-ban | Minden termék eredeti Portwest, CE minősítéssel
 # Üzemeltető: Trident Shield Group Kft., 4030 Debrecen, Keleti Ipartelep utca 4.
 # Rendelés: https://munkavedelmiszaki.hu | +36 30 272 2571 | iroda@tuz-munkavedelmiszaki.hu
 # Szállítás: 2-3 munkanap, 1990 Ft (30 000 Ft felett ingyenes)
@@ -278,9 +278,21 @@
 - Portwest PS36 Anthracite védőszemüveg (PS36) — 2540 Ft — https://munkavedelmiszaki.hu/termek/portwest-ps36-anthracite-vedoszemuveg
 - Portwest PS37 Anthracite védőszemüveg (PS37) — 3460 Ft — https://munkavedelmiszaki.hu/termek/portwest-ps37-anthracite-vedoszemuveg
 - Portwest PS20 Dynamic Plus KN védőszemüveg (PS20) — 4980 Ft — https://munkavedelmiszaki.hu/termek/portwest-ps20-dynamic-plus-kn-vedoszemuveg
+- Portwest B967 30L-es húzózsinóros hátizsák (B967) — 10 170 Ft — https://munkavedelmiszaki.hu/termek/portwest-b967-30l-es-huzozsinoros-hatizsak
+- Portwest B916 Három rekeszes hátizsák (B916) — 17 750 Ft — https://munkavedelmiszaki.hu/termek/portwest-b916-harom-rekeszes-hatizsak
+- Portwest B905 Jól láthatósági hátizsák (B905) — 23 840 Ft — https://munkavedelmiszaki.hu/termek/portwest-b905-jol-lathatosagi-hatizsak
+- Portwest B913 Ebéd hűtőtáska 7,5 L-es (B913) — 7630 Ft — https://munkavedelmiszaki.hu/termek/portwest-b913-ebed-hutotaska-75-l-es
+- Portwest B035 3 részes téli kiegészítő szett (B035) — 8930 Ft — https://munkavedelmiszaki.hu/termek/portwest-b035-3-reszes-teli-kiegeszito-szett
+- Portwest CV05 Cooling hűsítő kendő (CV05) — 2480 Ft — https://munkavedelmiszaki.hu/termek/portwest-cv05-cooling-husito-kendo
 - Portwest A111 PVC pontozott védőkesztyű (A111) — 310 Ft — https://munkavedelmiszaki.hu/termek/portwest-a111-pvc-pontozott-vedokesztyu
 - Portwest A115 Thermolite kesztyű (A115) — 1420 Ft — https://munkavedelmiszaki.hu/termek/portwest-a115-thermolite-kesztyu
 - Portwest KP40 Ultimate gél betétes térdpárna (KP40) — 12 070 Ft — https://munkavedelmiszaki.hu/termek/portwest-kp40-ultimate-gel-betetes-terdparna
 - Portwest KP44 Térdpárna (KP44) — 4310 Ft — https://munkavedelmiszaki.hu/termek/portwest-kp44-terdparna
 - Portwest KP20 Könnyű, gél betétes térdpárna (KP20) — 5850 Ft — https://munkavedelmiszaki.hu/termek/portwest-kp20-konnyu-gel-betetes-terdparna
 - Portwest KP30 Super gél betétes térdpárna (KP30) — 10 400 Ft — https://munkavedelmiszaki.hu/termek/portwest-kp30-super-gel-betetes-terdparna
+- Portwest FP52 Kétágú rugalmas hevederes rögzítőkötél energiaelnyelővel, 1,8 m (FP52) — 25 680 Ft — https://munkavedelmiszaki.hu/termek/portwest-fp52-ketagu-rugalmas-hevederes-rogzitokotel-energiaelnyelovel-18-m
+- Portwest FP40 Automata hevederes zuhanásgátló blokk, 3 m (FP40) — 93 060 Ft — https://munkavedelmiszaki.hu/termek/portwest-fp40-automata-hevederes-zuhanasgatlo-blokk-3-m
+- Portwest FP41 Automata drótköteles zuhanásgátló blokk, 10 m (FP41) — 235 960 Ft — https://munkavedelmiszaki.hu/termek/portwest-fp41-automata-drotkoteles-zuhanasgatlo-blokk-10-m
+- Portwest FP22 Állítható hosszúságú korlátozó rögzítőkötél, 2 m (FP22) — 15 210 Ft — https://munkavedelmiszaki.hu/termek/portwest-fp22-allithato-hosszusagu-korlatozo-rogzitokotel-2-m
+- Portwest FP35 Állványhorog karabiner (FP35) — 13 680 Ft — https://munkavedelmiszaki.hu/termek/portwest-fp35-allvanyhorog-karabiner
+- Portwest FP05 Acél rögzítőkötél, 1m (FP05) — 6100 Ft — https://munkavedelmiszaki.hu/termek/portwest-fp05-acel-rogzitokotel-1m

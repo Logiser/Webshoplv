@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { ShoppingCart, X, Search, Phone, Mail, MapPin, Lock, Truck, Shield, Award, ChevronRight, Home, Filter, Star, Heart, Eye } from 'lucide-react';
+import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronRight, Home, Filter, Star, Heart, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, getProductActivity } from '../data/storage';
@@ -78,7 +78,28 @@ const WorkwearShop = () => {
   }, []);
 
   const allBrands = getAllBrands();
-  const allSizes = Array.from(new Set(products.flatMap(p => p.sizes || []))).sort();
+
+  // Méretszűrő: csak az aktuális kategória/alkategória termékeiben előforduló
+  // méretek jelenjenek meg (ne keveredjen a cipőméret a ruhamérettel)
+  const sizeSourceProducts = products.filter(p =>
+    (!selectedCategory || p.categoryId === selectedCategory) &&
+    (!selectedSubcategory || p.subcategoryId === selectedSubcategory)
+  );
+  const sizeOrder = (s) => {
+    const num = parseInt(s);
+    if (!isNaN(num)) return num;                                        // számos méretek (36-52)
+    const order = ['2XS', 'XS', 'XS/S', 'S', 'S/M', 'M', 'M/L', 'L', 'L/XL', 'XL', 'XL/XXL', '2XL', '2XL/3XL', 'XXL', '3XL', '4XL', '4XL/5XL', '5XL', '6XL', 'Egységes'];
+    const idx = order.indexOf(s);
+    return idx >= 0 ? 100 + idx : 200;                                  // betűs méretek a számok után
+  };
+  const allSizes = Array.from(new Set(sizeSourceProducts.flatMap(p => p.sizes || [])))
+    .sort((a, b) => sizeOrder(a) - sizeOrder(b) || String(a).localeCompare(String(b)));
+
+  // Kategóriaváltáskor a már nem elérhető kijelölt méretek törlése
+  useEffect(() => {
+    setSelectedSizes(prev => prev.filter(s => allSizes.includes(s)));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedSubcategory]);
 
   // Szűrt termékek
   const filteredProducts = products.filter(p => {
@@ -743,10 +764,7 @@ const WorkwearShop = () => {
           </div>
 
           <div style={{ borderTop: '1px solid #333', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <p style={{ margin: 0 }}>© 2024 MunkavédelmiShop - Minden jog fenntartva</p>
-            <Link to="/admin-login" style={{ color: '#C9A961', textDecoration: 'none', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-              <Lock size={12} /> Admin
-            </Link>
+            <p style={{ margin: 0 }}>© 2026 MunkavédelmiShop - Minden jog fenntartva</p>
           </div>
         </div>
       </footer>

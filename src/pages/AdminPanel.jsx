@@ -19,6 +19,15 @@ import {
 } from '../data/storage';
 import { openInvoice } from '../utils/invoice';
 
+// Forint-formázás: 1 millió felett "12,45 M Ft", alatta "123 456 Ft"
+const fmtFt = (n) => {
+  const v = Number(n) || 0;
+  if (Math.abs(v) >= 1000000) {
+    return `${(v / 1000000).toLocaleString('hu-HU', { maximumFractionDigits: 2 })} M Ft`;
+  }
+  return `${v.toLocaleString('hu-HU')} Ft`;
+};
+
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -253,15 +262,15 @@ const Dashboard = ({ onChange }) => {
           subtitle={stats.hiddenProducts > 0 ? `${stats.hiddenProducts} rejtett` : 'Mind látható'} />
         <StatCard icon={Tag} title="Akciós termékek" value={stats.onSaleCount} color="#C9A961"
           subtitle="Aktív akciók" />
-        <StatCard icon={DollarSign} title="Készlet érték" value={`${(stats.totalStockValue / 1000).toFixed(0)}K Ft`} color="#2196F3"
+        <StatCard icon={DollarSign} title="Készlet érték" value={fmtFt(stats.totalStockValue)} color="#2196F3"
           subtitle={`Teljes raktárkészlet`} />
         <StatCard icon={AlertTriangle} title="Alacsony készlet" value={stats.lowStockCount} color="#FF9800"
           subtitle="< 20 db" badge={stats.lowStockCount > 0 ? '!' : null} />
         <StatCard icon={X} title="Elfogyott" value={stats.outOfStockCount} color="#d32f2f"
           subtitle="0 készlet" badge={stats.outOfStockCount > 0 ? '!' : null} />
         <StatCard icon={ShoppingBag} title="Rendelések" value={stats.totalOrders} color="#9C27B0"
-          subtitle={`${(stats.totalRevenue / 1000).toFixed(0)}K Ft bevétel`} />
-        <StatCard icon={TrendingUp} title="Bevétel" value={`${(stats.totalRevenue / 1000).toFixed(1)}K Ft`} color="#00897B"
+          subtitle={`${fmtFt(stats.totalRevenue)} bevétel`} />
+        <StatCard icon={TrendingUp} title="Bevétel" value={fmtFt(stats.totalRevenue)} color="#00897B"
           subtitle="Összes rendelésből" />
       </div>
 
@@ -281,7 +290,7 @@ const Dashboard = ({ onChange }) => {
               <div key={cat.id} style={{ marginBottom: '0.75rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem', fontSize: '0.9rem' }}>
                   <span><strong>{cat.icon} {cat.name}</strong></span>
-                  <span style={{ color: '#666' }}>{stat.count} termék • {stat.totalStock} db • {(stat.value / 1000).toFixed(0)}K Ft</span>
+                  <span style={{ color: '#666' }}>{stat.count} termék • {stat.totalStock.toLocaleString('hu-HU')} db • {fmtFt(stat.value)}</span>
                 </div>
                 <div style={{ height: '8px', backgroundColor: '#eee', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{

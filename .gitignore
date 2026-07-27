@@ -37,3 +37,6 @@ yarn-error.log*
 
 # Claude Code (gépspecifikus launch config)
 .claude/
+
+# Local Netlify folder
+.netlify

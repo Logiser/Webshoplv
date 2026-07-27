@@ -95,7 +95,9 @@ export const productSubcategories = [
   { id: 'fuldugok', categoryId: 'kiegeszitok', name: 'Füldugók', slug: 'fuldugok' },
   { id: 'legzesvedok', categoryId: 'kiegeszitok', name: 'Légzésvédők & Szűrők', slug: 'legzesvedok' },
   { id: 'terdvedok', categoryId: 'kiegeszitok', name: 'Térdvédők', slug: 'terdvedok' },
-  { id: 'magasban-munka', categoryId: 'kiegeszitok', name: 'Magasban munkavégzés', slug: 'magasban-munka' }
+  { id: 'magasban-munka', categoryId: 'kiegeszitok', name: 'Magasban munkavégzés', slug: 'magasban-munka' },
+  { id: 'zuhanasgatlo-kieg', categoryId: 'kiegeszitok', name: 'Zuhanásgátló kiegészítők', slug: 'zuhanasgatlo-kiegeszitok' },
+  { id: 'taskak', categoryId: 'kiegeszitok', name: 'Táskák & Kiegészítők', slug: 'taskak-kiegeszitok' }
 ];
 
 export const products = productsJson;
