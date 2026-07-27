@@ -88,6 +88,32 @@ exports.handler = async (event) => {
       }
       const url = p.depiendUrl || DEPIEND_URLS[p.articleNo];
       if (!url) return;
+      // Versenyár-alapú (Árukereső) termék: az árat békén hagyjuk, KIVÉVE ha a
+      // beszerzési ár úgy megnőtt, hogy a jelenlegi ár 10% árrés alá esne —
+      // ilyenkor a padló-árra emelünk (veszteség-védelem)
+      if (p.priceSource === 'arukereso') {
+        try {
+          const res = await fetch(url, { headers: { 'User-Agent': UA } });
+          if (!res.ok) return;
+          const html = await res.text();
+          const m = html.match(/class="price">([\d\s ]+)Ft/);
+          if (!m) return;
+          const listPrice = parseInt(m[1].replace(/[\s ]/g, ''), 10);
+          if (!listPrice || listPrice < 50) return;
+          const partnerPrice = Math.round(listPrice * partnerRatio);
+          const floorPrice = Math.ceil((partnerPrice * 1.1) / 10) * 10;
+          const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
+          report.checked++;
+          if (currentPrice < floorPrice) {
+            overrides[p.id] = { ...(overrides[p.id] || {}), price: floorPrice };
+            report.changed.push({
+              articleNo: p.articleNo, name: p.name, ok: 'padlo-emeles',
+              listPrice, partnerPrice, oldPrice: currentPrice, newPrice: floorPrice
+            });
+          }
+        } catch (e) { report.errors.push({ articleNo: p.articleNo, error: e.message }); }
+        return;
+      }
       report.checked++;
       try {
         const res = await fetch(url, { headers: { 'User-Agent': UA } });

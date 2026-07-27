@@ -24,6 +24,8 @@ const snapshot = products.map(p => ({
   slug: p.slug || slugify(p.name),
   description: p.description || '',
   price: p.price,
+  partnerPrice: p.partnerPrice,
+  priceSource: p.priceSource || 'keplet',
   image: p.image,
   stock: p.stock,
   brand: p.brand || '',
