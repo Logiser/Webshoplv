@@ -41,7 +41,9 @@ const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0';
 
 exports.handler = async (event) => {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_PASSWORD } = process.env;
-  const margin = parseFloat(process.env.DEPIEND_MARGIN) || 1.35;
+  const margin = parseFloat(process.env.DEPIEND_MARGIN) || 1.6;
+  // Viszonteladói kedvezmény a publikus listaárhoz képest (2026-07: egységes 23.9%)
+  const partnerRatio = parseFloat(process.env.DEPIEND_PARTNER_RATIO) || 0.7608;
 
   // Jogosultság: ütemezett hívás (next_run a body-ban) VAGY admin jelszó
   let isScheduled = false;
@@ -88,13 +90,16 @@ exports.handler = async (event) => {
           report.errors.push({ articleNo: p.articleNo, error: `Gyanús ár: ${m[1]}` });
           continue;
         }
-        const newPrice = Math.round(supplierPrice * margin / 10) * 10;
+        // supplierPrice itt a publikus listaár; a tényleges beszerzési (partner) ár
+        // a listaár × partnerRatio, az eladási ár erre tett árréssel számolódik
+        const partnerPrice = Math.round(supplierPrice * partnerRatio);
+        const newPrice = Math.round(partnerPrice * margin / 10) * 10;
         const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
         if (newPrice !== currentPrice) {
           overrides[p.id] = { ...(overrides[p.id] || {}), price: newPrice };
           report.changed.push({
             articleNo: p.articleNo, name: p.name,
-            supplierPrice, oldPrice: currentPrice, newPrice
+            listPrice: supplierPrice, partnerPrice, oldPrice: currentPrice, newPrice
           });
         }
       } catch (e) {
