@@ -66,6 +66,7 @@ export const productSubcategories = [
   { id: 'elelmiszeripari', categoryId: 'munkaruha', name: 'Élelmiszeripari ruházat', slug: 'elelmiszeripari' },
   { id: 'egyszer-hasznalatos', categoryId: 'munkaruha', name: 'Egyszer használatos', slug: 'egyszer-hasznalatos' },
   { id: 'sef-ruhazat', categoryId: 'munkaruha', name: 'Séf munkaruházat', slug: 'sef-ruhazat' },
+  { id: 'gyermek', categoryId: 'munkaruha', name: 'Gyermek ruházat', slug: 'gyermek-ruhazat' },
 
   // Cipők alkategóriák
   { id: 'cipo-s1', categoryId: 'munkacipo', name: 'S1 / S1P kategória', slug: 'cipo-s1' },

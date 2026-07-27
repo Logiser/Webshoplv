@@ -27,6 +27,8 @@ const WorkwearShop = () => {
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
   const [minRating, setMinRating] = useState(0);
+  // Lapozás: ~2000 termékkártya egyszerre berenderelése lassú lenne
+  const [visibleCount, setVisibleCount] = useState(60);
 
   useEffect(() => {
     const allProducts = getVisibleProducts();
@@ -100,6 +102,11 @@ const WorkwearShop = () => {
     setSelectedSizes(prev => prev.filter(s => allSizes.includes(s)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedSubcategory]);
+
+  // Szűrő- vagy rendezés-váltáskor a lapozás visszaáll az elejére
+  useEffect(() => {
+    setVisibleCount(60);
+  }, [searchTerm, selectedCategory, selectedSubcategory, priceMin, priceMax, selectedBrands, selectedSizes, minRating, sortBy]);
 
   // Szűrt termékek
   const filteredProducts = products.filter(p => {
@@ -653,7 +660,7 @@ const WorkwearShop = () => {
                 display: 'grid',
                 gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem'
               }}>
-                {sortedProducts.map(product => (
+                {sortedProducts.slice(0, visibleCount).map(product => (
                   <ProductCard
                     key={product.id}
                     product={product}
@@ -662,6 +669,16 @@ const WorkwearShop = () => {
                     wished={wishlist.includes(product.id)}
                   />
                 ))}
+              </div>
+            )}
+            {sortedProducts.length > visibleCount && (
+              <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+                <button onClick={() => setVisibleCount(c => c + 60)} style={{
+                  padding: '0.9rem 2.5rem', backgroundColor: '#0F2A1D', color: 'white',
+                  border: 'none', borderRadius: '4px', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold'
+                }}>
+                  Továbbiak betöltése ({sortedProducts.length - visibleCount} további termék)
+                </button>
               </div>
             )}
           </div>
@@ -809,7 +826,7 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
       </button>
 
       <div style={{ position: 'relative', backgroundColor: '#f9f9f9', padding: '1rem' }}>
-        <img src={product.image} alt={product.name} style={{ width: '100%', height: '180px', objectFit: 'contain' }} />
+        <img src={product.image} alt={product.name} loading="lazy" style={{ width: '100%', height: '180px', objectFit: 'contain' }} />
         {product.stock < 20 && product.stock > 0 && (
           <span style={{
             position: 'absolute', top: '0.5rem', left: '0.5rem',

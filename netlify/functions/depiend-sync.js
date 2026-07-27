@@ -1,43 +1,60 @@
 // netlify/functions/depiend-sync.js
-// Depiend beszállítói ár-szinkron: lekéri a termékek aktuális Depiend-árát,
-// árrés-szabállyal (DEPIEND_MARGIN, alap 1.35) újraszámolja a webshop-árat,
-// és a kv_store override-okba menti a változásokat.
-// Futás: naponta ütemezve (netlify.toml) VAGY kézzel az adminból (x-admin-password).
-// Env: SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_PASSWORD, DEPIEND_MARGIN (opcionális)
+// Depiend beszállítói ár-szinkron a TÖMEGES kereses-ajax végponttal:
+// 4 kéréssel lekéri MIND a ~2000 Portwest termék aktuális listaárát,
+// majd árrés-szabállyal újraszámolja a webshop-árakat a kv_store override-okba.
+// (A korábbi, termékoldalankénti verzió 278 terméknél ~15 mp volt; ~2000-nél
+// túllépné a Netlify function-limitet — a bulk végpont ~5 mp alatt végez.)
+// Futás: óránként ütemezve (netlify.toml) VAGY kézzel az adminból (x-admin-password).
+// Env: SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_PASSWORD, DEPIEND_MARGIN, DEPIEND_PARTNER_RATIO
 
 const { createClient } = require('@supabase/supabase-js');
 const PRODUCTS = require('./products-data.json');
 
-// Cikkszám -> Depiend termékoldal
-const DEPIEND_URLS = {
-  'C701': 'https://www.depiend.hu/munkaruha/munkaruha/nadrag/portwest-combat-nadrag-c701',
-  'C720': 'https://www.depiend.hu/munkaruha/munkaruha/nadrag/portwest-tradesman-holster-nadrag-c720',
-  'CD110': 'https://www.depiend.hu/munkaruha/munkaruha/dzseki-kabat/portwest-wx1-kettonusu-dzseki-cd110',
-  'CD871': 'https://www.depiend.hu/munkaruha/munkaruha/dzseki-kabat/portwest-wx2-eco-fleece-cd871',
-  'CD864': 'https://www.depiend.hu/munkaruha/munkaruha/dzseki-kabat/portwest-wx2-eco-telikabat-cd864',
-  'B303': 'https://www.depiend.hu/munkaruha/munkaruha/jol-lathatosagi-munkaruha/portwest-jol-lathatosagi-pulover-b303',
-  'C370': 'https://www.depiend.hu/munkaruha/munkaruha/jol-lathatosagi-munkaruha/portwest-hi-vis-meshair-szellozo-melleny-c370',
-  '2802': 'https://www.depiend.hu/munkaruha/munkaruha/overal/portwest-overal-2802',
-  'FC08': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/cipo/portwest-compositelite-eco-runner-munkavedelmi-cipo-s1p-fc08',
-  'FT16': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/cipo/portwest-olymflex-london-s1p-trainer-munkavedelmi-cipo-ft16',
-  'FC64': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/cipo/portwest-compositelite-trekker-munkavedelmi-labbeli-s1-fc64',
-  'FD61': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/cipo/portwest-compositelite-fuzos-munkavedelmi-cipo-s2-fd61',
-  'FC19': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/cipo/portwest-apex-munkavedelmi-felcipo-esd-s3s-hro-sr-sc-fo-fc19',
-  'FC10': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/bakancs/portwest-compositelite-vedobakancs-s1p-fc10',
-  'FC11': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/bakancs/portwest-compositelite-thor-vedobakancs-s3-fc11',
-  'FD03': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/bakancs/portwest-protector-plus-munkavedelmi-bakancs-s3-hro-fd03',
-  'FC12': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/bakancs/portwest-compositelite-szormebeleses-vedobakancs-s3-ci-fc12',
-  'FC17': 'https://www.depiend.hu/munkaruha/munkavedelmi-cipo-vedolabbelik/bakancs/portwest-compositelite-montana-hiker-munkavedelmi-bakancs-s3-fc17',
-  'A100': 'https://www.depiend.hu/munkaruha/munkavedelmi-kesztyu-latex-kesztyu-nitril-kesztyu/vedokesztyu/portwest-martott-latex-vedokesztyu-a100',
-  'A120': 'https://www.depiend.hu/munkaruha/munkavedelmi-kesztyu-latex-kesztyu-nitril-kesztyu/vedokesztyu/portwest-nylon-vedokesztyu-pu-tenyermartott-a120',
-  'A140': 'https://www.depiend.hu/munkaruha/munkavedelmi-kesztyu-latex-kesztyu-nitril-kesztyu/vedokesztyu/portwest-martott-latex-vedokesztyu-teli-kivitel-a140',
-  'A146': 'https://www.depiend.hu/munkaruha/munkavedelmi-kesztyu-latex-kesztyu-nitril-kesztyu/vedokesztyu/portwest-arctic-teli-vedokesztyu-a146',
-  'PS55': 'https://www.depiend.hu/munkaruha/sisak-arcvedo-sapka/sisak/portwest-endurance-vedosisak-ps55',
-  'PR01': 'https://www.depiend.hu/munkaruha/vedoszemuveg/hagyomanyos/portwest-anthracite-wraparound-vedoszemuveg-pr01',
-  'B013': 'https://www.depiend.hu/munkaruha/sisak-arcvedo-sapka/sapka/portwest-kotott-sapka-insulatex-belessel-b013'
+const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0';
+const SEARCH_PAGE = 'https://www.depiend.hu/kereses/portwest';
+const AJAX_URL = 'https://www.depiend.hu/kereses-ajax';
+
+// Cikkszám a Depiend-találat címéből: "Portwest FC06 FX2 Eco ..." -> FC06
+const artOf = (title) => {
+  const m = (title || '').match(/^Portwest\s+([A-Z0-9]{2,7})\b/i);
+  return m ? m[1].toUpperCase() : null;
 };
 
-const UA = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/126.0';
+// Az összes Portwest listaár lehúzása: cookie+CSRF a keresőoldalról, majd lapozás
+async function fetchAllListPrices() {
+  const pageRes = await fetch(SEARCH_PAGE, { headers: { 'User-Agent': UA } });
+  if (!pageRes.ok) throw new Error(`Depiend keresőoldal: HTTP ${pageRes.status}`);
+  const cookies = (pageRes.headers.getSetCookie ? pageRes.headers.getSetCookie() : [pageRes.headers.get('set-cookie')].filter(Boolean))
+    .map(c => c.split(';')[0]).join('; ');
+  const html = await pageRes.text();
+  const csrfM = html.match(/name="csrf-token" content="([^"]+)"/);
+  if (!csrfM) throw new Error('CSRF token nem található');
+
+  const prices = {}; // articleNo -> bruttó listaár
+  let total = Infinity;
+  for (let skip = 0; skip < total && skip < 5000; skip += 500) {
+    const qs = new URLSearchParams({
+      limit: '500', skip: String(skip), order: 'score', _csrf: csrfM[1]
+    });
+    qs.append('brand[]', 'Portwest');
+    const res = await fetch(`${AJAX_URL}?${qs}`, {
+      headers: {
+        'User-Agent': UA, 'Cookie': cookies, 'Referer': SEARCH_PAGE,
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    });
+    if (!res.ok) throw new Error(`kereses-ajax: HTTP ${res.status}`);
+    const data = await res.json();
+    total = parseInt(data.total) || 0;
+    for (const p of (data.products || [])) {
+      const art = artOf(p.title);
+      if (!art) continue;
+      const price = parseInt(String(p.price || '').replace(/[^0-9]/g, ''), 10);
+      if (price && price >= 50 && !prices[art]) prices[art] = price;
+    }
+  }
+  return prices;
+}
 
 exports.handler = async (event) => {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY, ADMIN_PASSWORD } = process.env;
@@ -78,85 +95,53 @@ exports.handler = async (event) => {
       if (parseFloat(prRow.value.partnerRatio) > 0) partnerRatio = parseFloat(prRow.value.partnerRatio);
     }
 
-    // Párhuzamos feldolgozás 15-ös kötegekben: a teljes futás ~15 mp alatt végez
-    // (a Netlify ütemezett function-limitje alatt)
-    const checkOne = async (p) => {
+    const listPrices = await fetchAllListPrices();
+    report.bulkCount = Object.keys(listPrices).length;
+
+    for (const p of PRODUCTS) {
       // Kézi áras termék: az admin által rögzített árat a szinkron NEM írja felül
       if (overrides[p.id] && overrides[p.id].priceManual === true) {
         report.manualSkipped = (report.manualSkipped || 0) + 1;
-        return;
+        continue;
       }
-      const url = p.depiendUrl || DEPIEND_URLS[p.articleNo];
-      if (!url) return;
+      const listPrice = listPrices[(p.articleNo || '').toUpperCase()];
+      if (!listPrice) {
+        report.unavailable.push({ articleNo: p.articleNo });
+        continue;
+      }
+      report.checked++;
+      const partnerPrice = Math.round(listPrice * partnerRatio);
+      const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
+
       // Versenyár-alapú (Árukereső) termék: az árat békén hagyjuk, KIVÉVE ha a
       // beszerzési ár úgy megnőtt, hogy a jelenlegi ár 5% árrés alá esne —
       // ilyenkor a padló-árra emelünk (veszteség-védelem)
       if (p.priceSource === 'arukereso') {
-        try {
-          const res = await fetch(url, { headers: { 'User-Agent': UA } });
-          if (!res.ok) return;
-          const html = await res.text();
-          const m = html.match(/class="price">([\d\s ]+)Ft/);
-          if (!m) return;
-          const listPrice = parseInt(m[1].replace(/[\s ]/g, ''), 10);
-          if (!listPrice || listPrice < 50) return;
-          const partnerPrice = Math.round(listPrice * partnerRatio);
-          const floorPrice = Math.ceil((partnerPrice * 1.05) / 10) * 10;
-          const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
-          report.checked++;
-          if (currentPrice < floorPrice) {
-            overrides[p.id] = { ...(overrides[p.id] || {}), price: floorPrice };
-            report.changed.push({
-              articleNo: p.articleNo, name: p.name, ok: 'padlo-emeles',
-              listPrice, partnerPrice, oldPrice: currentPrice, newPrice: floorPrice
-            });
-          }
-        } catch (e) { report.errors.push({ articleNo: p.articleNo, error: e.message }); }
-        return;
-      }
-      report.checked++;
-      try {
-        const res = await fetch(url, { headers: { 'User-Agent': UA } });
-        if (!res.ok) {
-          report.unavailable.push({ articleNo: p.articleNo, status: res.status });
-          return;
-        }
-        const html = await res.text();
-        const m = html.match(/class="price">([\d\s ]+)Ft/);
-        if (!m) {
-          report.errors.push({ articleNo: p.articleNo, error: 'Ár nem található az oldalon' });
-          return;
-        }
-        const supplierPrice = parseInt(m[1].replace(/[\s ]/g, ''), 10);
-        if (!supplierPrice || supplierPrice < 50) {
-          report.errors.push({ articleNo: p.articleNo, error: `Gyanús ár: ${m[1]}` });
-          return;
-        }
-        // supplierPrice itt a publikus listaár; a tényleges beszerzési (partner) ár
-        // a listaár × partnerRatio, az eladási ár erre tett árréssel számolódik
-        const partnerPrice = Math.round(supplierPrice * partnerRatio);
-        const newPrice = Math.round(partnerPrice * margin / 10) * 10;
-        const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
-        if (newPrice !== currentPrice) {
-          overrides[p.id] = { ...(overrides[p.id] || {}), price: newPrice };
+        const floorPrice = Math.ceil((partnerPrice * 1.05) / 10) * 10;
+        if (currentPrice < floorPrice) {
+          overrides[p.id] = { ...(overrides[p.id] || {}), price: floorPrice };
           report.changed.push({
-            articleNo: p.articleNo, name: p.name,
-            listPrice: supplierPrice, partnerPrice, oldPrice: currentPrice, newPrice
+            articleNo: p.articleNo, name: p.name, ok: 'padlo-emeles',
+            listPrice, partnerPrice, oldPrice: currentPrice, newPrice: floorPrice
           });
         }
-      } catch (e) {
-        report.errors.push({ articleNo: p.articleNo, error: e.message });
+        continue;
       }
-    };
 
-    const CONCURRENCY = 15;
-    for (let i = 0; i < PRODUCTS.length; i += CONCURRENCY) {
-      await Promise.all(PRODUCTS.slice(i, i + CONCURRENCY).map(checkOne));
+      // Képlet-áras termék: partnerár × árrés
+      const newPrice = Math.round(partnerPrice * margin / 10) * 10;
+      if (newPrice !== currentPrice) {
+        overrides[p.id] = { ...(overrides[p.id] || {}), price: newPrice };
+        report.changed.push({
+          articleNo: p.articleNo, name: p.name,
+          listPrice, partnerPrice, oldPrice: currentPrice, newPrice
+        });
+      }
     }
 
     const now = new Date().toISOString();
     const upserts = [
-      { key: 'ms_depiend_sync', value: { lastRun: now, margin, ...report }, updated_at: now }
+      { key: 'ms_depiend_sync', value: { lastRun: now, margin, ...report, changed: report.changed.slice(0, 200) }, updated_at: now }
     ];
     if (report.changed.length > 0) {
       upserts.push({ key: 'ms_product_overrides', value: overrides, updated_at: now });
@@ -164,8 +149,8 @@ exports.handler = async (event) => {
     const { error: upErr } = await db.from('kv_store').upsert(upserts);
     if (upErr) throw upErr;
 
-    console.log(`Depiend szinkron kész: ${report.checked} ellenőrizve, ${report.changed.length} árváltozás`);
-    return { statusCode: 200, body: JSON.stringify(report) };
+    console.log(`Depiend szinkron kész: ${report.checked} ellenőrizve (bulk: ${report.bulkCount}), ${report.changed.length} árváltozás`);
+    return { statusCode: 200, body: JSON.stringify({ ...report, changed: report.changed.slice(0, 50) }) };
   } catch (e) {
     console.error('depiend-sync hiba:', e);
     return { statusCode: 500, body: JSON.stringify({ error: e.message, report }) };
