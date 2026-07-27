@@ -69,26 +69,28 @@ exports.handler = async (event) => {
     if (ovErr) throw ovErr;
     const overrides = (ovRow && ovRow.value) || {};
 
-    for (const p of PRODUCTS) {
+    // Párhuzamos feldolgozás 15-ös kötegekben: a teljes futás ~15 mp alatt végez
+    // (a Netlify ütemezett function-limitje alatt)
+    const checkOne = async (p) => {
       const url = p.depiendUrl || DEPIEND_URLS[p.articleNo];
-      if (!url) continue;
+      if (!url) return;
       report.checked++;
       try {
         const res = await fetch(url, { headers: { 'User-Agent': UA } });
         if (!res.ok) {
           report.unavailable.push({ articleNo: p.articleNo, status: res.status });
-          continue;
+          return;
         }
         const html = await res.text();
         const m = html.match(/class="price">([\d\s ]+)Ft/);
         if (!m) {
           report.errors.push({ articleNo: p.articleNo, error: 'Ár nem található az oldalon' });
-          continue;
+          return;
         }
         const supplierPrice = parseInt(m[1].replace(/[\s ]/g, ''), 10);
         if (!supplierPrice || supplierPrice < 50) {
           report.errors.push({ articleNo: p.articleNo, error: `Gyanús ár: ${m[1]}` });
-          continue;
+          return;
         }
         // supplierPrice itt a publikus listaár; a tényleges beszerzési (partner) ár
         // a listaár × partnerRatio, az eladási ár erre tett árréssel számolódik
@@ -105,6 +107,11 @@ exports.handler = async (event) => {
       } catch (e) {
         report.errors.push({ articleNo: p.articleNo, error: e.message });
       }
+    };
+
+    const CONCURRENCY = 15;
+    for (let i = 0; i < PRODUCTS.length; i += CONCURRENCY) {
+      await Promise.all(PRODUCTS.slice(i, i + CONCURRENCY).map(checkOne));
     }
 
     const now = new Date().toISOString();
