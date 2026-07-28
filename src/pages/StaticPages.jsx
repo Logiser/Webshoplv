@@ -18,9 +18,10 @@ export const TermsPage = () => {
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>2. A Weboldal Operátora</h2>
           <p>
             <strong>Cégnév:</strong> Trident Shield Group Kft.<br />
-            <strong>Cégjegyzékszám:</strong> [Cégjegyzékszám]<br />
-            <strong>Adószám:</strong> [Adószám]<br />
-            <strong>Székhely:</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
+            <strong>Cégjegyzékszám:</strong> 15-09-093902<br />
+            <strong>Adószám:</strong> 32873537-1-15<br />
+            <strong>Székhely:</strong> 4485 Nagyhalász, Jókai utca 18.<br />
+            <strong>Telephely (ügyfélkapcsolat):</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
             <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.hu<br />
             <strong>Telefon:</strong> +36 30 272 2571
           </p>
@@ -198,23 +199,22 @@ export const ImpressumPage = () => {
           <h2 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>Szolgáltató Adatai</h2>
           <p>
             <strong>Cégnév:</strong> Trident Shield Group Kft.<br />
-            <strong>Rövidítés:</strong> MunkavédelmiShop<br />
-            <strong>Cégjegyzékszám:</strong> [Cégjegyzékszám]<br />
-            <strong>Adószám:</strong> [Adószám]<br />
-            <strong>EU adószám:</strong> [EU adószám]<br />
+            <strong>Márkanév:</strong> MunkavédelmiShop<br />
+            <strong>Cégjegyzékszám:</strong> 15-09-093902<br />
+            <strong>Adószám:</strong> 32873537-1-15<br />
+            <strong>Székhely:</strong> 4485 Nagyhalász, Jókai utca 18.<br />
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Irodai Elérhetőség</h2>
           <p>
-            <strong>Cím:</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
+            <strong>Cím (telephely):</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
             <strong>Telefon:</strong> +36 30 272 2571<br />
             <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.hu<br />
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Ügyvezető</h2>
           <p>
-            <strong>Név:</strong> Demeter Márk<br />
-            <strong>Munkavédelmi Technikus Engedély:</strong> [Engedély száma]
+            <strong>Név:</strong> Németh János
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Weboldal Adatai</h2>
