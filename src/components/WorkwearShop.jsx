@@ -56,6 +56,16 @@ const WorkwearShop = () => {
 
   const getEffectivePrice = (p) => (p.sale && p.sale.active) ? p.sale.price : p.price;
 
+  // Beszállítói publikus listaár (igazolható referencia-ár az áthúzott megjelenítéshez).
+  // Az eladási ár ettől független — a marketplace-feedekkel mindig egyezik.
+  const getListPrice = (p) => (p.partnerPrice > 0) ? Math.round(p.partnerPrice / 0.7608 / 10) * 10 : null;
+  const getListDiscount = (p) => {
+    const lp = getListPrice(p);
+    const eff = getEffectivePrice(p);
+    if (!lp || lp <= eff) return 0;
+    return Math.round((1 - eff / lp) * 100);
+  };
+
   // SEO
   useEffect(() => {
     document.title = 'MunkavédelmiShop - Munkaruházat és Munkavédelmi Felszerelés Webshop';
@@ -523,39 +533,42 @@ const WorkwearShop = () => {
         );
       })()}
 
-      {/* Nálunk a legolcsóbb sáv */}
+      {/* Listaár alatti ajánlatok sáv */}
       {!selectedCategory && !searchTerm && (() => {
-        const bestPrice = products.filter(p => p.competitorPrice > 0 && getEffectivePrice(p) < p.competitorPrice)
-          .sort((a, b) => (b.competitorPrice - getEffectivePrice(b)) - (a.competitorPrice - getEffectivePrice(a)))
+        const deals = products.filter(p => getListDiscount(p) >= 15)
+          .sort((a, b) => getListDiscount(b) - getListDiscount(a))
           .slice(0, 10);
-        if (bestPrice.length === 0) return null;
+        if (deals.length === 0) return null;
         return (
           <div style={{ backgroundColor: 'white', borderBottom: '1px solid #eee', padding: '2rem 1.5rem' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
               <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-                🏆 Nálunk a legolcsóbb
+                💥 Listaár alatt
               </h3>
               <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
-                Ezekre a termékekre megnéztük a piacot — és senki nem adja olcsóbban.
+                A gyártói listaárnál jóval olcsóbban — közvetlen beszállítói háttérrel.
               </p>
               <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                {bestPrice.map(p => (
+                {deals.map(p => (
                   <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
                     <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #e0e8e0' }}>
                       <div style={{ position: 'relative' }}>
                         <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
-                        <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#0F2A1D', color: '#C9A961', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 'bold' }}>
-                          LEGJOBB ÁR
+                        <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#D32F2F', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                          −{getListDiscount(p)}%
                         </span>
                       </div>
                       <div style={{ padding: '0.75rem' }}>
                         <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
                         <div style={{ marginTop: '0.5rem' }}>
-                          <span style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                          <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
+                            {getListPrice(p).toLocaleString('hu-HU')} Ft
+                          </span>
+                          <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
                             {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
                           </span>
-                          <div style={{ color: '#4CAF50', fontSize: '0.78rem', marginTop: '2px' }}>
-                            máshol {p.competitorPrice.toLocaleString('hu-HU')} Ft-tól
+                          <div style={{ color: '#999', fontSize: '0.72rem', marginTop: '2px' }}>
+                            gyártói listaár helyett
                           </div>
                         </div>
                       </div>
@@ -1013,11 +1026,28 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
                 {product.sale.price.toLocaleString('hu-HU')} Ft
               </span>
             </div>
-          ) : (
-            <p style={{ color: '#C9A961', fontSize: '1.3rem', fontWeight: 'bold', margin: '0.5rem 0' }}>
-              {product.price.toLocaleString('hu-HU')} Ft
-            </p>
-          )}
+          ) : (() => {
+            // Gyártói listaár mint igazolható referencia-ár (áthúzva, ha érdemi a kedvezmény)
+            const listP = product.partnerPrice > 0 ? Math.round(product.partnerPrice / 0.7608 / 10) * 10 : null;
+            const disc = listP && listP > product.price ? Math.round((1 - product.price / listP) * 100) : 0;
+            return disc >= 10 ? (
+              <div style={{ margin: '0.5rem 0' }}>
+                <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85rem', marginRight: '0.5rem' }} title="Gyártói listaár">
+                  {listP.toLocaleString('hu-HU')} Ft
+                </span>
+                <span style={{ color: '#d32f2f', fontSize: '1.3rem', fontWeight: 'bold' }}>
+                  {product.price.toLocaleString('hu-HU')} Ft
+                </span>
+                <span style={{ backgroundColor: '#fdecea', color: '#d32f2f', fontSize: '0.72rem', fontWeight: 'bold', padding: '2px 6px', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle' }}>
+                  −{disc}%
+                </span>
+              </div>
+            ) : (
+              <p style={{ color: '#C9A961', fontSize: '1.3rem', fontWeight: 'bold', margin: '0.5rem 0' }}>
+                {product.price.toLocaleString('hu-HU')} Ft
+              </p>
+            );
+          })()}
           <button onClick={(e) => { e.stopPropagation(); onSelect(); }} style={{
             width: '100%', backgroundColor: '#0F2A1D', color: 'white',
             padding: '0.6rem', borderRadius: '4px', border: 'none',
