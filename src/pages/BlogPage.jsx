@@ -1,13 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronRight, Calendar, User } from 'lucide-react';
+import { ArrowLeft, ChevronRight, Calendar, Clock } from 'lucide-react';
 import { getBlogPosts } from '../data/storage';
+
+// Olvasási idő becslés a HTML-tartalomból (200 szó/perc)
+export const readingTime = (html) => {
+  const words = (html || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+};
 
 const BlogPage = () => {
   const [posts, setPosts] = useState([]);
+  const [activeTag, setActiveTag] = useState(null);
 
   useEffect(() => {
-    document.title = 'Blog - MunkavédelmiShop';
+    document.title = 'Szakértői blog - MunkavédelmiShop';
     setPosts(getBlogPosts());
 
     const setMeta = (name, content) => {
@@ -19,8 +26,15 @@ const BlogPage = () => {
       }
       tag.content = content;
     };
-    setMeta('description', 'Munkavédelmi blog: szabványok, tanácsok, útmutatók. Hogyan válassz munkacipőt, kesztyűt, hi-vis ruhát.');
+    setMeta('description', 'Munkavédelmi szakértői blog: szabványok, útmutatók, vásárlási tanácsok. Hogyan válassz munkacipőt, kesztyűt, láthatósági ruhát.');
   }, []);
+
+  // Szűrő-címkék a cikkek tagjeiből (előfordulás szerint, max 8)
+  const tagCounts = {};
+  posts.forEach(p => (p.tags || []).forEach(t => { tagCounts[t] = (tagCounts[t] || 0) + 1; }));
+  const filterTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 8).map(([t]) => t);
+
+  const visible = activeTag ? posts.filter(p => (p.tags || []).includes(activeTag)) : posts;
 
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
@@ -42,18 +56,42 @@ const BlogPage = () => {
         background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)',
         color: 'white', padding: '3rem 1.5rem', textAlign: 'center'
       }}>
-        <h1 style={{ fontSize: '2.5rem', margin: 0, fontFamily: 'Georgia, serif' }}>📝 Munkavédelmi Blog</h1>
+        <h1 style={{ fontSize: '2.5rem', margin: 0, fontFamily: 'Georgia, serif' }}>📝 Szakértői blog</h1>
         <p style={{ fontSize: '1.1rem', opacity: 0.9, marginTop: '0.5rem' }}>
-          Útmutatók, szabványok, tanácsok a munkavédelem világából
+          Útmutatók, szabvány-magyarázatok és vásárlási tanácsok — hogy pontosan azt vedd meg, amire tényleg szükséged van
         </p>
       </div>
 
       <div style={{ maxWidth: '1000px', margin: '2rem auto', padding: '0 1.5rem' }}>
+        {/* Téma-szűrők */}
+        {filterTags.length > 0 && (
+          <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '2rem' }}>
+            <button onClick={() => setActiveTag(null)} style={{
+              padding: '0.4rem 1rem', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem',
+              border: '1px solid #0F2A1D',
+              backgroundColor: activeTag === null ? '#0F2A1D' : 'white',
+              color: activeTag === null ? 'white' : '#0F2A1D', fontWeight: 'bold'
+            }}>
+              Összes ({posts.length})
+            </button>
+            {filterTags.map(t => (
+              <button key={t} onClick={() => setActiveTag(activeTag === t ? null : t)} style={{
+                padding: '0.4rem 1rem', borderRadius: '20px', cursor: 'pointer', fontSize: '0.85rem',
+                border: '1px solid #ccc',
+                backgroundColor: activeTag === t ? '#0F2A1D' : 'white',
+                color: activeTag === t ? 'white' : '#555'
+              }}>
+                #{t} ({tagCounts[t]})
+              </button>
+            ))}
+          </div>
+        )}
+
         <div style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '2rem'
         }}>
-          {posts.map(post => (
+          {visible.map(post => (
             <Link key={post.id} to={`/blog/${post.slug}`}
               style={{ textDecoration: 'none', color: 'inherit' }}>
               <article style={{
@@ -64,7 +102,7 @@ const BlogPage = () => {
                 onMouseEnter={e => e.currentTarget.style.transform = 'translateY(-4px)'}
                 onMouseLeave={e => e.currentTarget.style.transform = 'translateY(0)'}>
                 {post.image && (
-                  <img src={post.image} alt={post.title}
+                  <img src={post.image} alt={post.title} loading="lazy"
                     style={{ width: '100%', height: '200px', objectFit: 'cover' }} />
                 )}
                 <div style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
@@ -73,7 +111,7 @@ const BlogPage = () => {
                       <Calendar size={12} /> {new Date(post.date).toLocaleDateString('hu-HU')}
                     </span>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <User size={12} /> {post.author}
+                      <Clock size={12} /> {readingTime(post.content)} perc olvasás
                     </span>
                   </div>
                   <h2 style={{ color: '#0F2A1D', fontSize: '1.2rem', margin: '0 0 0.5rem 0' }}>
@@ -102,8 +140,8 @@ const BlogPage = () => {
           ))}
         </div>
 
-        {posts.length === 0 && (
-          <p style={{ textAlign: 'center', color: '#999', padding: '3rem' }}>Még nincs blog poszt.</p>
+        {visible.length === 0 && (
+          <p style={{ textAlign: 'center', color: '#999', padding: '3rem' }}>Nincs a szűrésnek megfelelő cikk.</p>
         )}
       </div>
     </div>

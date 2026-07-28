@@ -1,13 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, User, ChevronRight } from 'lucide-react';
-import { getBlogPostBySlug, getBlogPosts } from '../data/storage';
+import { ArrowLeft, Calendar, User, ChevronRight, Clock, ShoppingCart, ChevronDown } from 'lucide-react';
+import { getBlogPostBySlug, getBlogPosts, getVisibleProducts } from '../data/storage';
+import { readingTime } from './BlogPage';
+
+// Cikkhez kapcsolódó termékek: tag- és cím-kulcsszavak alapján pontozunk,
+// a legjobb listaár-kedvezményű találatokat ajánljuk (max 4)
+const KEYWORD_MAP = [
+  { keys: ['munkacipo', 'cipő', 'cipo', 'lábbeli', 'labbeli', 'bakancs'], cats: ['munkacipo', 'bakancs'] },
+  { keys: ['kesztyu', 'kesztyű'], cats: ['kesztyu'] },
+  { keys: ['hi-vis', 'lathatosag', 'láthatóság', 'jól láthatósági'], cats: ['munkaruha'] },
+  { keys: ['sisak', 'szemuveg', 'szemüveg', 'fülvédő', 'fultok', 'légzésvédő', 'legzesvedo'], cats: ['kiegeszitok'] },
+  { keys: ['munkaruha', 'nadrág', 'nadrag', 'kabát', 'kabat', 'overál', 'overal', 'ruha'], cats: ['munkaruha'] }
+];
+
+const relatedProducts = (post) => {
+  const haystack = ((post.tags || []).join(' ') + ' ' + post.title).toLowerCase();
+  const cats = new Set();
+  KEYWORD_MAP.forEach(m => { if (m.keys.some(k => haystack.includes(k))) m.cats.forEach(c => cats.add(c)); });
+  let pool = getVisibleProducts().filter(p => cats.size === 0 || cats.has(p.categoryId));
+  const discount = (p) => {
+    if (!(p.partnerPrice > 0)) return 0;
+    const lp = Math.round(p.partnerPrice / 0.7608 / 10) * 10;
+    return lp > p.price ? (1 - p.price / lp) : 0;
+  };
+  return pool.sort((a, b) => discount(b) - discount(a)).slice(0, 4);
+};
 
 const BlogPostPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [post, setPost] = useState(null);
   const [otherPosts, setOtherPosts] = useState([]);
+  const [recos, setRecos] = useState([]);
+  const [openFaq, setOpenFaq] = useState(null);
 
   useEffect(() => {
     const p = getBlogPostBySlug(slug);
@@ -16,7 +42,14 @@ const BlogPostPage = () => {
       return;
     }
     setPost(p);
-    setOtherPosts(getBlogPosts().filter(other => other.id !== p.id).slice(0, 3));
+    // Kapcsolódó cikkek: előbb az azonos témájúak (közös tag), aztán a többi
+    const myTags = new Set(p.tags || []);
+    const others = getBlogPosts().filter(other => other.id !== p.id);
+    const sameTopic = others.filter(o => (o.tags || []).some(t => myTags.has(t)));
+    const rest = others.filter(o => !(o.tags || []).some(t => myTags.has(t)));
+    setOtherPosts([...sameTopic, ...rest].slice(0, 3));
+    setRecos(relatedProducts(p));
+    window.scrollTo({ top: 0 });
 
     document.title = `${p.title} | MunkavédelmiShop Blog`;
 
@@ -39,16 +72,29 @@ const BlogPostPage = () => {
     if (absImage) setMeta('og:image', absImage, true);
     setMeta('og:type', 'article', true);
 
-    // Schema.org Article markup
-    const schema = {
+    // Schema.org Article (+ FAQPage, ha a cikknek van GYIK-je)
+    const wordCount = (p.content || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
+    const schemas = [{
       "@context": "https://schema.org",
       "@type": "Article",
       "headline": p.title,
       "image": absImage,
       "datePublished": p.date,
+      "wordCount": wordCount,
+      "articleSection": (p.tags || [])[0] || 'munkavédelem',
       "author": { "@type": "Organization", "name": p.author },
       "publisher": { "@type": "Organization", "name": "MunkavédelmiShop" }
-    };
+    }];
+    if (Array.isArray(p.faq) && p.faq.length > 0) {
+      schemas.push({
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": p.faq.map(f => ({
+          "@type": "Question", "name": f.q,
+          "acceptedAnswer": { "@type": "Answer", "text": f.a }
+        }))
+      });
+    }
 
     let schemaScript = document.querySelector('script[type="application/ld+json"][data-blog]');
     if (!schemaScript) {
@@ -57,7 +103,7 @@ const BlogPostPage = () => {
       schemaScript.setAttribute('data-blog', 'true');
       document.head.appendChild(schemaScript);
     }
-    schemaScript.textContent = JSON.stringify(schema);
+    schemaScript.textContent = JSON.stringify(schemas);
 
     return () => {
       if (schemaScript && schemaScript.parentNode) {
@@ -103,9 +149,17 @@ const BlogPostPage = () => {
             style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', borderRadius: '8px', marginBottom: '2rem' }} />
         )}
 
-        <div style={{ display: 'flex', gap: '1rem', color: '#999', marginBottom: '1rem', fontSize: '0.9rem' }}>
+        <div style={{ display: 'flex', gap: '1rem', color: '#999', marginBottom: '1rem', fontSize: '0.9rem', flexWrap: 'wrap', alignItems: 'center' }}>
+          {(post.tags || [])[0] && (
+            <span style={{ backgroundColor: '#0F2A1D', color: '#C9A961', padding: '0.15rem 0.6rem', borderRadius: '4px', fontSize: '0.78rem', fontWeight: 'bold', textTransform: 'uppercase' }}>
+              {(post.tags || [])[0]}
+            </span>
+          )}
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <Calendar size={14} /> {new Date(post.date).toLocaleDateString('hu-HU')}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Clock size={14} /> {readingTime(post.content)} perc olvasás
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <User size={14} /> {post.author}
@@ -116,12 +170,66 @@ const BlogPostPage = () => {
           {post.title}
         </h1>
 
-        <p style={{ color: '#666', fontSize: '1.1rem', marginBottom: '2rem', fontStyle: 'italic', borderLeft: '3px solid #C9A961', paddingLeft: '1rem' }}>
-          {post.excerpt}
-        </p>
+        {/* "Röviden" bevezető-doboz */}
+        <div style={{ backgroundColor: '#eef2ef', borderLeft: '4px solid #C9A961', padding: '1rem 1.25rem', borderRadius: '0 8px 8px 0', marginBottom: '2rem' }}>
+          <strong style={{ color: '#0F2A1D' }}>Röviden:</strong>{' '}
+          <span style={{ color: '#444' }}>{post.excerpt}</span>
+        </div>
 
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', lineHeight: 1.7, color: '#333' }}
           dangerouslySetInnerHTML={{ __html: post.content }} />
+
+        {/* Kapcsolódó termékek — a cikk témájához illő legjobb ajánlatok */}
+        {recos.length > 0 && (
+          <div style={{ backgroundColor: '#0F2A1D', borderRadius: '8px', padding: '1.5rem', marginTop: '2rem' }}>
+            <h2 style={{ color: 'white', margin: '0 0 0.25rem 0', fontSize: '1.25rem', fontFamily: 'Georgia, serif' }}>
+              🛒 A cikkhez ajánljuk
+            </h2>
+            <p style={{ color: 'rgba(255,255,255,0.75)', margin: '0 0 1rem 0', fontSize: '0.9rem' }}>
+              Válogatás a webshopból — listaár alatti árakkal.
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.75rem' }}>
+              {recos.map(p => (
+                <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none' }}>
+                  <div style={{ backgroundColor: 'white', borderRadius: '6px', overflow: 'hidden', height: '100%' }}>
+                    <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '110px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
+                    <div style={{ padding: '0.6rem' }}>
+                      <div style={{ color: '#333', fontSize: '0.78rem', height: '2.4em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
+                      <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem', marginTop: '0.35rem' }}>
+                        {((p.sale && p.sale.active) ? p.sale.price : p.price).toLocaleString('hu-HU')} Ft
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+            <Link to="/" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', backgroundColor: '#C9A961', color: '#0F2A1D', padding: '0.6rem 1.25rem', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold', marginTop: '1rem', fontSize: '0.9rem' }}>
+              <ShoppingCart size={16} /> Tovább a webshopba
+            </Link>
+          </div>
+        )}
+
+        {/* GYIK (ha a cikkhez tartozik) */}
+        {Array.isArray(post.faq) && post.faq.length > 0 && (
+          <div style={{ marginTop: '2rem' }}>
+            <h2 style={{ color: '#0F2A1D' }}>❓ Gyakori kérdések</h2>
+            {post.faq.map((f, i) => (
+              <div key={i} style={{ backgroundColor: 'white', borderRadius: '8px', marginBottom: '0.5rem', overflow: 'hidden', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+                <button onClick={() => setOpenFaq(openFaq === i ? null : i)} style={{
+                  width: '100%', padding: '0.9rem 1.1rem', backgroundColor: 'white', border: 'none',
+                  cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  textAlign: 'left', fontSize: '0.95rem', fontWeight: 'bold', color: '#0F2A1D'
+                }}>
+                  {f.q}
+                  <ChevronDown size={16} style={{ transform: openFaq === i ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s', flexShrink: 0, marginLeft: '0.5rem', color: '#C9A961' }} />
+                </button>
+                {openFaq === i && (
+                  <div style={{ padding: '0 1.1rem 0.9rem', color: '#444', lineHeight: 1.6, fontSize: '0.92rem' }}>{f.a}</div>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         <div style={{ marginTop: '2rem' }}>
           {(post.tags || []).map(tag => (
@@ -135,11 +243,23 @@ const BlogPostPage = () => {
             </span>
           ))}
         </div>
+
+        {/* Szerző-blokk */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', backgroundColor: 'white', borderRadius: '8px', padding: '1.25rem', marginTop: '2rem', boxShadow: '0 1px 4px rgba(0,0,0,0.05)' }}>
+          <div style={{ fontSize: '2rem' }}>🛡️</div>
+          <div>
+            <div style={{ color: '#0F2A1D', fontWeight: 'bold' }}>{post.author}</div>
+            <div style={{ color: '#666', fontSize: '0.85rem', lineHeight: 1.5 }}>
+              A MunkavédelmiShop a Trident Shield Group Kft. webáruháza — munkavédelmi szakemberek
+              válogatják a termékeket és írják az útmutatókat. Kérdésed van? Hívj: +36 30 272 2571
+            </div>
+          </div>
+        </div>
       </article>
 
       {otherPosts.length > 0 && (
         <div style={{ maxWidth: '900px', margin: '3rem auto 2rem', padding: '0 1.5rem' }}>
-          <h2 style={{ color: '#0F2A1D' }}>📚 További cikkek</h2>
+          <h2 style={{ color: '#0F2A1D' }}>📚 Kapcsolódó cikkek</h2>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem',
@@ -152,10 +272,13 @@ const BlogPostPage = () => {
                   boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
                 }}>
                   {p.image && (
-                    <img src={p.image} alt={p.title} style={{ width: '100%', height: '120px', objectFit: 'cover' }} />
+                    <img src={p.image} alt={p.title} loading="lazy" style={{ width: '100%', height: '120px', objectFit: 'cover' }} />
                   )}
                   <div style={{ padding: '1rem' }}>
                     <h3 style={{ color: '#0F2A1D', fontSize: '1rem', margin: 0 }}>{p.title}</h3>
+                    <div style={{ color: '#999', fontSize: '0.78rem', marginTop: '0.4rem' }}>
+                      {readingTime(p.content)} perc olvasás
+                    </div>
                   </div>
                 </div>
               </Link>
