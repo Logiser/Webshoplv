@@ -7,7 +7,7 @@ import { ArrowLeft, ChevronDown } from 'lucide-react';
 const FAQS = [
   {
     q: 'Mennyi a szállítási idő és a szállítási költség?',
-    a: 'Raktáron lévő termékeinket 2-3 munkanapon belül kézbesítjük országosan, futárszolgálattal. A szállítási költség 1 290 Ft, 30 000 Ft feletti rendelésnél a kiszállítás ingyenes.'
+    a: 'Rendelésedet 2-3 munkanapon belül kézbesítjük országosan futárszolgálattal (1 290 Ft), vagy 2-4 munkanapon belül Foxpost csomagautomatába (990 Ft). 30 000 Ft feletti rendelésnél a kiszállítás mindkét módon ingyenes.'
   },
   {
     q: 'Milyen munkavédelmi cipő kategóriát válasszak (S1, S1P, S2, S3)?',

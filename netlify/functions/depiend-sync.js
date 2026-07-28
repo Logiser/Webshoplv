@@ -108,8 +108,29 @@ exports.handler = async (event) => {
       }
       const entry = listPrices[(p.articleNo || '').toUpperCase()];
       if (!entry) {
+        // KÉSZLET-ŐR: a termék eltűnt a Depiend kínálatából. Két egymást követő
+        // körben hiányzik → elrejtjük (dropshippingnél nem adhatunk el olyat,
+        // amit a beszállító sem tud szállítani).
+        const misses = ((overrides[p.id] && overrides[p.id].depiendMiss) || 0) + 1;
+        overrides[p.id] = { ...(overrides[p.id] || {}), depiendMiss: misses };
+        report.overridesDirty = true;
+        if (misses >= 2 && !(overrides[p.id].hidden === true)) {
+          overrides[p.id].hidden = true;
+          report.autoHidden = (report.autoHidden || 0) + 1;
+          report.changed.push({ articleNo: p.articleNo, name: p.name, ok: 'keszlet-rejtes' });
+        }
         report.unavailable.push({ articleNo: p.articleNo });
         continue;
+      }
+      // Újra kapható: rejtés feloldása, ha azt a készlet-őr tette rá
+      if (ov.depiendMiss > 0) {
+        overrides[p.id] = { ...ov, depiendMiss: 0 };
+        report.overridesDirty = true;
+        if (ov.hidden === true) {
+          overrides[p.id].hidden = false;
+          report.autoRestored = (report.autoRestored || 0) + 1;
+          report.changed.push({ articleNo: p.articleNo, name: p.name, ok: 'keszlet-vissza' });
+        }
       }
       report.checked++;
       const { list: listPrice, reduced } = entry;
@@ -185,7 +206,7 @@ exports.handler = async (event) => {
     const upserts = [
       { key: 'ms_depiend_sync', value: { lastRun: now, margin, ...report, changed: report.changed.slice(0, 200) }, updated_at: now }
     ];
-    if (report.changed.length > 0) {
+    if (report.changed.length > 0 || report.overridesDirty) {
       upserts.push({ key: 'ms_product_overrides', value: overrides, updated_at: now });
     }
     const { error: upErr } = await db.from('kv_store').upsert(upserts);

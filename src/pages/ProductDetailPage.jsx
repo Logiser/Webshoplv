@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, Eye, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, ChevronRight, ChevronLeft } from 'lucide-react';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, getProductActivity, trackProductOpen } from '../data/storage';
+import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, trackProductOpen } from '../data/storage';
 import { trackViewItem, trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 
 const ProductDetailPage = () => {
@@ -13,7 +13,10 @@ const ProductDetailPage = () => {
   const [quantity, setQuantity] = useState(1);
   const [related, setRelated] = useState([]);
   const [wished, setWished] = useState(false);
-  const [activity, setActivity] = useState({ activeViewers: 1 });
+  // Valódi értékelések (reviews-api): jóváhagyott vélemények + beküldő űrlap
+  const [reviews, setReviews] = useState([]);
+  const [revForm, setRevForm] = useState({ name: '', stars: 5, text: '' });
+  const [revSent, setRevSent] = useState(false);
   const [imgIdx, setImgIdx] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
   const touchStartX = useRef(null);
@@ -30,8 +33,15 @@ const ProductDetailPage = () => {
     setWished(isInWishlist(p.id));
     recordProductView(p.id);
     trackProductOpen(p, 'oldal');   // PPC statisztika
-    setActivity(getProductActivity(p.id));
     trackViewItem(p);  // GA4 + FB Pixel
+
+    // Jóváhagyott értékelések betöltése
+    setReviews([]);
+    setRevSent(false);
+    fetch('/.netlify/functions/reviews-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ op: 'list', productId: p.id })
+    }).then(r => r.json()).then(d => setReviews(d.reviews || [])).catch(() => {});
 
     // Kapcsolódó termékek (azonos alkategória)
     const allVisible = getVisibleProducts();
@@ -79,11 +89,8 @@ const ProductDetailPage = () => {
           "price": (p.sale && p.sale.active) ? p.sale.price : p.price,
           "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
         },
-        "aggregateRating": p.rating ? {
-          "@type": "AggregateRating",
-          "ratingValue": p.rating,
-          "reviewCount": Math.floor(Math.random() * 50) + 10
-        } : undefined
+        // aggregateRating: csak VALÓDI, jóváhagyott értékelésekből kerülhet ki
+        // (a reviews-api tölti fel; kamu számot nem teszünk a sémába)
       },
       {
         "@context": "https://schema.org",
@@ -111,15 +118,6 @@ const ProductDetailPage = () => {
       }
     };
   }, [slug, navigate]);
-
-  // Aktivitás frissítés 30 mp-ként
-  useEffect(() => {
-    if (!product) return;
-    const interval = setInterval(() => {
-      setActivity(getProductActivity(product.id));
-    }, 30000);
-    return () => clearInterval(interval);
-  }, [product]);
 
   if (!product) return null;
 
@@ -300,16 +298,18 @@ const ProductDetailPage = () => {
 
             <p style={{ color: '#444', marginBottom: '1.5rem', lineHeight: 1.6 }}>{product.description}</p>
 
-            {/* Élő aktivitás */}
-            <div style={{ 
-              backgroundColor: '#fff9e6', padding: '0.75rem 1rem', borderRadius: '4px',
-              borderLeft: '4px solid #FF9800', marginBottom: '1rem', fontSize: '0.9rem'
-            }}>
-              <p style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Eye size={14} color="#FF9800" />
-                <strong>{activity.activeViewers} ember</strong> nézi most ezt a terméket
-              </p>
-            </div>
+            {/* Valódi értékelés-összesítő (csak ha van jóváhagyott vélemény) */}
+            {reviews.length > 0 && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem', fontSize: '0.95rem' }}>
+                <span style={{ color: '#FFB800', fontSize: '1.1rem' }}>
+                  {'★'.repeat(Math.round(reviews.reduce((s, r) => s + r.stars, 0) / reviews.length))}
+                </span>
+                <span style={{ color: '#666' }}>
+                  {(reviews.reduce((s, r) => s + r.stars, 0) / reviews.length).toFixed(1)} / 5
+                  ({reviews.length} értékelés)
+                </span>
+              </div>
+            )}
 
             {/* Ár */}
             <div style={{ backgroundColor: '#f9f9f9', padding: '1rem', borderRadius: '4px', marginBottom: '1.5rem', borderLeft: '4px solid #C9A961' }}>
@@ -449,6 +449,61 @@ const ProductDetailPage = () => {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* Vásárlói értékelések */}
+        <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '1.5rem', marginTop: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
+          <h2 style={{ color: '#0F2A1D', marginTop: 0 }}>⭐ Vásárlói értékelések</h2>
+          {reviews.length === 0 && (
+            <p style={{ color: '#888' }}>Erről a termékről még nincs értékelés — legyél te az első!</p>
+          )}
+          {reviews.map((r, i) => (
+            <div key={i} style={{ borderBottom: '1px solid #f0f0f0', padding: '0.75rem 0' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ color: '#FFB800' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</span>
+                <strong style={{ color: '#0F2A1D', fontSize: '0.92rem' }}>{r.name}</strong>
+                <span style={{ color: '#aaa', fontSize: '0.78rem' }}>{new Date(r.ts).toLocaleDateString('hu-HU')}</span>
+              </div>
+              <p style={{ color: '#444', margin: '0.4rem 0 0 0', fontSize: '0.92rem', lineHeight: 1.55 }}>{r.text}</p>
+            </div>
+          ))}
+
+          {revSent ? (
+            <p style={{ color: '#4CAF50', fontWeight: 'bold', marginTop: '1rem' }}>
+              ✔ Köszönjük! Az értékelésed jóváhagyás után jelenik meg.
+            </p>
+          ) : (
+            <div style={{ marginTop: '1.25rem', backgroundColor: '#fafaf8', borderRadius: '8px', padding: '1rem' }}>
+              <h3 style={{ color: '#0F2A1D', marginTop: 0, fontSize: '1rem' }}>Írd meg a véleményed</h3>
+              <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', marginBottom: '0.75rem' }}>
+                <input type="text" placeholder="Neved" value={revForm.name}
+                  onChange={e => setRevForm({ ...revForm, name: e.target.value })}
+                  style={{ flex: 1, minWidth: '160px', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px' }} />
+                <select value={revForm.stars} onChange={e => setRevForm({ ...revForm, stars: parseInt(e.target.value, 10) })}
+                  style={{ padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px', backgroundColor: 'white' }}>
+                  {[5, 4, 3, 2, 1].map(s => <option key={s} value={s}>{'★'.repeat(s)} ({s})</option>)}
+                </select>
+              </div>
+              <textarea placeholder="Milyen a termék? Méret, kényelem, tartósság…" value={revForm.text}
+                onChange={e => setRevForm({ ...revForm, text: e.target.value })} rows={3}
+                style={{ width: '100%', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', fontFamily: 'inherit' }} />
+              <button onClick={async () => {
+                if (!revForm.name.trim() || !revForm.text.trim()) { alert('Kérlek, add meg a neved és a véleményed!'); return; }
+                try {
+                  await fetch('/.netlify/functions/reviews-api', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ op: 'submit', productId: product.id, ...revForm })
+                  });
+                } catch (e) {}
+                setRevSent(true);
+              }} style={{ marginTop: '0.6rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none', padding: '0.6rem 1.5rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold' }}>
+                Értékelés beküldése
+              </button>
+              <p style={{ color: '#999', fontSize: '0.75rem', marginTop: '0.5rem' }}>
+                Az értékeléseket moderáljuk — jóváhagyás után jelennek meg.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Kapcsolódó termékek */}

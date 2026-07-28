@@ -12,6 +12,9 @@ const WRITABLE_KEYS = [
   'ms_stock_history',
   'ms_blog_posts',
   'ms_argep_prices',
+  'ms_reviews',
+  'ms_newsletter',
+  'ms_abandoned_carts',
   'ms_supplier_notifications',
   'ms_coupons',
   'ms_pricing'

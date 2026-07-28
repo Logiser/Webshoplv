@@ -115,9 +115,13 @@ exports.handler = async (event) => {
     </table>
 
     <div style="margin: 24px 0; padding: 20px; background: linear-gradient(135deg, #fff9e6, #fff5d5); border-left: 4px solid #C9A961; border-radius: 4px;">
-      <p style="margin: 0; font-size: 1rem;">⭐ <strong>Hamarosan kapsz tőlünk egy rövid kérdőívet</strong></p>
+      <p style="margin: 0; font-size: 1rem;">⭐ <strong>Mondd el a véleményed!</strong></p>
       <p style="margin: 8px 0 0 0; font-size: 0.9rem; color: #666;">
-        30 perc múlva küldünk neked egy értékelő emailt — segíts megosztani a véleményed a vásárlásról!
+        Nyisd meg a megvásárolt termék oldalát a webshopban, és írj pár mondatos értékelést —
+        ezzel a többi vásárlónak is segítesz jól választani.
+      </p>
+      <p style="margin: 12px 0 0 0;">
+        <a href="${SITE_URL}" style="color: #0F2A1D; font-weight: bold;">→ Termék megnyitása és értékelése</a>
       </p>
     </div>
 

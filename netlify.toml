@@ -7,6 +7,10 @@
 [functions."depiend-sync"]
   schedule = "0 * * * *"
 
+# Kosárelhagyó emlékeztető: naponta délelőtt (8:30 UTC = 10:30 CEST)
+[functions."cart-reminder"]
+  schedule = "30 8 * * *"
+
 # Depiend URL-lista CORS-szal (partner ár-szinkron segédfájl)
 [[headers]]
   for = "/depiend-urls.json"

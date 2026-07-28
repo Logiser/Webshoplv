@@ -152,6 +152,49 @@ exports.handler = async (event) => {
       if (ci >= 0) coupons[ci].usedCount = (coupons[ci].usedCount || 0) + 1;
     }
 
+    // NAV-os számla a Számlázz.hu Agent API-val — csak akkor fut, ha a
+    // SZAMLAZZ_AGENT_KEY env be van állítva (addig a belső bizonylat él).
+    // Nem blokkoló: a rendelés számla-hiba esetén is rögzül.
+    if (process.env.SZAMLAZZ_AGENT_KEY) {
+      try {
+        const c = order.customer || {};
+        const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const items = (order.cart || []).map(i => {
+          const gross = (parseInt(i.price, 10) || 0);
+          const net = Math.round(gross / 1.27 * 100) / 100;
+          const qty = parseInt(i.quantity, 10) || 1;
+          return `<tetel><megnevezes>${esc(i.name)}</megnevezes><mennyiseg>${qty}</mennyiseg>` +
+            `<mennyisegiEgyseg>db</mennyisegiEgyseg><nettoEgysegar>${net}</nettoEgysegar><afakulcs>27</afakulcs>` +
+            `<nettoErtek>${Math.round(net * qty * 100) / 100}</nettoErtek><afaErtek>${Math.round((gross - net) * qty * 100) / 100}</afaErtek>` +
+            `<bruttoErtek>${gross * qty}</bruttoErtek></tetel>`;
+        }).join('');
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<xmlszamla xmlns="http://www.szamlazz.hu/xmlszamla">
+  <beallitasok><szamlaagentkulcs>${process.env.SZAMLAZZ_AGENT_KEY}</szamlaagentkulcs>
+    <eszamla>true</eszamla><szamlaLetoltes>false</szamlaLetoltes></beallitasok>
+  <fejlec><fizmod>utánvét</fizmod><penznem>HUF</penznem><szamlaNyelve>hu</szamlaNyelve>
+    <megjegyzes>Rendelés: ${orderId}</megjegyzes></fejlec>
+  <elado></elado>
+  <vevo><nev>${esc(c.name)}</nev><irsz>${esc(c.zipCode)}</irsz><telepules>${esc(c.city)}</telepules>
+    <cim>${esc(c.address)}</cim><email>${esc(c.email)}</email>
+    ${c.company ? `<cegnev>${esc(c.company)}</cegnev>` : ''}</vevo>
+  <tetelek>${items}</tetelek>
+</xmlszamla>`;
+        const fd = new FormData();
+        fd.append('action-xmlagentxmlfile', new Blob([xml], { type: 'application/xml' }), 'invoice.xml');
+        const invRes = await fetch('https://www.szamlazz.hu/szamla/', { method: 'POST', body: fd });
+        const invHeader = invRes.headers.get('szlahu_szamlaszam');
+        if (invHeader) {
+          newOrder.szamlazzHuSzamlaszam = invHeader;
+          console.log(`Számlázz.hu számla kiállítva: ${invHeader}`);
+        } else {
+          console.warn('Számlázz.hu: nincs számlaszám a válaszban', invRes.headers.get('szlahu_error') || '');
+        }
+      } catch (invErr) {
+        console.error('Számlázz.hu hiba (nem blokkoló):', invErr.message);
+      }
+    }
+
     // Mentés: order sor + KV dokumentumok
     const { error: insErr } = await db.from('orders').insert({ id: orderId, data: newOrder });
     if (insErr) throw insErr;

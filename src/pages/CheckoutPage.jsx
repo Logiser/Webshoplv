@@ -24,6 +24,17 @@ const CheckoutPage = () => {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState('');
+  // Marketing-hozzájárulás (hírlevél + kosár-emlékeztető) — alapból KI (GDPR)
+  const [marketingConsent, setMarketingConsent] = useState(false);
+
+  // Elhagyott kosár mentése: csak kifejezett hozzájárulással, az email megadása után
+  const saveAbandoned = () => {
+    if (!marketingConsent || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(formData.email) || cart.length === 0) return;
+    fetch('/.netlify/functions/newsletter-api', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ op: 'abandon', email: formData.email, consent: true, cart })
+    }).catch(() => {});
+  };
 
   // Kupon
   const [couponInput, setCouponInput] = useState('');
@@ -31,12 +42,29 @@ const CheckoutPage = () => {
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
 
-  // Termék-összeg a kosárból számolva (nem a totálból visszafelé — így a
-  // 30 000 Ft feletti ingyenes szállításnál is pontos)
+  // Szállítási mód: házhozszállítás vagy Foxpost automata
+  const [shipMethod, setShipMethod] = useState('home');
+  const [foxpostPoints, setFoxpostPoints] = useState([]);
+  const [foxpostQuery, setFoxpostQuery] = useState('');
+  const [foxpostPoint, setFoxpostPoint] = useState(null);
+
+  // Foxpost automata-lista (publikus CDN); hiba esetén a házhozszállítás marad
+  useEffect(() => {
+    fetch('https://cdn.foxpost.hu/apms.json')
+      .then(r => r.json())
+      .then(list => { if (Array.isArray(list)) setFoxpostPoints(list); })
+      .catch(() => {});
+  }, []);
+
+  const HOME_SHIPPING = parseInt(process.env.REACT_APP_SHIPPING_COST, 10) || 1290;
+  const FOXPOST_SHIPPING = parseInt(process.env.REACT_APP_SHIPPING_FOXPOST, 10) || 990;
+
+  // Termék-összeg a kosárból számolva; a szállítási díj a választott módtól függ,
+  // 30 000 Ft felett mindkét mód ingyenes
   const productTotal = cart.reduce((s, i) => s + (i.price * i.quantity), 0);
-  const shippingCost = total - productTotal;   // 0 vagy 1 290
+  const shippingCost = productTotal >= 30000 ? 0 : (shipMethod === 'foxpost' ? FOXPOST_SHIPPING : HOME_SHIPPING);
   const discount = coupon && coupon.valid ? Math.min(coupon.discount, productTotal) : 0;
-  const grandTotal = total - discount;
+  const grandTotal = productTotal + shippingCost - discount;
 
   const handleApplyCoupon = async () => {
     if (!couponInput.trim() || couponLoading) return;
@@ -89,14 +117,30 @@ const CheckoutPage = () => {
       return;
     }
 
+    if (shipMethod === 'foxpost' && !foxpostPoint) {
+      setError('Kérjük, válassz Foxpost automatát!');
+      setLoading(false);
+      return;
+    }
+
     try {
       // Rendelés mentése (Supabase módban szerver-oldalon, egyébként localStorage-ba)
+      const shippingInfo = {
+        method: shipMethod,
+        cost: shippingCost,
+        foxpostPoint: shipMethod === 'foxpost' && foxpostPoint ? {
+          place_id: foxpostPoint.place_id, name: foxpostPoint.name,
+          city: foxpostPoint.city, zip: foxpostPoint.zip, address: foxpostPoint.address
+        } : null
+      };
+
       const savedOrder = await saveOrder({
         customerName: `${formData.firstName || ''} ${formData.lastName || ''}`.trim(),
         customer: formData,
         cart: cart,
         items: cart,
         total: grandTotal,
+        shipping: shippingInfo,
         coupon: coupon && coupon.valid ? { code: coupon.code, discount } : null,
         timestamp: new Date().toISOString()
       });
@@ -122,7 +166,21 @@ const CheckoutPage = () => {
       }
 
       setSuccess(true);
-      
+
+      // Hírlevél-feliratkozás + elhagyott-kosár bejegyzés törlése (nem blokkoló)
+      try {
+        if (marketingConsent) {
+          fetch('/.netlify/functions/newsletter-api', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ op: 'subscribe', email: formData.email, source: 'checkout' })
+          }).catch(() => {});
+        }
+        fetch('/.netlify/functions/newsletter-api', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ op: 'abandon_clear', email: formData.email })
+        }).catch(() => {});
+      } catch (e) {}
+
       // Purchase tracking - GA4 + FB Pixel
       trackPurchase(savedOrder.id, cart, grandTotal);
       
@@ -370,6 +428,7 @@ const CheckoutPage = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={saveAbandoned}
                   placeholder="email@example.com"
                   style={{
                     width: '100%',
@@ -380,6 +439,18 @@ const CheckoutPage = () => {
                     boxSizing: 'border-box'
                   }}
                 />
+              </div>
+
+              <div style={{ marginBottom: '1rem', backgroundColor: '#f8f6f0', borderRadius: '4px', padding: '0.75rem' }}>
+                <label style={{ display: 'flex', alignItems: 'flex-start', gap: '0.5rem', cursor: 'pointer', fontSize: '0.88rem', color: '#444' }}>
+                  <input type="checkbox" checked={marketingConsent}
+                    onChange={e => { setMarketingConsent(e.target.checked); }}
+                    style={{ marginTop: '3px' }} />
+                  <span>
+                    Feliratkozom a hírlevélre (akciók, kuponok — havonta max. 2 email), és kérek
+                    emlékeztetőt, ha itt hagyom a kosaram. Bármikor leiratkozhatsz.
+                  </span>
+                </label>
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
@@ -486,6 +557,85 @@ const CheckoutPage = () => {
                     }}
                   />
                 </div>
+              </div>
+
+              {/* Szállítási mód */}
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
+                  Szállítási mód *
+                </label>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <label style={{
+                    flex: 1, minWidth: '200px', border: `2px solid ${shipMethod === 'home' ? '#C9A961' : '#ddd'}`,
+                    borderRadius: '6px', padding: '0.75rem', cursor: 'pointer',
+                    backgroundColor: shipMethod === 'home' ? '#fdf9f0' : 'white'
+                  }}>
+                    <input type="radio" name="shipMethod" checked={shipMethod === 'home'}
+                      onChange={() => setShipMethod('home')} style={{ marginRight: '0.5rem' }} />
+                    <strong>🚚 Házhozszállítás</strong>
+                    <div style={{ color: '#666', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {productTotal >= 30000 ? 'Ingyenes' : `${HOME_SHIPPING.toLocaleString('hu-HU')} Ft`} · 2-3 munkanap
+                    </div>
+                  </label>
+                  <label style={{
+                    flex: 1, minWidth: '200px', border: `2px solid ${shipMethod === 'foxpost' ? '#C9A961' : '#ddd'}`,
+                    borderRadius: '6px', padding: '0.75rem', cursor: 'pointer',
+                    backgroundColor: shipMethod === 'foxpost' ? '#fdf9f0' : 'white',
+                    opacity: foxpostPoints.length === 0 ? 0.5 : 1
+                  }}>
+                    <input type="radio" name="shipMethod" checked={shipMethod === 'foxpost'}
+                      disabled={foxpostPoints.length === 0}
+                      onChange={() => setShipMethod('foxpost')} style={{ marginRight: '0.5rem' }} />
+                    <strong>📦 Foxpost automata</strong>
+                    <div style={{ color: '#666', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      {productTotal >= 30000 ? 'Ingyenes' : `${FOXPOST_SHIPPING.toLocaleString('hu-HU')} Ft`} · 2-4 munkanap
+                      {foxpostPoints.length === 0 && ' · (lista betöltése…)'}
+                    </div>
+                  </label>
+                </div>
+
+                {/* Foxpost automata-kereső */}
+                {shipMethod === 'foxpost' && (
+                  <div style={{ marginTop: '0.75rem', backgroundColor: '#fafaf8', borderRadius: '6px', padding: '0.75rem' }}>
+                    {foxpostPoint ? (
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
+                        <div style={{ fontSize: '0.9rem' }}>
+                          <strong style={{ color: '#0F2A1D' }}>📍 {foxpostPoint.name}</strong>
+                          <div style={{ color: '#666' }}>{foxpostPoint.zip} {foxpostPoint.city}, {foxpostPoint.address}</div>
+                        </div>
+                        <button type="button" onClick={() => setFoxpostPoint(null)}
+                          style={{ border: '1px solid #ddd', backgroundColor: 'white', borderRadius: '4px', padding: '0.4rem 0.75rem', cursor: 'pointer', fontSize: '0.82rem' }}>
+                          Módosítás
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <input type="text" placeholder="Keresés város vagy irányítószám szerint…"
+                          value={foxpostQuery} onChange={e => setFoxpostQuery(e.target.value)}
+                          style={{ width: '100%', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px', boxSizing: 'border-box', marginBottom: '0.5rem' }} />
+                        {foxpostQuery.trim().length >= 2 && (
+                          <div style={{ maxHeight: '180px', overflowY: 'auto' }}>
+                            {foxpostPoints
+                              .filter(p => {
+                                const q = foxpostQuery.trim().toLowerCase();
+                                return String(p.city || '').toLowerCase().includes(q)
+                                  || String(p.zip || '').startsWith(q)
+                                  || String(p.name || '').toLowerCase().includes(q);
+                              })
+                              .slice(0, 12)
+                              .map(p => (
+                                <button type="button" key={p.place_id} onClick={() => setFoxpostPoint(p)}
+                                  style={{ display: 'block', width: '100%', textAlign: 'left', border: 'none', borderBottom: '1px solid #eee', backgroundColor: 'white', padding: '0.5rem 0.6rem', cursor: 'pointer', fontSize: '0.85rem' }}>
+                                  <strong style={{ color: '#0F2A1D' }}>{p.name}</strong>
+                                  <span style={{ color: '#888' }}> — {p.zip} {p.city}, {p.address}</span>
+                                </button>
+                              ))}
+                          </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
 
               <div style={{ marginBottom: '1.5rem' }}>

@@ -2,13 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronRight, Home, Filter, Star, Heart, Eye } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, getProductActivity, trackProductOpen } from '../data/storage';
+import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 
 const WorkwearShop = () => {
   const navigate = useNavigate();
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [searchFocus, setSearchFocus] = useState(false);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterDone, setNewsletterDone] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [cart, setCart] = useState([]);
@@ -264,16 +267,47 @@ const WorkwearShop = () => {
         </Link>
 
         <div style={{
-          flex: 1, minWidth: '200px', maxWidth: '500px',
+          flex: 1, minWidth: '200px', maxWidth: '500px', position: 'relative',
           display: 'flex', alignItems: 'center', backgroundColor: '#f5f5f5',
           borderRadius: '4px', padding: '0.25rem 0.5rem', border: '1px solid #ddd'
         }}>
           <Search size={20} style={{ color: '#999', marginRight: '0.5rem' }} />
           <input
-            type="text" placeholder="Termékek keresése..."
+            type="text" placeholder="Keresés névre vagy cikkszámra…"
             value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+            onBlur={() => setTimeout(() => setSearchFocus(false), 200)}
+            onFocus={() => setSearchFocus(true)}
             style={{ flex: 1, border: 'none', backgroundColor: 'transparent', padding: '0.5rem', fontSize: '0.95rem', outline: 'none' }}
           />
+          {/* Kereső-előnézet: cikkszám-egyezés előre, aztán név-találatok */}
+          {searchFocus && searchTerm.trim().length >= 2 && (() => {
+            const q = searchTerm.trim().toLowerCase();
+            const byArt = products.filter(p => (p.articleNo || '').toLowerCase().startsWith(q));
+            const byName = products.filter(p => !byArt.includes(p) && p.name.toLowerCase().includes(q));
+            const hits = [...byArt, ...byName].slice(0, 6);
+            if (hits.length === 0) return null;
+            return (
+              <div style={{
+                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 60,
+                backgroundColor: 'white', borderRadius: '0 0 8px 8px', border: '1px solid #ddd',
+                borderTop: 'none', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', overflow: 'hidden'
+              }}>
+                {hits.map(p => (
+                  <Link key={p.id} to={`/termek/${p.slug}`} onClick={() => { setSearchFocus(false); }}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', textDecoration: 'none', borderBottom: '1px solid #f2f2f2' }}>
+                    <img src={p.image} alt="" loading="lazy" style={{ width: '40px', height: '40px', objectFit: 'contain', backgroundColor: '#fafafa', borderRadius: '4px', flexShrink: 0 }} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ color: '#0F2A1D', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                      <div style={{ color: '#999', fontSize: '0.72rem' }}>{p.articleNo}</div>
+                    </div>
+                    <div style={{ color: '#C9A961', fontWeight: 'bold', fontSize: '0.88rem', flexShrink: 0 }}>
+                      {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            );
+          })()}
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
@@ -927,6 +961,33 @@ const WorkwearShop = () => {
                 <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.
               </p>
             </div>
+            <div>
+              <h4 style={{ color: 'white', marginTop: 0 }}>📬 Hírlevél</h4>
+              <p style={{ color: '#bbb', fontSize: '0.85rem', marginTop: 0 }}>
+                Akciók, új termékek, kuponok — havonta max. 2 email, spam nélkül.
+              </p>
+              {newsletterDone ? (
+                <p style={{ color: '#C9A961', fontWeight: 'bold' }}>✔ Feliratkoztál, köszönjük!</p>
+              ) : (
+                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                  <input type="email" placeholder="Email-címed" value={newsletterEmail}
+                    onChange={e => setNewsletterEmail(e.target.value)}
+                    style={{ flex: 1, minWidth: 0, padding: '0.5rem', borderRadius: '4px', border: '1px solid #555', backgroundColor: '#1a3f33', color: 'white', fontSize: '0.85rem' }} />
+                  <button onClick={async () => {
+                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(newsletterEmail)) { alert('Kérlek, érvényes email-címet adj meg.'); return; }
+                    try {
+                      await fetch('/.netlify/functions/newsletter-api', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ op: 'subscribe', email: newsletterEmail, source: 'footer' })
+                      });
+                    } catch (e) { /* offline dev: nem blokkolunk */ }
+                    setNewsletterDone(true);
+                  }} style={{ backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.5rem 0.9rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}>
+                    Feliratkozom
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <div style={{ borderTop: '1px solid #333', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
@@ -942,11 +1003,6 @@ const WorkwearShop = () => {
 // PRODUCT CARD
 // ============================================================
 const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
-  const [activity, setActivity] = useState({ activeViewers: 1, lastOrderTime: null });
-
-  useEffect(() => {
-    setActivity(getProductActivity(product.id));
-  }, [product.id]);
 
   return (
     <div onClick={onSelect} style={{
@@ -1007,14 +1063,6 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
           </h3>
         </Link>
 
-        {/* Élő aktivitás */}
-        {activity.activeViewers > 0 && (
-          <div style={{ fontSize: '0.75rem', color: '#FF9800', marginBottom: '0.5rem' }}>
-            <p style={{ margin: 0, display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-              <Eye size={10} /> {activity.activeViewers} ember nézi most
-            </p>
-          </div>
-        )}
 
         <div style={{ marginTop: 'auto' }}>
           {product.sale && product.sale.active ? (

@@ -17,11 +17,11 @@ export const TermsPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>2. A Weboldal Operátora</h2>
           <p>
-            <strong>Cégname:</strong> Trident Shield Group Kft.<br />
+            <strong>Cégnév:</strong> Trident Shield Group Kft.<br />
             <strong>Cégjegyzékszám:</strong> [Cégjegyzékszám]<br />
             <strong>Adószám:</strong> [Adószám]<br />
-            <strong>Telephely:</strong> Budapest, Magyarország<br />
-            <strong>E-mail:</strong> rendelések@munkavedelem.shop<br />
+            <strong>Székhely:</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
+            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.hu<br />
             <strong>Telefon:</strong> +36 30 272 2571
           </p>
 
@@ -41,21 +41,25 @@ export const TermsPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>5. Szállítás</h2>
           <p>
-            Az áruk szállítása az ország egész területén lehetséges. A szállítási költség a rendelés 
-            összértékétől függően a kosárban megjelenik. Az átlagos szállítási idő 1-3 munkanap.
+            Az áruk szállítása az ország egész területén lehetséges, futárszolgálattal házhozszállítással
+            vagy Foxpost csomagautomatába. A szállítási költség a pénztárban jelenik meg
+            (30 000 Ft feletti rendelésnél a szállítás ingyenes). Az átlagos szállítási idő 2-4 munkanap;
+            a termékeket beszállítói raktárból indítjuk.
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>6. Fizetés</h2>
           <p>
-            A fizetés a rendelés összegéről szóló e-mail-ben közölt módokon lehetséges. A fizetés lehet 
-            bankkártyával, banki átutalással vagy más előre jelzett módokon.
+            Fizetés jelenleg utánvéttel (a csomag átvételekor) vagy banki átutalással lehetséges.
+            Az átutaláshoz szükséges adatokat a rendelés-visszaigazoló e-mail tartalmazza.
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>7. Elállási Jog</h2>
           <p>
-            A fogyasztó a megrendelés teljesítésétől számított 30 napon belül jogosult az elállásra, 
-            kivéve, ha a termék szabad felhasználásnak megfelelően megsérült. Az elállási szándék 
-            közlésével a vásárló viseli az áru visszaküldésének költségeit.
+            A fogyasztót a 45/2014. (II. 26.) Korm. rendelet alapján a termék átvételétől számított
+            14 napon belül indokolás nélküli elállási jog illeti meg. Az elállás esetén a termék
+            visszaküldésének közvetlen költségét a vásárló viseli; a vételárat (a kiszállítás alapdíjával
+            együtt) a termék visszaérkezését követő 14 napon belül visszatérítjük. Az elállási jog nem
+            gyakorolható higiéniai okból nem visszaváltható, felbontott csomagolású termékek esetén.
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>8. Felelősség</h2>
@@ -202,9 +206,9 @@ export const ImpressumPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Irodai Elérhetőség</h2>
           <p>
-            <strong>Cím:</strong> Budapest, Magyarország<br />
+            <strong>Cím:</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
             <strong>Telefon:</strong> +36 30 272 2571<br />
-            <strong>E-mail:</strong> rendelések@munkavedelem.shop<br />
+            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.hu<br />
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Ügyvezető</h2>
@@ -260,16 +264,17 @@ export const ShippingPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>2. Szállítási Költség</h2>
           <p>
-            <strong>Szállítási díj:</strong> 1.290 Ft (állandó díj az egész ország területén)<br />
-            <strong>Ingyenes szállítás:</strong> 50.000 Ft feletti rendelés esetén
+            <strong>Házhozszállítás futárral:</strong> 1.290 Ft (az egész ország területén)<br />
+            <strong>Foxpost csomagautomata:</strong> 990 Ft<br />
+            <strong>Ingyenes szállítás:</strong> 30.000 Ft feletti rendelés esetén (mindkét módnál)
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>3. Szállítási Idő</h2>
           <p>
-            <strong>Normál szállítás:</strong> 1-3 munkanap (hétfő-péntek)<br />
-            <strong>Sürgős szállítás:</strong> 1 munkanap (előrendelés szükséges)<br />
-            Az időpontok a megrendelés időpontjától számítódnak. Hétvégi és ünnepnapi megrendelések 
-            következő munkanapra kezdenek el szállítódni.
+            <strong>Házhozszállítás:</strong> 2-3 munkanap (hétfő-péntek)<br />
+            <strong>Foxpost automata:</strong> 2-4 munkanap<br />
+            A termékeket beszállítói raktárból indítjuk; az időpontok a megrendelés visszaigazolásától
+            számítanak. Hétvégén és ünnepnapon leadott rendelés feldolgozása a következő munkanapon indul.
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>4. Szállítási Mód</h2>
