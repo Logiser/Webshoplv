@@ -12,6 +12,14 @@ const WorkwearShop = () => {
   const [searchFocus, setSearchFocus] = useState(false);
   const [newsletterEmail, setNewsletterEmail] = useState('');
   const [newsletterDone, setNewsletterDone] = useState(false);
+  // Mobil nézet: egyoszlopos elrendezés + nyitható szűrőpanel
+  const [isMobile, setIsMobile] = useState(typeof window !== 'undefined' && window.innerWidth < 768);
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [cart, setCart] = useState([]);
@@ -484,7 +492,7 @@ const WorkwearShop = () => {
       {!selectedCategory && !searchTerm && (
         <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: '3.5rem 1.5rem 3rem', textAlign: 'center' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '2.6rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
+            <h2 style={{ fontSize: isMobile ? '1.7rem' : '2.6rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
               A munkád megvéd minket.<br />
               <span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span>
             </h2>
@@ -672,17 +680,30 @@ const WorkwearShop = () => {
 
       {/* Main Content - Sidebar + Products */}
       <div style={{ maxWidth: '1400px', margin: '2rem auto', padding: '0 1.5rem' }}>
+        {/* Mobil szűrő-kapcsoló */}
+        {isMobile && (
+          <button onClick={() => setFiltersOpen(o => !o)} style={{
+            width: '100%', marginBottom: '1rem', padding: '0.75rem',
+            backgroundColor: filtersOpen ? '#0F2A1D' : 'white', color: filtersOpen ? 'white' : '#0F2A1D',
+            border: '1px solid #0F2A1D', borderRadius: '8px', cursor: 'pointer', fontWeight: 'bold',
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
+          }}>
+            <Filter size={16} /> Szűrők {filtersOpen ? 'elrejtése' : 'megjelenítése'}
+          </button>
+        )}
+
         <div style={{
           display: 'grid',
-          gridTemplateColumns: '260px 1fr',
-          gap: '2rem'
+          gridTemplateColumns: isMobile ? '1fr' : '260px 1fr',
+          gap: isMobile ? '1rem' : '2rem'
         }}>
 
           {/* Sidebar with Filters */}
           <aside style={{
             backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px',
             boxShadow: '0 2px 8px rgba(0,0,0,0.05)', height: 'fit-content',
-            position: 'sticky', top: '180px'
+            position: isMobile ? 'static' : 'sticky', top: '180px',
+            display: isMobile && !filtersOpen ? 'none' : 'block'
           }}>
             {/* Alkategóriák */}
             {selectedCategory && currentSubcategories.length > 0 && (

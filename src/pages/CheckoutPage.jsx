@@ -272,7 +272,7 @@ const CheckoutPage = () => {
           Rendelés Lezárása
         </h1>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem', marginBottom: '2rem' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
           {/* Rendelés összesítő */}
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', height: 'fit-content' }}>
             <h2 style={{ color: '#0F2A1D', marginTop: 0 }}>Rendelési Összesítő</h2>

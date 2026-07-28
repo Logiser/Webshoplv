@@ -1000,7 +1000,79 @@ export const getBlogPosts = () => {
       localSet(BLOG_SEED_VERSION_KEY, BLOG_SEED_VERSION);
     }
   }
-  return posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+  // GYIK hozzáfűzése slug alapján (a régebben mentett cikkekhez is)
+  return posts
+    .map(p => (!p.faq && BLOG_FAQS[p.slug]) ? { ...p, faq: BLOG_FAQS[p.slug] } : p)
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
+};
+
+// Cikkenkénti GYIK (a cikkoldal GYIK-szekciója + FAQPage schema tölti be)
+const BLOG_FAQS = {
+  'hogyan-valassz-munkacipot': [
+    { q: 'Mi a különbség az S1 és az S1P munkavédelmi cipő között?', a: 'Az S1 orrmerevítős, antisztatikus, zárt sarkú cipő beltéri, száraz munkakörnyezetbe. Az S1P mindezt átszúrás elleni talplemezzel egészíti ki — építkezésre, műhelybe, ahol szög vagy éles törmelék kerülhet a talp alá, S1P a minimum.' },
+    { q: 'Melyik kategória kell kültéri munkához?', a: 'Kültérre az S3 az ajánlott: vízálló felsőrész, átszúrásbiztos talplemez és profilos, csúszásgátló talp egyben. Esős, sáros terepen ez a biztonságos választás.' },
+    { q: 'Milyen méretet válasszak munkavédelmi cipőből?', a: 'A megszokott utcai méretedet — a Portwest lábbelik mérethűek. Ha vastag, téli zoknival hordanád, fél számmal nagyobb javasolt. Ha mégsem jó, 14 napon belül cseréljük.' }
+  ],
+  'munkavedelmi-kesztyu-kategoriak': [
+    { q: 'Mit jelent az EN 388 szabvány a kesztyűn?', a: 'Az EN 388 a mechanikai kockázatok elleni védelem szabványa: a kesztyűn lévő 4-6 karakteres kód a kopás-, vágás-, szakítás- és átszúrás-állóságot (plusz újabban az ISO-vágásállóságot és ütésvédelmet) jelzi. Minél nagyobb a szám, annál erősebb a védelem.' },
+    { q: 'Milyen kesztyű kell precíziós munkához?', a: 'Vékony, PU- vagy nitril-mártott, varrat nélküli kötött kesztyű (pl. 13-15-ös gauge) — megtartja a tapintásérzékenységet, mégis véd. Ilyen például a Portwest A120 PU-tenyérmártott modell.' },
+    { q: 'Vágásveszélyes munkához melyik kesztyűt válasszam?', a: 'Kifejezetten vágásbiztos (EN 388 szerint C-F vágási szintű) kesztyűt — üveg, lemez, penge közelében ez kötelező. A webshopban külön alkategóriában találod a vágásbiztos modelleket.' }
+  ],
+  'jol-lathatosagi-ruha-szabvany': [
+    { q: 'Mit jelent az EN ISO 20471 osztályozás?', a: 'A szabvány 3 osztályba sorolja a láthatósági ruházatot a fluoreszkáló háttéranyag és a fényvisszaverő csík felülete alapján. A 3. osztály a legmagasabb — közúton, éjszakai munkánál jellemzően ezt írják elő.' },
+    { q: 'Sárga vagy narancs láthatósági ruhát vegyek?', a: 'Mindkettő szabványos; a választást a munkakörnyezet dönti el. Zöld növényzet mellett a narancs, földes-barnás környezetben a sárga üt el jobban. Vasútnál jellemzően a narancs az előírás.' },
+    { q: 'Meddig marad szabványos egy hi-vis ruha?', a: 'Amíg a fluoreszkáló szín ki nem fakul és a fényvisszaverő csík sértetlen. Kb. 25-50 mosás után (címkétől függően) a védelmi képesség csökken — kopottan, szennyezetten már nem számít láthatósági ruhának.' }
+  ],
+  'teli-munkavedelmi-bakancs-valasztas': [
+    { q: 'Mit jelent a CI jelölés a téli bakancson?', a: 'A CI (Cold Insulation) a hideg elleni talpszigetelést jelzi: a szabványteszt szerint -17 °C-on 30 percig legfeljebb 10 °C-ot hűlhet a talpbélés. Téli kültéri munkához ezt keresd.' },
+    { q: 'Bélelt vagy béleletlen bakancs télre?', a: 'Tartósan kültéri munkához szőrmebéleléses modell (pl. Portwest FC12), változó hőmérsékletű (raktár-udvar) munkához inkább CI-talpas, béleletlen bakancs jó gyapjú zoknival — így nem izzad be.' },
+    { q: 'A vízállóság ugyanaz, mint a WR jelölés?', a: 'Az S2/S3 kategória vízlepergető felsőrészt jelent (WRU), a teljes cipő vízállóságát a külön WR jelölés adja. Latyakos, tocsogós terepre WR vagy magas szárú S3 ajánlott.' }
+  ],
+  'latex-nitril-pu-kesztyu-bevonatok': [
+    { q: 'Melyik bevonat a legjobb olajos munkához?', a: 'A nitril — kiváló olaj- és zsírállóság, jó kopásállóság mellett. A latex olajjal érintkezve gyorsan gyengül, a PU pedig inkább száraz, precíz munkára való.' },
+    { q: 'Mi a latex kesztyű előnye és hátránya?', a: 'Előnye a kiemelkedő tapadás nedves felületen is és a rugalmasság — építőipari, kertészeti munkára ideális. Hátránya az olajérzékenység, és hogy latexallergiásoknak nem ajánlott.' },
+    { q: 'Mikor válasszak PU-bevonatú kesztyűt?', a: 'Szereléshez, elektronikai és precíziós munkához: a PU vékony, érzékeny fogást ad, nem morzsálódik, és a legtöbb modell érintőképernyő-kompatibilis.' }
+  ],
+  'vedosisak-szabalyok-en397-kihordas': [
+    { q: 'Meddig használható egy EN 397-es védősisak?', a: 'A gyártók jellemzően a gyártástól számított 3-5 évet adnak meg (a héj anyagától függően) — a gyártási dátum a sisak belsejében található. UV-nak kitett, karcos, ütést kapott sisakot azonnal cserélni kell.' },
+    { q: 'Ütést kapott a sisakom, de nem látszik rajta sérülés. Használhatom?', a: 'Nem. A héj mikrorepedései szabad szemmel nem látszanak, de a következő ütésnél már nem véd. Leesett, ütést kapott sisakot mindig cserélj.' },
+    { q: 'Lehet matricázni vagy festeni a védősisakot?', a: 'Csak a gyártó által engedélyezett módon — az oldószeres festékek és egyes ragasztók gyengíthetik a héjat. Jelöléshez használj a gyártó által jóváhagyott matricát.' }
+  ],
+  'munkanadrag-valasztas-zsebek-anyagok': [
+    { q: 'Milyen anyagú munkanadrág a legstrapabíróbb?', a: 'A pamut-poliészter keverék (jellemzően 35/65 vagy 60/40) jó egyensúly: a poliészter a kopásállóságot, a pamut a kényelmet adja. Igénybevett részeken (térd, zsebek) az Oxford- vagy Cordura-erősítés számít igazán.' },
+    { q: 'Mire jó a holster (lengő) zseb?', a: 'A nadrág elejére kihajtható erősített zsebekben a leggyakoribb kéziszerszámok azonnal elérhetők — burkolóknak, ácsoknak, villanyszerelőknek nagy időmegtakarítás. Használaton kívül visszatűrhető.' },
+    { q: 'Kell-e térdvédő-zsebes nadrág?', a: 'Ha naponta térdelsz (burkolás, padlózás, szerelés), igen: az EN 14404 szerinti térdvédő betét csak térdvédő-zsebes nadrágban használható szabványosan.' }
+  ],
+  'teli-munkaruha-retegezes': [
+    { q: 'Hogyan öltözzek rétegesen téli fizikai munkához?', a: 'Három réteg: nedvességelvezető aláöltözet (nem pamut!), szigetelő középréteg (polár, pulóver), majd szél- és vízálló külső réteg. Fizikai munkánál a lélegzőképesség ugyanolyan fontos, mint a szigetelés.' },
+    { q: 'Miért ne pamut aláöltözetben dolgozzak télen?', a: 'A pamut magába szívja az izzadságot és nedves marad — a nedves ruha pedig hűt. A funkcionális (poliészter/gyapjú) aláöltözet elvezeti a nedvességet, így szárazon és melegen tart.' },
+    { q: 'Mit jelent a dzsekiknél a 3 az 1-ben kialakítás?', a: 'Kivehető belső réteget (polár vagy steppelt bélés): külön hordható átmeneti időben, összekapcsolva télikabát. Ilyen például a Portwest TK50 és a CD864.' }
+  ],
+  'vedoszemuveg-tipusok-bevonatok': [
+    { q: 'Mit jelent a K és N jelölés a védőszemüvegen?', a: 'A K a karcálló, az N a páramentes bevonatot jelzi az EN 166/168 szerint. Fizikai munkához érdemes mindkettőt választani — a karcos vagy párás lencse önmagában is balesetveszély.' },
+    { q: 'Dioptriás szemüveg fölé milyen védőszemüveg jó?', a: 'A gumipántos, zárt védőszemüvegek (goggle) és a "látogató" típusú, szemüveg fölé húzható modellek. A webshop gumipántos alkategóriájában találod ezeket.' },
+    { q: 'Sötétített védőszemüveget mikor használjak?', a: 'Kültéri, erős napfényben végzett munkához (füstszínű lencse), illetve hegesztés-közeli segédmunkához a megfelelő árnyalati fokozatú lencsével. Beltérre a víztiszta, UV-szűrős lencse való.' }
+  ],
+  'en-iso-20345-2022-valtozasok': [
+    { q: 'Mi változott az EN ISO 20345:2022-ben a régi szabványhoz képest?', a: 'A legfontosabbak: új S3S/S1PS kategóriák a nem fém talplemezes lábbelikre, új csúszásállósági vizsgálat (SR jelölés), valamint a karcálló orr-rész (SC) és a létrafok-tapadás (LG) opcionális jelölése.' },
+    { q: 'A régi szabvány szerinti cipőm még használható?', a: 'Igen — a 20345:2011 szerint tanúsított lábbelik a tanúsítványuk lejártáig forgalomban maradhatnak és használhatók. Új beszerzésnél viszont érdemes már a 2022-es jelölésű modellt választani.' },
+    { q: 'Mit jelent az FO jelölés?', a: 'Az üzemanyag- és olajálló talpat (Fuel & Oil resistant). A 2022-es szabványban ez már opcionális kiegészítő jelölés — műhelyben, gépek környezetében hasznos.' }
+  ],
+  'overal-vagy-ketreszes-munkaruha': [
+    { q: 'Mikor jobb az overál, mint a kétrészes munkaruha?', a: 'Ahol a derékrész védelme kritikus: fekve-guggolva végzett szerelésnél, festésnél, poros környezetben az overál nem csúszik fel, nem enged be szennyeződést. Cserébe a hőszabályozása kötöttebb.' },
+    { q: 'Miért népszerűbb mégis a kétrészes szett?', a: 'Rugalmasabb: a kabát levehető melegben, a nadrág önállóan is hordható, és a méretezés is pontosabb — más felső- és alsóméret kombinálható. A legtöbb szakmában ez a praktikusabb.' },
+    { q: 'Mi az a melles nadrág (kantáros), és kinek való?', a: 'A derék fölé érő, pántos nadrág: a derék és a vese táját is védi, nem csúszik le hajolgatásnál. Kültéri fizikai munkára, télre kifejezetten jó választás.' }
+  ],
+  'munkaltatoi-vedoeszkoz-juttatas-kotelezettsegek': [
+    { q: 'Ki fizeti a munkavédelmi eszközöket: a munkáltató vagy a dolgozó?', a: 'Mindig a munkáltató — a munkavédelmi törvény (Mvt. 56. §) szerint az egyéni védőeszközt a munkáltató saját költségén köteles biztosítani, és a dolgozóra ez át nem hárítható.' },
+    { q: 'Kötelező-e írásba foglalni a védőeszköz-juttatás rendjét?', a: 'Igen, 2024. január 1-jétől az egyéni védőeszköz juttatási rendjét írásban kell meghatározni, munkakörönként. Ennek elkészítésében a Trident Shield Group szolgáltatásként is segít.' },
+    { q: 'Milyen gyakran kell cserélni a védőeszközöket?', a: 'A juttatási rendben rögzített kihordási idő szerint, de elhasználódás, sérülés esetén azonnal. A védelmi képességét vesztett eszköz (kopott talp, sérült sisak) nem számít védőeszköznek.' }
+  ],
+  'munkavedelmi-labbeli-apolas-elettartam': [
+    { q: 'Hogyan szárítsam a beázott munkavédelmi bakancsot?', a: 'Szobahőmérsékleten, kitömve (újságpapír) és a talpbetétet kivéve — soha ne radiátoron vagy kályha mellett, mert a bőr kiszárad és a ragasztás enged.' },
+    { q: 'Mikor kell cserélni a munkavédelmi cipőt?', a: 'Ha a talpprofil 1,5 mm alá kopott, az orrmerevítő ütést kapott, vagy a talp-felsőrész ragasztás enged. Ilyenkor munkavédelmi szempontból elhasználódott, akkor is, ha még hordható.' },
+    { q: 'Megéri két pár cipőt váltogatni?', a: 'Igen — a bőr és a bélés így ki tud száradni két viselés között, ami mindkét pár élettartamát jelentősen (akár másfélszeresére) növeli, és a lábgomba kockázatát is csökkenti.' }
+  ]
 };
 
 export const getBlogPostBySlug = (slug) => {
