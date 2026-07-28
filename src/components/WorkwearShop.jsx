@@ -438,25 +438,161 @@ const WorkwearShop = () => {
 
       {/* Hero */}
       {!selectedCategory && !searchTerm && (
-        <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: '3rem 1.5rem', textAlign: 'center' }}>
+        <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: '3.5rem 1.5rem 3rem', textAlign: 'center' }}>
           <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: '2.5rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif' }}>
-              Munkaruha és Munkavédelmi Felszerelés Webshop
+            <h2 style={{ fontSize: '2.6rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
+              A munkád megvéd minket.<br />
+              <span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span>
             </h2>
-            <p style={{ fontSize: '1.1rem', margin: '0 0 2rem 0', opacity: 0.9, maxWidth: '700px', marginLeft: 'auto', marginRight: 'auto' }}>
-              Portwest munkanadrágok, munkavédelmi cipők és bakancsok (EN ISO 20345), munkakesztyűk,
-              védősisakok és jól láthatósági ruházat — 100 népszerű termék raktárról, országos kiszállítással Debrecenből.
+            <p style={{ fontSize: '1.15rem', margin: '0 0 1.75rem 0', opacity: 0.92, maxWidth: '720px', marginLeft: 'auto', marginRight: 'auto' }}>
+              {products.length.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés —
+              a legtöbbjét máshol nem kapod olcsóbban. 2-3 munkanapos kiszállítás, 14 napos csere,
+              és ha nem jó a méret, segítünk választani.
             </p>
-            <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
+              <button onClick={() => { const el = document.getElementById('akcios-sav') || document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
+                backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.85rem 1.75rem',
+                borderRadius: '4px', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer'
+              }}>
+                🔥 Akciós ajánlatok
+              </button>
+              <button onClick={() => { const el = document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
+                backgroundColor: 'transparent', color: 'white', border: '2px solid #C9A961', padding: '0.85rem 1.75rem',
+                borderRadius: '4px', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer'
+              }}>
+                Kategóriák böngészése
+              </button>
+            </div>
+            <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap', fontSize: '0.95rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Truck size={24} style={{ color: '#C9A961' }} /> <span>Gyors kiszállítás</span>
+                <Truck size={22} style={{ color: '#C9A961' }} /> <span>1 290 Ft szállítás — 30 000 Ft felett ingyenes</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Shield size={24} style={{ color: '#C9A961' }} /> <span>Minőségi garancia</span>
+                <Shield size={22} style={{ color: '#C9A961' }} /> <span>100% eredeti Portwest, CE-tanúsítvánnyal</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Award size={24} style={{ color: '#C9A961' }} /> <span>Tanúsított termékek</span>
+                <Award size={22} style={{ color: '#C9A961' }} /> <span>14 napos csere és visszaküldés</span>
               </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Akciós ajánlatok sáv */}
+      {!selectedCategory && !searchTerm && (() => {
+        const saleItems = products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
+          .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)
+          .slice(0, 10);
+        if (saleItems.length === 0) return null;
+        return (
+          <div id="akcios-sav" style={{ backgroundColor: '#fff5ee', borderBottom: '1px solid #f0e0d0', padding: '2rem 1.5rem' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+              <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
+                🔥 Akciós ajánlatok
+              </h3>
+              <p style={{ color: '#8a6d3b', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
+                A beszállítói akciókat azonnal továbbadjuk — amíg a készlet tart.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                {saleItems.map(p => (
+                  <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
+                    <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #f0d0b0' }}>
+                      <div style={{ position: 'relative' }}>
+                        <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
+                        <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#D32F2F', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                          −{Math.round((1 - p.sale.price / p.price) * 100)}%
+                        </span>
+                      </div>
+                      <div style={{ padding: '0.75rem' }}>
+                        <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
+                            {p.price.toLocaleString('hu-HU')} Ft
+                          </span>
+                          <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                            {p.sale.price.toLocaleString('hu-HU')} Ft
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Nálunk a legolcsóbb sáv */}
+      {!selectedCategory && !searchTerm && (() => {
+        const bestPrice = products.filter(p => p.competitorPrice > 0 && getEffectivePrice(p) < p.competitorPrice)
+          .sort((a, b) => (b.competitorPrice - getEffectivePrice(b)) - (a.competitorPrice - getEffectivePrice(a)))
+          .slice(0, 10);
+        if (bestPrice.length === 0) return null;
+        return (
+          <div style={{ backgroundColor: 'white', borderBottom: '1px solid #eee', padding: '2rem 1.5rem' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+              <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
+                🏆 Nálunk a legolcsóbb
+              </h3>
+              <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
+                Ezekre a termékekre megnéztük a piacot — és senki nem adja olcsóbban.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
+                {bestPrice.map(p => (
+                  <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
+                    <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #e0e8e0' }}>
+                      <div style={{ position: 'relative' }}>
+                        <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
+                        <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#0F2A1D', color: '#C9A961', padding: '2px 8px', borderRadius: '4px', fontSize: '0.72rem', fontWeight: 'bold' }}>
+                          LEGJOBB ÁR
+                        </span>
+                      </div>
+                      <div style={{ padding: '0.75rem' }}>
+                        <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
+                        <div style={{ marginTop: '0.5rem' }}>
+                          <span style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                            {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
+                          </span>
+                          <div style={{ color: '#4CAF50', fontSize: '0.78rem', marginTop: '2px' }}>
+                            máshol {p.competitorPrice.toLocaleString('hu-HU')} Ft-tól
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Kategória-csempék */}
+      {!selectedCategory && !searchTerm && (
+        <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2rem 1.5rem 0.5rem' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 1.25rem 0' }}>
+              Mit keresel?
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+              {productCategories.map(cat => {
+                const rep = products.find(p => p.categoryId === cat.id && p.image);
+                const count = products.filter(p => p.categoryId === cat.id).length;
+                return (
+                  <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
+                    backgroundColor: 'white', border: '1px solid #e5e5e5', borderRadius: '8px', padding: 0,
+                    cursor: 'pointer', overflow: 'hidden', textAlign: 'left', boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
+                    transition: 'transform 0.15s', display: 'block'
+                  }}>
+                    {rep && <img src={rep.image} alt={cat.name} loading="lazy" style={{ width: '100%', height: '130px', objectFit: 'contain', backgroundColor: '#fafafa' }} />}
+                    <div style={{ padding: '0.75rem 1rem' }}>
+                      <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.98rem' }}>{cat.name}</div>
+                      <div style={{ color: '#999', fontSize: '0.82rem', marginTop: '2px' }}>{count} termék →</div>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>

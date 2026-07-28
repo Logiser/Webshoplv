@@ -22,9 +22,12 @@ async function applyLiveOverrides(products) {
     return products.map(p => {
       const o = overrides[p.id];
       if (!o) return p;
+      // Akciós ár: a feedben is az effektív (akciós) ár megy ki
+      const basePrice = (typeof o.price === 'number' && o.price > 0) ? o.price : p.price;
+      const salePrice = (o.sale && o.sale.active && o.sale.price > 0) ? o.sale.price : null;
       return {
         ...p,
-        price: (typeof o.price === 'number' && o.price > 0) ? o.price : p.price,
+        price: salePrice !== null ? Math.min(salePrice, basePrice) : basePrice,
         stock: (typeof o.stock === 'number') ? o.stock : p.stock,
         hidden: o.hidden === true
       };

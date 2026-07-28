@@ -30,7 +30,7 @@ async function fetchAllListPrices() {
   const csrfM = html.match(/name="csrf-token" content="([^"]+)"/);
   if (!csrfM) throw new Error('CSRF token nem található');
 
-  const prices = {}; // articleNo -> bruttó listaár
+  const prices = {}; // articleNo -> { list: bruttó listaár, reduced: akciós ár|null }
   let total = Infinity;
   for (let skip = 0; skip < total && skip < 5000; skip += 500) {
     const qs = new URLSearchParams({
@@ -50,7 +50,8 @@ async function fetchAllListPrices() {
       const art = artOf(p.title);
       if (!art) continue;
       const price = parseInt(String(p.price || '').replace(/[^0-9]/g, ''), 10);
-      if (price && price >= 50 && !prices[art]) prices[art] = price;
+      const reduced = parseInt(String(p.priceReduced || '').replace(/[^0-9]/g, ''), 10) || null;
+      if (price && price >= 50 && !prices[art]) prices[art] = { list: price, reduced: reduced && reduced >= 50 ? reduced : null };
     }
   }
   return prices;
@@ -99,43 +100,84 @@ exports.handler = async (event) => {
     report.bulkCount = Object.keys(listPrices).length;
 
     for (const p of PRODUCTS) {
+      const ov = overrides[p.id] || {};
       // Kézi áras termék: az admin által rögzített árat a szinkron NEM írja felül
-      if (overrides[p.id] && overrides[p.id].priceManual === true) {
+      if (ov.priceManual === true) {
         report.manualSkipped = (report.manualSkipped || 0) + 1;
         continue;
       }
-      const listPrice = listPrices[(p.articleNo || '').toUpperCase()];
-      if (!listPrice) {
+      const entry = listPrices[(p.articleNo || '').toUpperCase()];
+      if (!entry) {
         report.unavailable.push({ articleNo: p.articleNo });
         continue;
       }
       report.checked++;
-      const partnerPrice = Math.round(listPrice * partnerRatio);
-      const currentPrice = (overrides[p.id] && overrides[p.id].price) || p.price;
+      const { list: listPrice, reduced } = entry;
+      const partnerNormal = Math.round(listPrice * partnerRatio);
+      // Akciónál: a publikus akciós ár BIZTOSAN elérhető beszerzési árként —
+      // konzervatívan ezzel számolunk (a viszonteladói kedvezmény akciós árra
+      // vetítése nincs igazolva, ezért azt nem feltételezzük)
+      const partnerEff = reduced ? Math.min(partnerNormal, reduced) : partnerNormal;
+      const floorPrice = Math.ceil((partnerEff * 1.05) / 10) * 10;
+      const capPrice = Math.round((partnerEff * 2.2) / 10) * 10;
+      const currentPrice = ov.price || p.price;
+      const depiendSale = ov.sale && ov.sale.source === 'depiend';
+      const adminSale = ov.sale && ov.sale.active && ov.sale.source !== 'depiend';
 
-      // Versenyár-alapú (Árukereső) termék: az árat békén hagyjuk, KIVÉVE ha a
-      // beszerzési ár úgy megnőtt, hogy a jelenlegi ár 5% árrés alá esne —
-      // ilyenkor a padló-árra emelünk (veszteség-védelem)
+      // Célár: versenyáras terméknél a legolcsóbb-10 Ft (az akciós beszerzés
+      // beengedhet minket a versenyképes sávba!), képletesnél partnerEff × árrés
+      let targetPrice;
+      if (p.priceSource === 'arukereso' && p.competitorPrice > 0) {
+        let t = Math.floor(p.competitorPrice / 10) * 10;
+        if (t >= p.competitorPrice) t -= 10;
+        targetPrice = Math.min(Math.max(t, floorPrice), capPrice);
+      } else {
+        targetPrice = Math.round(partnerEff * margin / 10) * 10;
+      }
+
+      if (reduced && !adminSale) {
+        // Beszállítói akció: ha a célár a jelenlegi ár ALÁ mehet, akciós
+        // jelöléssel visszük ki (áthúzott régi ár + AKCIÓ badge a shopon)
+        if (targetPrice < currentPrice) {
+          overrides[p.id] = {
+            ...ov,
+            sale: { active: true, price: targetPrice, label: 'AKCIÓ', source: 'depiend' }
+          };
+          report.changed.push({
+            articleNo: p.articleNo, name: p.name, ok: 'depiend-akcio',
+            listPrice, reduced, partnerPrice: partnerEff, oldPrice: currentPrice, newPrice: targetPrice
+          });
+          report.supplierSales = (report.supplierSales || 0) + 1;
+          continue;
+        }
+        report.supplierSales = (report.supplierSales || 0) + 1;
+      } else if (!reduced && depiendSale) {
+        // Az akció lejárt a Depiendnél: akciós jelölés le, normál árazás vissza
+        const cleaned = { ...ov };
+        delete cleaned.sale;
+        overrides[p.id] = cleaned;
+        report.changed.push({ articleNo: p.articleNo, name: p.name, ok: 'akcio-vege' });
+      }
+
+      // Normál árkarbantartás (akció nélkül, vagy akció ami nem enged árcsökkentést)
       if (p.priceSource === 'arukereso') {
-        const floorPrice = Math.ceil((partnerPrice * 1.05) / 10) * 10;
+        // Versenyáras: csak padló-védelem (emelés), az árat egyébként békén hagyjuk
         if (currentPrice < floorPrice) {
           overrides[p.id] = { ...(overrides[p.id] || {}), price: floorPrice };
           report.changed.push({
             articleNo: p.articleNo, name: p.name, ok: 'padlo-emeles',
-            listPrice, partnerPrice, oldPrice: currentPrice, newPrice: floorPrice
+            listPrice, partnerPrice: partnerEff, oldPrice: currentPrice, newPrice: floorPrice
           });
         }
-        continue;
-      }
-
-      // Képlet-áras termék: partnerár × árrés
-      const newPrice = Math.round(partnerPrice * margin / 10) * 10;
-      if (newPrice !== currentPrice) {
-        overrides[p.id] = { ...(overrides[p.id] || {}), price: newPrice };
-        report.changed.push({
-          articleNo: p.articleNo, name: p.name,
-          listPrice, partnerPrice, oldPrice: currentPrice, newPrice
-        });
+      } else {
+        const newPrice = Math.round(partnerEff * margin / 10) * 10;
+        if (newPrice !== currentPrice) {
+          overrides[p.id] = { ...(overrides[p.id] || {}), price: newPrice };
+          report.changed.push({
+            articleNo: p.articleNo, name: p.name,
+            listPrice, partnerPrice: partnerEff, oldPrice: currentPrice, newPrice
+          });
+        }
       }
     }
 

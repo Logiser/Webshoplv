@@ -25,6 +25,12 @@
   to = "/.netlify/functions/arukereso-feed"
   status = 200
 
+# ÁrGép feed redirect (platform-stratégiával szűrt terméklista)
+[[redirects]]
+  from = "/argep-feed.xml"
+  to = "/.netlify/functions/argep-feed"
+  status = 200
+
 # SPA fallback - MINDIG az utolsó!
 [[redirects]]
   from = "/*"
