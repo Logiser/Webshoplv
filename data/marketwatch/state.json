@@ -1,0 +1,30 @@
+{
+  "megjegyzes": "Piacfigyelés állapota. A cursor a products.generated.json katalógus-sorrendjére mutat (hanyadik terméknél tart az adott platform átvilágítása). A napi ütemezett feladat innen folytatja.",
+  "argep": {
+    "cursor": 297,
+    "osszesen": 1875,
+    "lastRun": "2026-07-28",
+    "napiLimit": 250,
+    "kerelemKoze_mp": 45,
+    "megjegyzes": "~110 kérés/óra felett IP-szintű Cloudflare 1015 tiltás (a felhasználót is kizárja!) — SOHA ne menj 45 mp-nél sűrűbben"
+  },
+  "arukereso": {
+    "cursor": 0,
+    "osszesen": 1875,
+    "lastRun": "2026-07-28",
+    "napiLimit": 500,
+    "kerelemKoze_mp": 2,
+    "megjegyzes": "CategorySearch.php?st=portwest+{ART} — 1597 kérés egyben átment, de a frissítő körök legyenek kíméletesek"
+  },
+  "emag": {
+    "cursor": 0,
+    "osszesen": 1875,
+    "lastRun": "2026-07-28",
+    "napiLimit": 100,
+    "kerelemKoze_mp": 5,
+    "megjegyzes": "CAPTCHA-érzékeny (HTTP 511 / eMAG Captcha oldal) — az ELSŐ captcha-jelre azonnal le kell állni aznapra"
+  },
+  "depiend_akciok": {
+    "megjegyzes": "Automatikus: az óránkénti depiend-sync Netlify function figyeli a priceReduced mezőt, ehhez nem kell kézi futtatás"
+  }
+}
