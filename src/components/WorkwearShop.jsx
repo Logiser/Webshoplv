@@ -6,9 +6,12 @@ import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackPro
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from './SizeChartModal';
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLang } from '../i18n/LanguageContext';
 
 const WorkwearShop = () => {
   const navigate = useNavigate();
+  const { t } = useLang();
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFocus, setSearchFocus] = useState(false);
@@ -277,9 +280,12 @@ const WorkwearShop = () => {
             <Mail size={14} /> iroda@tuz-munkavedelmiszaki.hu
           </span>
         </div>
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          <Truck size={14} /> Ingyenes szállítás 30.000 Ft felett
-        </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Truck size={14} /> {t('nav.freeShipping')}
+          </span>
+          <LanguageSwitcher compact />
+        </div>
       </div>
 
       {/* Header */}
@@ -302,7 +308,7 @@ const WorkwearShop = () => {
         }}>
           <Search size={20} style={{ color: '#999', marginRight: '0.5rem' }} />
           <input
-            type="text" placeholder="Keresés névre vagy cikkszámra…"
+            type="text" placeholder={t("nav.search")}
             value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
             onBlur={() => setTimeout(() => setSearchFocus(false), 200)}
             onFocus={() => setSearchFocus(true)}
@@ -340,7 +346,7 @@ const WorkwearShop = () => {
         </div>
 
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <Link to="/wishlist" title="Kedvencek"
+          <Link to="/wishlist" title={t("nav.favorites")}
             style={{ padding: '0.6rem', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', position: 'relative', textDecoration: 'none', color: '#d32f2f', display: 'flex' }}>
             <Heart size={22} fill={wishlist.length > 0 ? '#d32f2f' : 'none'} />
             {wishlist.length > 0 && (
@@ -848,7 +854,7 @@ const WorkwearShop = () => {
               color: '#0F2A1D', border: '1px solid #0F2A1D', borderRadius: '4px',
               cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
             }}>
-              🔄 Szűrők visszaállítása
+              🔄 {t("filter.reset")}
             </button>
           </aside>
 

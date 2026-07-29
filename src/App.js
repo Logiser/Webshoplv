@@ -14,6 +14,7 @@ import FaqPage from './pages/FaqPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import PaymentResultPage from './pages/PaymentResultPage';
 import AccountPage from './pages/AccountPage';
+import { LanguageProvider } from './i18n/LanguageContext';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
@@ -86,6 +87,7 @@ function App() {
   }
 
   return (
+    <LanguageProvider>
     <BrowserRouter>
       <RouteTracker />
       <CookieConsent />
@@ -200,6 +202,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
+    </LanguageProvider>
   );
 }
 
