@@ -6,20 +6,21 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-// Vevőnek megmutatható mezők (belső adat — pl. beszerzési ár — soha nem megy ki)
+// Vevőnek megmutatható mezők (belső adat — pl. beszerzési ár — soha nem megy ki).
+// Az orders sor szerkezete: { id, data: { ...rendelés } }
 const publicView = (o) => ({
   id: o.id,
-  status: o.status,
-  createdAt: o.created_at || o.createdAt,
+  status: o.status || 'pending',
+  createdAt: o.timestamp || o.createdAt || null,
   total: o.total,
   items: (o.items || []).map(i => ({
     name: i.name, quantity: i.quantity, price: i.price, size: i.size, color: i.color
   })),
-  shippingMethod: o.shipping_method || (o.data && o.data.shippingMethod) || null,
-  pickupPoint: (o.data && o.data.pickupPoint) || null,
-  paymentMethod: o.payment_method || (o.data && o.data.paymentMethod) || null,
-  trackingNumber: o.tracking_number || (o.data && o.data.trackingNumber) || null,
-  invoiceNumber: o.invoice_number || (o.data && o.data.invoiceNumber) || null
+  shippingMethod: (o.shipping && o.shipping.method) || null,
+  pickupPoint: (o.shipping && o.shipping.foxpostPoint) || null,
+  paymentMethod: o.paymentMethod || null,
+  trackingNumber: o.trackingNumber || null,
+  invoiceNumber: o.invoiceNumber || null
 });
 
 exports.handler = async (event) => {
@@ -45,13 +46,15 @@ exports.handler = async (event) => {
 
   try {
     const db = createClient(SUPABASE_URL, SUPABASE_SERVICE_KEY);
-    const { data, error } = await db.from('orders').select('*').eq('id', orderId).maybeSingle();
+    const { data: row, error } = await db.from('orders').select('id, data').eq('id', orderId).maybeSingle();
     if (error) throw error;
+
+    const data = row ? { id: row.id, ...(row.data || {}) } : null;
 
     // Nem létező rendelés és e-mail-eltérés ugyanazt a választ adja:
     // így nem derül ki, hogy létezik-e egyáltalán az adott azonosító.
     const orderEmail = String(
-      (data && (data.email || (data.customer && data.customer.email) || (data.data && data.data.email))) || ''
+      (data && data.customer && data.customer.email) || ''
     ).trim().toLowerCase();
 
     if (!data || orderEmail !== email) {

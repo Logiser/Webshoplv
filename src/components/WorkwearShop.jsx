@@ -65,6 +65,25 @@ const WorkwearShop = () => {
         }
       } catch (e) {}
     }
+
+    // Kosár visszaállítása az emlékeztető e-mail linkjéből (?kosar=<token>)
+    const params = new URLSearchParams(window.location.search);
+    const restoreToken = params.get('kosar');
+    if (restoreToken) {
+      fetch(`/.netlify/functions/restore-cart?t=${encodeURIComponent(restoreToken)}`)
+        .then(r => r.json())
+        .then(d => {
+          if (d && Array.isArray(d.cart) && d.cart.length > 0) {
+            setCart(d.cart);
+            setCartOpen(true);
+          }
+        })
+        .catch(() => {})
+        .finally(() => {
+          // A token ne maradjon a címsorban
+          window.history.replaceState({}, '', window.location.pathname);
+        });
+    }
   }, []);
 
   const getEffectivePrice = (p) => (p.sale && p.sale.active) ? p.sale.price : p.price;

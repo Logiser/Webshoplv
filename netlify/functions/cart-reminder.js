@@ -23,10 +23,12 @@ exports.handler = async () => {
       return { statusCode: 200, body: JSON.stringify({ ok: true, empty: true }) };
     }
 
-    // Akinek időközben lett rendelése, azt töröljük
-    const { data: orders } = await db.from('orders').select('customer').limit(1000);
+    // Akinek időközben lett rendelése, azt töröljük.
+    // FONTOS: az orders táblában minden a `data` JSONB oszlopban van
+    // ({ id, data: { customer: { email } } }) — nincs külön `customer` oszlop.
+    const { data: orders } = await db.from('orders').select('data').limit(1000);
     const orderedEmails = new Set((orders || [])
-      .map(o => ((o.customer || {}).email || '').toLowerCase()).filter(Boolean));
+      .map(o => (((o.data || {}).customer || {}).email || '').toLowerCase()).filter(Boolean));
 
     let dirty = false;
     for (const [email, entry] of Object.entries(carts)) {
@@ -62,7 +64,7 @@ exports.handler = async () => {
     <table style="width:100%;border-collapse:collapse;font-size:14px">${rows}</table>
     <p style="text-align:right;font-weight:bold">Összesen: ${total.toLocaleString('hu-HU')} Ft</p>
     <p style="text-align:center;margin:24px 0">
-      <a href="${SITE}" style="background:#C9A961;color:#0F2A1D;padding:12px 28px;border-radius:4px;text-decoration:none;font-weight:bold">Rendelés befejezése</a>
+      <a href="${SITE}/?kosar=${encodeURIComponent(Buffer.from(email).toString('base64url'))}" style="background:#C9A961;color:#0F2A1D;padding:12px 28px;border-radius:4px;text-decoration:none;font-weight:bold">Kosár visszaállítása &amp; rendelés</a>
     </p>
     <p style="color:#888;font-size:12px">Ezt az emailt azért kaptad, mert a pénztárnál hozzájárultál az értesítéshez.
     Több emlékeztetőt nem küldünk erről a kosárról.</p>
