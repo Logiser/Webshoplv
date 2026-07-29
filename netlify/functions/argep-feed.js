@@ -10,6 +10,7 @@ const { createClient } = require('@supabase/supabase-js');
 const PRODUCTS = require('./products-data.json');
 // Árgép-versenyárak build-kori pillanatképe ({ ART: minÁr, 0 = nincs fent az Árgépen })
 const ARGEP_STATIC = require('./argep-prices.json');
+const { isShopLive } = require('./_shop-live');
 
 const CATEGORY_PATHS = {
   munkaruha: 'Munkavédelem > Munkaruházat',
@@ -47,7 +48,8 @@ exports.handler = async () => {
       } catch (e) { console.error('kv hiba:', e.message); }
     }
 
-    const items = PRODUCTS.map(p => {
+    // Indulás előtt üres feed (lásd _shop-live.js)
+    const items = (isShopLive() ? PRODUCTS : []).map(p => {
       const o = overrides[p.id] || {};
       const basePrice = (typeof o.price === 'number' && o.price > 0) ? o.price : p.price;
       const salePrice = (o.sale && o.sale.active && o.sale.price > 0) ? o.sale.price : null;

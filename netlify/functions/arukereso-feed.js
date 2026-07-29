@@ -20,6 +20,8 @@ const escapeXml = (s) => String(s || '')
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
   .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
 
+const { isShopLive } = require('./_shop-live');
+
 // Adatbázis-módosítások (ár, készlet, rejtés) rávetítése az alapkatalógusra
 async function applyLiveOverrides(products) {
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY } = process.env;
@@ -54,7 +56,8 @@ exports.handler = async () => {
     const baseUrl = process.env.URL || 'https://tridentshop.hu';
     const shippingCost = parseInt(process.env.REACT_APP_SHIPPING_COST) || 1290;
 
-    const products = await applyLiveOverrides(PRODUCTS);
+    // Indulás előtt üres feed (lásd _shop-live.js)
+    const products = isShopLive() ? await applyLiveOverrides(PRODUCTS) : [];
 
     const items = products.filter(p => p.stock > 0 && !p.hidden).map(p => {
       const imageUrl = (p.image || '').startsWith('http') ? p.image : `${baseUrl}${p.image}`;

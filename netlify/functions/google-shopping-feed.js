@@ -9,6 +9,7 @@
 
 const { createClient } = require('@supabase/supabase-js');
 const PRODUCTS = require('./products-data.json');
+const { isShopLive } = require('./_shop-live');
 
 // Adatbázis-módosítások (ár, készlet, rejtés) rávetítése az alapkatalógusra
 async function applyLiveOverrides(products) {
@@ -51,7 +52,8 @@ const slugify = (text) => {
 exports.handler = async (event, context) => {
   try {
     const baseUrl = process.env.URL || 'https://tridentshop.hu';
-    const products = await applyLiveOverrides(PRODUCTS || []);
+    // Indulás előtt üres feed: a Merchant Center nem tesz közzé termékeket
+    const products = isShopLive() ? await applyLiveOverrides(PRODUCTS || []) : [];
 
     const items = products.filter(p => p.stock > 0 && !p.hidden).map(p => {
       const slug = p.slug || slugify(p.name);
