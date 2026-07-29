@@ -1,15 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, ChevronRight, ChevronLeft } from 'lucide-react';
+import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, ChevronRight, ChevronLeft, Ruler } from 'lucide-react';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, trackProductOpen } from '../data/storage';
 import { trackViewItem, trackAddToCart, trackAddToWishlist } from '../utils/analytics';
+import { getSizeChart } from '../data/sizeCharts';
+import SizeChartModal from '../components/SizeChartModal';
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
+  const [showSizeChart, setShowSizeChart] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [related, setRelated] = useState([]);
   const [wished, setWished] = useState(false);
@@ -123,6 +126,7 @@ const ProductDetailPage = () => {
 
   const cat = productCategories.find(c => c.id === product.categoryId);
   const subcat = productSubcategories.find(s => s.id === product.subcategoryId);
+  const sizeChart = getSizeChart(product);
   const effectivePrice = (product.sale && product.sale.active) ? product.sale.price : product.price;
 
   const handleAddToCart = () => {
@@ -368,9 +372,20 @@ const ProductDetailPage = () => {
               const sizeStock = activeVariant && activeVariant.sizeStock ? activeVariant.sizeStock : null;
               return (
                 <div style={{ marginBottom: '1rem' }}>
-                  <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                    Méret:
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <label style={{ fontWeight: 'bold', color: '#0F2A1D' }}>
+                      Méret:
+                    </label>
+                    {sizeChart && (
+                      <button onClick={() => setShowSizeChart(true)} style={{
+                        background: 'none', border: 'none', color: '#0F2A1D', cursor: 'pointer',
+                        textDecoration: 'underline', fontSize: '0.88rem', padding: 0,
+                        display: 'flex', alignItems: 'center', gap: '0.3rem'
+                      }}>
+                        <Ruler size={15} /> Mérettáblázat
+                      </button>
+                    )}
+                  </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                     {product.sizes.map(size => {
                       const qty = sizeStock ? (sizeStock[size] || 0) : null;
@@ -536,6 +551,10 @@ const ProductDetailPage = () => {
           </div>
         )}
       </div>
+
+      {showSizeChart && (
+        <SizeChartModal chart={sizeChart} onClose={() => setShowSizeChart(false)} />
+      )}
     </div>
   );
 };

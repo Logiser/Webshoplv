@@ -4,6 +4,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
+import { getSizeChart } from '../data/sizeCharts';
+import SizeChartModal from './SizeChartModal';
 
 const WorkwearShop = () => {
   const navigate = useNavigate();
@@ -1135,6 +1137,7 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 // PRODUCT MODAL
 // ============================================================
 const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selectedColor, setSelectedColor, quantity, setQuantity, onAddToCart, wished, onWishlist }) => {
+  const [modalSizeChart, setModalSizeChart] = useState(null);
   const variants = product.variants || [];
   const activeVariant = variants.find(v => v.code === selectedColor) || (variants.length === 1 ? variants[0] : null);
   const displayStock = activeVariant ? activeVariant.stock : product.stock;
@@ -1254,7 +1257,17 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             const sizeStock = activeVariant && activeVariant.sizeStock ? activeVariant.sizeStock : null;
             return (
               <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Méret:</label>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                  <label style={{ fontWeight: 'bold', color: '#0F2A1D' }}>Méret:</label>
+                  {getSizeChart(product) && (
+                    <button onClick={() => setModalSizeChart(getSizeChart(product))} style={{
+                      background: 'none', border: 'none', color: '#0F2A1D', cursor: 'pointer',
+                      textDecoration: 'underline', fontSize: '0.85rem', padding: 0
+                    }}>
+                      📏 Mérettáblázat
+                    </button>
+                  )}
+                </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
                   {product.sizes.map(size => {
                     const qty = sizeStock ? (sizeStock[size] || 0) : null;
@@ -1317,6 +1330,10 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
           </Link>
         </div>
       </div>
+
+      {modalSizeChart && (
+        <SizeChartModal chart={modalSizeChart} onClose={() => setModalSizeChart(null)} />
+      )}
     </div>
   );
 };
