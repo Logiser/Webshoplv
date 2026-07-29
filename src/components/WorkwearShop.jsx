@@ -965,6 +965,7 @@ const WorkwearShop = () => {
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/blog" style={{ color: '#bbb', textDecoration: 'none' }}>📝 Blog</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/wishlist" style={{ color: '#bbb', textDecoration: 'none' }}>❤️ Kedvenceim</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/gyik" style={{ color: '#bbb', textDecoration: 'none' }}>❓ Gyakori kérdések</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/rendeles-kovetes" style={{ color: '#bbb', textDecoration: 'none' }}>📦 Rendeléskövetés</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/about" style={{ color: '#bbb', textDecoration: 'none' }}>Rólunk</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/shipping" style={{ color: '#bbb', textDecoration: 'none' }}>Szállítási feltételek</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/terms" style={{ color: '#bbb', textDecoration: 'none' }}>ÁSZF</Link></li>

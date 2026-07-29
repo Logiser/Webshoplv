@@ -2,6 +2,8 @@
 // Resend.com email küldés - 3.000 email/hó ingyen
 // Setup: Netlify Environment Variables → RESEND_API_KEY = re_xxxxx
 
+const { buildInvoiceHTML } = require('./_invoice-html');
+
 exports.handler = async (event) => {
   if (event.httpMethod !== 'POST') {
     return {
@@ -13,6 +15,7 @@ exports.handler = async (event) => {
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
   const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iroda@tuz-munkavedelmiszaki.hu';
   const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
+  const SITE_URL = process.env.SITE_URL || process.env.URL || 'https://tridentshop.hu';
   // Megjegyzés: amíg nincs igazolt saját domain, FROM_EMAIL = onboarding@resend.dev
   // Saját domain után: FROM_EMAIL = noreply@tuz-munkavedelmiszaki.hu
 
@@ -131,6 +134,19 @@ exports.handler = async (event) => {
     <p style="margin: 4px 0;"><strong>Fizetési mód:</strong> ${payLabel}</p>
     <p style="margin: 4px 0;"><strong>Szállítás:</strong> ${shipLabel}</p>
 
+    <div style="margin-top: 16px; padding: 14px 16px; background: #f5f7f5; border-left: 4px solid #0F2A1D; border-radius: 4px;">
+      <p style="margin: 0 0 6px 0; font-weight: bold; color: #0F2A1D;">📦 Hol tart a csomagod?</p>
+      <p style="margin: 0; font-size: 0.92rem;">
+        Bármikor megnézheted a rendelésed állapotát:<br>
+        <a href="${SITE_URL}/rendeles-kovetes?id=${encodeURIComponent(orderId)}&email=${encodeURIComponent(customer.email || '')}"
+           style="color: #0F2A1D; font-weight: bold;">Rendeléskövetés megnyitása →</a>
+      </p>
+    </div>
+
+    <p style="margin: 16px 0 4px 0; font-size: 0.92rem; color: #555;">
+      📎 A bizonylatot mellékletként csatoltuk ehhez a levélhez.
+    </p>
+
     ${/^Előreutalás/i.test(payLabel) ? `
     <div style="margin-top: 16px; padding: 16px; background: #fff9e6; border-left: 4px solid #C9A961; border-radius: 4px;">
       <p style="margin: 0 0 8px 0; font-weight: bold; color: #0F2A1D;">🏦 Utalási adatok</p>
@@ -202,19 +218,16 @@ exports.handler = async (event) => {
 </body></html>`;
 
     // ============ Resend API hívás ============
-    const sendEmail = async (to, subject, html) => {
+    const sendEmail = async (to, subject, html, attachments) => {
+      const payload = { from: FROM_EMAIL, to: [to], subject, html };
+      if (attachments && attachments.length) payload.attachments = attachments;
       const response = await fetch('https://api.resend.com/emails', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${RESEND_API_KEY}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({
-          from: FROM_EMAIL,
-          to: [to],
-          subject,
-          html
-        })
+        body: JSON.stringify(payload)
       });
       const data = await response.json();
       if (!response.ok) {
@@ -236,14 +249,26 @@ exports.handler = async (event) => {
       console.error('Admin email hiba:', e);
     }
 
-    // 2. email: a vevőnek (csak ha van email cím)
+    // 2. email: a vevőnek (csak ha van email cím) — a bizonylatot mellékletként csatoljuk,
+    // így nem kell utólagos letöltő felületet fenntartani
     let customerResult = null;
     if (customer.email) {
+      let attachments;
+      try {
+        const html = buildInvoiceHTML(orderData);
+        attachments = [{
+          filename: `bizonylat-${orderData.invoiceNumber || orderId}.html`,
+          content: Buffer.from(html, 'utf8').toString('base64')
+        }];
+      } catch (e) {
+        console.error('Bizonylat generálási hiba (melléklet nélkül megy):', e);
+      }
       try {
         customerResult = await sendEmail(
           customer.email,
           `✅ Rendelés visszaigazolás - MunkavédelmiShop (${orderId})`,
-          customerHTML
+          customerHTML,
+          attachments
         );
       } catch (e) {
         console.error('Vevő email hiba:', e);

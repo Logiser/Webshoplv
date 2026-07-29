@@ -11,6 +11,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import { TermsPage, PrivacyPage, ImpressumPage, ShippingPage, ContactPage, AboutPage } from './pages/StaticPages';
 import CookieConsent from './components/CookieConsent';
 import FaqPage from './pages/FaqPage';
+import OrderTrackingPage from './pages/OrderTrackingPage';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
@@ -180,6 +181,7 @@ function App() {
         <Route path="/contact" element={<ContactPage />} />
         <Route path="/about" element={<AboutPage />} />
         <Route path="/gyik" element={<FaqPage />} />
+        <Route path="/rendeles-kovetes" element={<OrderTrackingPage />} />
 
         {/* Új v6.0 route-ok */}
         <Route path="/termek/:slug" element={<ProductDetailPage />} />
