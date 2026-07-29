@@ -10,13 +10,19 @@ const WishlistPage = () => {
   const [products, setProducts] = useState([]);
   const [refresh, setRefresh] = useState(0);
   const [syncEmail, setSyncEmail] = useState(() => localStorage.getItem('ms_wishlist_email') || '');
+  const [syncPin, setSyncPin] = useState('');
   const [syncMsg, setSyncMsg] = useState(null);   // {type: 'ok'|'err', text}
   const [syncBusy, setSyncBusy] = useState(false);
 
   const handleSync = async (op) => {
     const email = syncEmail.trim();
+    const pin = syncPin.trim();
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       setSyncMsg({ type: 'err', text: 'Adj meg érvényes email címet!' });
+      return;
+    }
+    if (!/^\d{4,8}$/.test(pin)) {
+      setSyncMsg({ type: 'err', text: 'Adj meg egy 4-8 számjegyű PIN-kódot — ez védi a listádat.' });
       return;
     }
     setSyncBusy(true);
@@ -24,10 +30,10 @@ const WishlistPage = () => {
     try {
       localStorage.setItem('ms_wishlist_email', email);
       if (op === 'save') {
-        const r = await saveWishlistToCloud(email);
-        setSyncMsg({ type: 'ok', text: `✅ ${r.count} kedvenc elmentve ehhez: ${email}` });
+        const r = await saveWishlistToCloud(email, pin);
+        setSyncMsg({ type: 'ok', text: `✅ ${r.count} kedvenc elmentve. Jegyezd meg a PIN-t — ezzel töltheted vissza!` });
       } else {
-        const items = await loadWishlistFromCloud(email);
+        const items = await loadWishlistFromCloud(email, pin);
         setRefresh(r => r + 1);
         setSyncMsg({ type: 'ok', text: `✅ ${items.length} kedvenc betöltve` });
       }
@@ -76,8 +82,11 @@ const WishlistPage = () => {
 
         {isSupabaseEnabled && (
           <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '2rem', borderLeft: '4px solid #C9A961' }}>
-            <p style={{ margin: '0 0 0.75rem 0', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem' }}>
+            <p style={{ margin: '0 0 0.25rem 0', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem' }}>
               ☁️ Kedvencek mentése email-címhez — így bármelyik eszközödről elérheted
+            </p>
+            <p style={{ margin: '0 0 0.75rem 0', color: '#666', fontSize: '0.82rem' }}>
+              A listát egy általad választott PIN-kód védi. Ugyanezzel a PIN-nel tudod visszatölteni.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <input
@@ -85,7 +94,17 @@ const WishlistPage = () => {
                 value={syncEmail}
                 onChange={(e) => { setSyncEmail(e.target.value); setSyncMsg(null); }}
                 placeholder="email@cimed.hu"
-                style={{ flex: '1 1 220px', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px' }}
+                style={{ flex: '1 1 200px', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px' }}
+              />
+              <input
+                type="password"
+                inputMode="numeric"
+                autoComplete="off"
+                value={syncPin}
+                maxLength={8}
+                onChange={(e) => { setSyncPin(e.target.value.replace(/\D/g, '')); setSyncMsg(null); }}
+                placeholder="PIN (4-8 számjegy)"
+                style={{ flex: '0 1 150px', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px' }}
               />
               <button onClick={() => handleSync('save')} disabled={syncBusy} style={{
                 padding: '0.6rem 1rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',

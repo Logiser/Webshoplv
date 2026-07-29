@@ -323,6 +323,39 @@ export const ShippingPage = () => {
 };
 
 export const ContactPage = () => {
+  const [form, setForm] = React.useState({ name: '', email: '', subject: '', message: '', company: '' });
+  const [status, setStatus] = React.useState(null); // null | 'sending' | 'ok' | hibaszöveg
+
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (status === 'sending') return;
+    setStatus('sending');
+    try {
+      const res = await fetch('/.netlify/functions/contact-form', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form)
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.ok) {
+        setStatus('ok');
+        setForm({ name: '', email: '', subject: '', message: '', company: '' });
+      } else {
+        setStatus(data.error || 'Az üzenetet most nem tudtuk elküldeni. Kérjük, hívj minket: +36 30 272 2571');
+      }
+    } catch (err) {
+      setStatus('Hálózati hiba. Kérjük, hívj minket: +36 30 272 2571');
+    }
+  };
+
+  const inputStyle = {
+    width: '100%', padding: '0.75rem', border: '1px solid #ddd',
+    borderRadius: '4px', fontSize: '1rem', boxSizing: 'border-box'
+  };
+  const labelStyle = { display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' };
+
   return (
     <div style={{ backgroundColor: '#fafaf8', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1.5rem' }}>
@@ -343,9 +376,9 @@ export const ContactPage = () => {
 
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px' }}>
             <h3 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>📧 E-mail</h3>
-            <p style={{ fontSize: '1.1rem' }}>
-              <a href="mailto:rendelések@munkavedelem.shop" style={{ color: '#C9A961', textDecoration: 'none' }}>
-                rendelések@munkavedelem.shop
+            <p style={{ fontSize: '1.05rem' }}>
+              <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style={{ color: '#C9A961', textDecoration: 'none' }}>
+                iroda@tuz-munkavedelmiszaki.hu
               </a>
             </p>
             <p style={{ color: '#666', fontSize: '0.9rem' }}>
@@ -356,8 +389,8 @@ export const ContactPage = () => {
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px' }}>
             <h3 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>📍 Cím</h3>
             <p style={{ color: '#333' }}>
-              Budapest<br />
-              Magyarország
+              4030 Debrecen,<br />
+              Keleti Ipartelep utca 4.
             </p>
             <p style={{ color: '#666', fontSize: '0.9rem' }}>
               Országos szállítás
@@ -366,98 +399,75 @@ export const ContactPage = () => {
         </div>
 
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', marginBottom: '2rem' }}>
-          <h2 style={{ color: '#0F2A1D', marginBottom: '1.5rem' }}>Üzenet Küldése</h2>
-          <form style={{
-            display: 'grid',
-            gap: '1rem'
-          }}>
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                Név *
-              </label>
-              <input
-                type="text"
-                placeholder="Teljes neved"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '1rem'
-                }}
-              />
-            </div>
+          <h2 style={{ color: '#0F2A1D', marginBottom: '1.5rem' }}>Üzenet küldése</h2>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                E-mail *
-              </label>
-              <input
-                type="email"
-                placeholder="email@example.com"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '1rem'
-                }}
-              />
+          {status === 'ok' ? (
+            <div style={{
+              backgroundColor: '#e8f5e9', border: '1px solid #4CAF50', color: '#1b5e20',
+              padding: '1.5rem', borderRadius: '8px'
+            }}>
+              <strong>Köszönjük, megkaptuk az üzeneted!</strong>
+              <p style={{ margin: '0.5rem 0 0 0' }}>
+                Munkatársunk 24 órán belül válaszol. Sürgős esetben hívj minket: +36 30 272 2571
+              </p>
             </div>
+          ) : (
+            <form onSubmit={handleSubmit} style={{ display: 'grid', gap: '1rem' }}>
+              <div>
+                <label style={labelStyle} htmlFor="cf-name">Név *</label>
+                <input id="cf-name" type="text" required maxLength={100}
+                  placeholder="Teljes neved" value={form.name} onChange={set('name')} style={inputStyle} />
+              </div>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                Tárgy *
-              </label>
-              <input
-                type="text"
-                placeholder="Üzenet tárgya"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '1rem'
-                }}
-              />
-            </div>
+              <div>
+                <label style={labelStyle} htmlFor="cf-email">E-mail *</label>
+                <input id="cf-email" type="email" required maxLength={120}
+                  placeholder="email@example.com" value={form.email} onChange={set('email')} style={inputStyle} />
+              </div>
 
-            <div>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                Üzenet *
-              </label>
-              <textarea
-                placeholder="Írd ide az üzeneted..."
-                rows="6"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem',
-                  border: '1px solid #ddd',
-                  borderRadius: '4px',
-                  fontSize: '1rem',
-                  fontFamily: 'inherit',
-                  resize: 'vertical'
-                }}
-              ></textarea>
-            </div>
+              <div>
+                <label style={labelStyle} htmlFor="cf-subject">Tárgy *</label>
+                <input id="cf-subject" type="text" required maxLength={150}
+                  placeholder="Üzenet tárgya" value={form.subject} onChange={set('subject')} style={inputStyle} />
+              </div>
 
-            <button
-              type="submit"
-              style={{
-                backgroundColor: '#0F2A1D',
-                color: 'white',
-                padding: '1rem',
-                borderRadius: '4px',
-                border: 'none',
-                fontSize: '1rem',
-                fontWeight: 'bold',
-                cursor: 'pointer',
-                marginTop: '1rem'
-              }}
-            >
-              Üzenet Küldése
-            </button>
-          </form>
+              <div>
+                <label style={labelStyle} htmlFor="cf-message">Üzenet *</label>
+                <textarea id="cf-message" required rows="6" maxLength={4000}
+                  placeholder="Írd ide az üzeneted..." value={form.message} onChange={set('message')}
+                  style={{ ...inputStyle, fontFamily: 'inherit', resize: 'vertical' }} />
+              </div>
+
+              {/* Spamszűrő: valódi felhasználó ezt nem látja, így nem is tölti ki */}
+              <input type="text" name="company" tabIndex={-1} autoComplete="off"
+                value={form.company} onChange={set('company')}
+                style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px' }}
+                aria-hidden="true" />
+
+              {status && status !== 'sending' && (
+                <div style={{
+                  backgroundColor: '#ffebee', border: '1px solid #d32f2f', color: '#b71c1c',
+                  padding: '0.75rem 1rem', borderRadius: '4px', fontSize: '0.95rem'
+                }}>
+                  {status}
+                </div>
+              )}
+
+              <p style={{ color: '#666', fontSize: '0.85rem', margin: 0 }}>
+                Az üzenet elküldésével hozzájárulsz, hogy a megadott adataidat a megkeresés
+                megválaszolása céljából kezeljük. Részletek az <a href="/privacy" style={{ color: '#C9A961' }}>Adatvédelmi tájékoztatóban</a>.
+              </p>
+
+              <button type="submit" disabled={status === 'sending'} style={{
+                backgroundColor: status === 'sending' ? '#6b7d73' : '#0F2A1D',
+                color: 'white', padding: '1rem', borderRadius: '4px', border: 'none',
+                fontSize: '1rem', fontWeight: 'bold',
+                cursor: status === 'sending' ? 'default' : 'pointer', marginTop: '0.5rem'
+              }}>
+                {status === 'sending' ? 'Küldés…' : 'Üzenet küldése'}
+              </button>
+            </form>
+          )}
         </div>
 
         <div style={{ backgroundColor: '#f0f0ec', padding: '2rem', borderRadius: '8px' }}>

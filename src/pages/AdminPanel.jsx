@@ -4,7 +4,7 @@ import {
   Home, Package, TrendingUp, Tag, Plus, Upload, Download, Search,
   Edit2, Trash2, Eye, EyeOff, AlertTriangle, DollarSign, Box, ShoppingBag,
   X, BarChart3, LogOut, Save, RefreshCw, Bell, FileText, CheckSquare,
-  BookOpen, Mail, Printer
+  BookOpen, Mail, Printer, Star
 } from 'lucide-react';
 import { productCategories, productSubcategories } from '../data/productData';
 import {
@@ -58,6 +58,7 @@ const AdminPanel = () => {
     { id: 'import', name: 'CSV/XML Import', icon: Upload },
     { id: 'orders', name: 'Rendelések', icon: ShoppingBag },
     { id: 'coupons', name: 'Kuponok', icon: Tag },
+    { id: 'reviews', name: 'Értékelések', icon: Star },
     { id: 'ppc', name: 'PPC Statisztika', icon: TrendingUp },
     { id: 'reports', name: 'Riportok', icon: BarChart3 },
     { id: 'supplier', name: 'Beszállító ⓘ', icon: Bell },
@@ -171,6 +172,7 @@ const AdminPanel = () => {
         {activeTab === 'import' && <ImportProducts onChange={triggerRefresh} setTab={setActiveTab} />}
         {activeTab === 'orders' && <OrdersList key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
+        {activeTab === 'reviews' && <ReviewsManager key={refreshKey} />}
         {activeTab === 'ppc' && <PpcStats key={refreshKey} />}
         {activeTab === 'reports' && <ReportsTab key={refreshKey} />}
         {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} />}
@@ -2019,6 +2021,143 @@ const StatCard = ({ title, value, color, icon }) => (
 const SOURCE_LABELS = {
   arukereso: '🛒 Árukereső', google: '🔎 Google Shopping', organikus: '🌱 Google organikus',
   facebook: '📘 Facebook', direkt: '🔗 Direkt', egyeb: '❓ Egyéb'
+};
+
+// ============================================================
+// ÉRTÉKELÉSEK MODERÁLÁSA
+// A beküldött vélemények approved:false-szal érkeznek — itt lehet
+// jóváhagyni (kikerül a termékoldalra) vagy törölni őket.
+// ============================================================
+const ReviewsManager = () => {
+  const [reviews, setReviews] = useState(null);   // { productId: [...] }
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState('');
+  const [filter, setFilter] = useState('pending'); // pending | approved | all
+  const products = getAllProducts();
+  const nameOf = (pid) => (products.find(p => String(p.id) === String(pid)) || {}).name || `#${pid}`;
+
+  const load = () => {
+    if (!isSupabaseEnabled) { setError('Az értékelések csak éles (Supabase) módban érhetők el.'); return; }
+    adminApi('get_all')
+      .then(({ kv }) => setReviews((kv && kv.ms_reviews) || {}))
+      .catch(e => setError(e.message || 'Betöltési hiba'));
+  };
+  useEffect(load, []);
+
+  const save = async (next) => {
+    setBusy('save');
+    try {
+      await adminApi('set_kv', { key: 'ms_reviews', value: next });
+      setReviews(next);
+    } catch (e) {
+      alert('Mentési hiba: ' + (e.message || e));
+    }
+    setBusy('');
+  };
+
+  const setApproved = (pid, idx, value) => {
+    const next = { ...reviews, [pid]: reviews[pid].map((r, i) => i === idx ? { ...r, approved: value } : r) };
+    save(next);
+  };
+  const remove = (pid, idx) => {
+    if (!window.confirm('Biztosan törlöd ezt az értékelést? Ez nem vonható vissza.')) return;
+    const list = reviews[pid].filter((_, i) => i !== idx);
+    const next = { ...reviews };
+    if (list.length) next[pid] = list; else delete next[pid];
+    save(next);
+  };
+
+  if (error) return <div><h1 style={{ color: '#0F2A1D' }}>⭐ Értékelések</h1><p style={{ color: '#d32f2f' }}>{error}</p></div>;
+  if (reviews === null) return <div><h1 style={{ color: '#0F2A1D' }}>⭐ Értékelések</h1><p style={{ color: '#999' }}>Betöltés...</p></div>;
+
+  const rows = [];
+  Object.entries(reviews).forEach(([pid, list]) => {
+    (list || []).forEach((r, idx) => rows.push({ pid, idx, ...r }));
+  });
+  rows.sort((a, b) => String(b.ts || '').localeCompare(String(a.ts || '')));
+  const pendingCount = rows.filter(r => !r.approved).length;
+  const shown = rows.filter(r => filter === 'all' || (filter === 'pending' ? !r.approved : r.approved));
+
+  const btn = (id, label) => (
+    <button onClick={() => setFilter(id)} style={{
+      padding: '0.5rem 1rem', marginRight: '0.5rem', borderRadius: '4px', cursor: 'pointer',
+      border: filter === id ? '2px solid #0F2A1D' : '1px solid #ddd',
+      backgroundColor: filter === id ? '#0F2A1D' : 'white',
+      color: filter === id ? 'white' : '#333', fontWeight: filter === id ? 'bold' : 'normal'
+    }}>{label}</button>
+  );
+
+  return (
+    <div>
+      <h1 style={{ color: '#0F2A1D' }}>⭐ Értékelések</h1>
+      <p style={{ color: '#666', marginTop: 0 }}>
+        A beérkező vélemények jóváhagyásig <strong>nem látszanak</strong> a termékoldalon.
+        {pendingCount > 0 && <span style={{ color: '#d32f2f', fontWeight: 'bold' }}> {pendingCount} vár jóváhagyásra.</span>}
+      </p>
+
+      <div style={{ margin: '1.5rem 0' }}>
+        {btn('pending', `Jóváhagyásra vár (${rows.filter(r => !r.approved).length})`)}
+        {btn('approved', `Közzétéve (${rows.filter(r => r.approved).length})`)}
+        {btn('all', `Összes (${rows.length})`)}
+        <button onClick={load} style={{
+          padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ddd',
+          backgroundColor: 'white', cursor: 'pointer', float: 'right'
+        }}>🔄 Frissítés</button>
+      </div>
+
+      {shown.length === 0 && (
+        <p style={{ color: '#999', backgroundColor: 'white', padding: '2rem', borderRadius: '8px', textAlign: 'center' }}>
+          Nincs megjeleníthető értékelés ebben a nézetben.
+        </p>
+      )}
+
+      {shown.map((r) => (
+        <div key={`${r.pid}-${r.idx}`} style={{
+          backgroundColor: 'white', padding: '1.25rem', borderRadius: '8px', marginBottom: '1rem',
+          borderLeft: `4px solid ${r.approved ? '#4CAF50' : '#FF9800'}`
+        }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <div>
+              <strong style={{ color: '#0F2A1D' }}>{r.name}</strong>
+              <span style={{ color: '#C9A961', marginLeft: '0.75rem' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</span>
+              <span style={{
+                marginLeft: '0.75rem', fontSize: '0.75rem', fontWeight: 'bold',
+                padding: '2px 8px', borderRadius: '4px',
+                backgroundColor: r.approved ? '#e8f5e9' : '#fff3e0',
+                color: r.approved ? '#2e7d32' : '#e65100'
+              }}>{r.approved ? 'KÖZZÉTÉVE' : 'JÓVÁHAGYÁSRA VÁR'}</span>
+            </div>
+            <span style={{ color: '#999', fontSize: '0.85rem' }}>
+              {r.ts ? new Date(r.ts).toLocaleString('hu-HU') : ''}
+            </span>
+          </div>
+
+          <p style={{ color: '#666', fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>
+            Termék: <strong>{nameOf(r.pid)}</strong>
+          </p>
+          <p style={{ color: '#333', margin: '0.75rem 0', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{r.text}</p>
+
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {!r.approved ? (
+              <button disabled={!!busy} onClick={() => setApproved(r.pid, r.idx, true)} style={{
+                backgroundColor: '#4CAF50', color: 'white', border: 'none', padding: '0.5rem 1rem',
+                borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+              }}>✓ Jóváhagyás</button>
+            ) : (
+              <button disabled={!!busy} onClick={() => setApproved(r.pid, r.idx, false)} style={{
+                backgroundColor: '#FF9800', color: 'white', border: 'none', padding: '0.5rem 1rem',
+                borderRadius: '4px', cursor: 'pointer'
+              }}>↩ Visszavonás</button>
+            )}
+            <button disabled={!!busy} onClick={() => remove(r.pid, r.idx)} style={{
+              backgroundColor: 'white', color: '#d32f2f', border: '1px solid #d32f2f',
+              padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer'
+            }}>🗑 Törlés</button>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 };
 
 const PpcStats = () => {

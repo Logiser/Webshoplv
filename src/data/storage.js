@@ -648,22 +648,24 @@ export const setWishlist = (ids) => {
 };
 
 // Email-alapú mentés/betöltés a wishlist-api function-ön keresztül (csak Supabase módban)
-export const saveWishlistToCloud = async (email) => {
+// A felhőbe mentett kedvenclistát PIN védi — e-mail-cím önmagában nem elég
+// a betöltéshez (különben bárki megnézhetné más listáját).
+export const saveWishlistToCloud = async (email, pin) => {
   const res = await fetch('/.netlify/functions/wishlist-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ op: 'save', email, items: getWishlist() })
+    body: JSON.stringify({ op: 'save', email, pin, items: getWishlist() })
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Mentési hiba');
   return data;
 };
 
-export const loadWishlistFromCloud = async (email) => {
+export const loadWishlistFromCloud = async (email, pin) => {
   const res = await fetch('/.netlify/functions/wishlist-api', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ op: 'load', email })
+    body: JSON.stringify({ op: 'load', email, pin })
   });
   const data = await res.json().catch(() => ({}));
   if (!res.ok) throw new Error(data.error || 'Betöltési hiba');

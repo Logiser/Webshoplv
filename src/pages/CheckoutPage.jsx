@@ -5,6 +5,13 @@ import { saveOrder, validateCoupon } from '../data/storage';
 import { openInvoice } from '../utils/invoice';
 import { trackBeginCheckout, trackPurchase } from '../utils/analytics';
 
+// Fizetési módok. Az online bankkártyás fizetés a szolgáltatói (SimplePay/Barion)
+// szerződés megkötése után kerül be — addig utánvét és előreutalás érhető el.
+const PAYMENT_LABELS = {
+  utanvet: 'Utánvét (készpénz vagy kártya a futárnál)',
+  atutalas: 'Előreutalás (banki átutalás)'
+};
+
 const CheckoutPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -41,6 +48,9 @@ const CheckoutPage = () => {
   const [coupon, setCoupon] = useState(null);        // {valid, code, discount}
   const [couponError, setCouponError] = useState('');
   const [couponLoading, setCouponLoading] = useState(false);
+
+  // Fizetési mód (online fizetés a szolgáltatói szerződés megkötése után jön)
+  const [payMethod, setPayMethod] = useState('utanvet');
 
   // Szállítási mód: házhozszállítás vagy Foxpost automata
   const [shipMethod, setShipMethod] = useState('home');
@@ -141,6 +151,7 @@ const CheckoutPage = () => {
         items: cart,
         total: grandTotal,
         shipping: shippingInfo,
+        paymentMethod: PAYMENT_LABELS[payMethod] || PAYMENT_LABELS.utanvet,
         coupon: coupon && coupon.valid ? { code: coupon.code, discount } : null,
         timestamp: new Date().toISOString()
       });
@@ -151,6 +162,8 @@ const CheckoutPage = () => {
         customer: formData,
         items: cart,
         total: grandTotal,
+        paymentMethod: PAYMENT_LABELS[payMethod] || PAYMENT_LABELS.utanvet,
+        shipping: shippingInfo,
         coupon: coupon && coupon.valid ? { code: coupon.code, discount } : null,
         timestamp: new Date().toISOString()
       };
@@ -635,6 +648,44 @@ const CheckoutPage = () => {
                       </>
                     )}
                   </div>
+                )}
+              </div>
+
+              {/* Fizetési mód */}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
+                  Fizetési mód *
+                </label>
+                <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  <label style={{
+                    flex: 1, minWidth: '200px', border: `2px solid ${payMethod === 'utanvet' ? '#C9A961' : '#ddd'}`,
+                    borderRadius: '6px', padding: '0.75rem', cursor: 'pointer',
+                    backgroundColor: payMethod === 'utanvet' ? '#fdf9f0' : 'white'
+                  }}>
+                    <input type="radio" name="payMethod" checked={payMethod === 'utanvet'}
+                      onChange={() => setPayMethod('utanvet')} style={{ marginRight: '0.5rem' }} />
+                    <strong>💵 Utánvét</strong>
+                    <div style={{ color: '#666', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      Készpénz vagy kártya a futárnál / az automatánál
+                    </div>
+                  </label>
+                  <label style={{
+                    flex: 1, minWidth: '200px', border: `2px solid ${payMethod === 'atutalas' ? '#C9A961' : '#ddd'}`,
+                    borderRadius: '6px', padding: '0.75rem', cursor: 'pointer',
+                    backgroundColor: payMethod === 'atutalas' ? '#fdf9f0' : 'white'
+                  }}>
+                    <input type="radio" name="payMethod" checked={payMethod === 'atutalas'}
+                      onChange={() => setPayMethod('atutalas')} style={{ marginRight: '0.5rem' }} />
+                    <strong>🏦 Előreutalás</strong>
+                    <div style={{ color: '#666', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                      A visszaigazoló e-mailben küldjük az utalási adatokat
+                    </div>
+                  </label>
+                </div>
+                {payMethod === 'atutalas' && (
+                  <p style={{ color: '#666', fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>
+                    A csomagot az összeg beérkezése után adjuk fel.
+                  </p>
                 )}
               </div>
 

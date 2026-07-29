@@ -15,6 +15,7 @@ const WRITABLE_KEYS = [
   'ms_reviews',
   'ms_newsletter',
   'ms_abandoned_carts',
+  'ms_contact_messages',
   'ms_supplier_notifications',
   'ms_coupons',
   'ms_pricing'

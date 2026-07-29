@@ -7,6 +7,7 @@ import WishlistPage from './pages/WishlistPage';
 import ProductDetailPage from './pages/ProductDetailPage';
 import BlogPage from './pages/BlogPage';
 import BlogPostPage from './pages/BlogPostPage';
+import NotFoundPage from './pages/NotFoundPage';
 import { TermsPage, PrivacyPage, ImpressumPage, ShippingPage, ContactPage, AboutPage } from './pages/StaticPages';
 import CookieConsent from './components/CookieConsent';
 import FaqPage from './pages/FaqPage';
@@ -188,6 +189,9 @@ function App() {
 
         {/* Főoldal */}
         <Route path="/" element={<WorkwearShop />} />
+
+        {/* Ismeretlen URL — minden más útvonal után! */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </BrowserRouter>
   );

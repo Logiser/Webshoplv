@@ -172,7 +172,7 @@ exports.handler = async (event) => {
 <xmlszamla xmlns="http://www.szamlazz.hu/xmlszamla">
   <beallitasok><szamlaagentkulcs>${process.env.SZAMLAZZ_AGENT_KEY}</szamlaagentkulcs>
     <eszamla>true</eszamla><szamlaLetoltes>false</szamlaLetoltes></beallitasok>
-  <fejlec><fizmod>utánvét</fizmod><penznem>HUF</penznem><szamlaNyelve>hu</szamlaNyelve>
+  <fejlec><fizmod>${esc(order.paymentMethod || 'utánvét')}</fizmod><penznem>HUF</penznem><szamlaNyelve>hu</szamlaNyelve>
     <megjegyzes>Rendelés: ${orderId}</megjegyzes></fejlec>
   <elado></elado>
   <vevo><nev>${esc(c.name)}</nev><irsz>${esc(c.zipCode)}</irsz><telepules>${esc(c.city)}</telepules>

@@ -26,7 +26,12 @@ exports.handler = async (event) => {
 
   try {
     const orderData = JSON.parse(event.body);
-    const { orderId, customer, items, total, timestamp } = orderData;
+    const { orderId, customer, items, total, timestamp, paymentMethod } = orderData;
+    const shipInfo = orderData.shipping || null;
+    const payLabel = paymentMethod || 'Utánvét';
+    const shipLabel = shipInfo && shipInfo.method === 'foxpost' && shipInfo.foxpostPoint
+      ? `Foxpost automata — ${shipInfo.foxpostPoint.name} (${shipInfo.foxpostPoint.zip} ${shipInfo.foxpostPoint.city}, ${shipInfo.foxpostPoint.address})`
+      : 'Házhozszállítás';
     const customerName = `${customer.firstName || ''} ${customer.lastName || ''}`.trim() 
       || customer.name || 'Vevő';
 
@@ -87,7 +92,9 @@ exports.handler = async (event) => {
 
     <p style="margin-top: 24px; color: #666; font-size: 0.85rem;">
       <strong>Időpont:</strong> ${dateStr}<br>
-      <strong>Rendelési azonosító:</strong> ${orderId}
+      <strong>Rendelési azonosító:</strong> ${orderId}<br>
+      <strong>Fizetési mód:</strong> ${payLabel}<br>
+      <strong>Szállítás:</strong> ${shipLabel}
     </p>
 
     <div style="margin-top: 24px; padding: 16px; background: #fff9e6; border-left: 4px solid #FF9800; border-radius: 4px;">
@@ -121,6 +128,21 @@ exports.handler = async (event) => {
     <h2 style="color: #0F2A1D; font-size: 1.1rem; border-bottom: 2px solid #C9A961; padding-bottom: 8px; margin-top: 24px;">Rendelés részletei</h2>
     <p style="margin: 4px 0;"><strong>Azonosító:</strong> ${orderId}</p>
     <p style="margin: 4px 0;"><strong>Időpont:</strong> ${dateStr}</p>
+    <p style="margin: 4px 0;"><strong>Fizetési mód:</strong> ${payLabel}</p>
+    <p style="margin: 4px 0;"><strong>Szállítás:</strong> ${shipLabel}</p>
+
+    ${/^Előreutalás/i.test(payLabel) ? `
+    <div style="margin-top: 16px; padding: 16px; background: #fff9e6; border-left: 4px solid #C9A961; border-radius: 4px;">
+      <p style="margin: 0 0 8px 0; font-weight: bold; color: #0F2A1D;">🏦 Utalási adatok</p>
+      <p style="margin: 4px 0; font-size: 0.92rem;">
+        Kedvezményezett: <strong>Trident Shield Group Kft.</strong><br>
+        Közlemény: <strong>${orderId}</strong><br>
+        Összeg: <strong>${(total || 0).toLocaleString('hu-HU')} Ft</strong>
+      </p>
+      <p style="margin: 8px 0 0 0; font-size: 0.85rem; color: #666;">
+        A bankszámlaszámot külön e-mailben küldjük. A csomagot az összeg beérkezése után adjuk fel.
+      </p>
+    </div>` : ''}
 
     <h3 style="color: #0F2A1D; font-size: 1rem; margin-top: 20px;">Megrendelt termékek</h3>
     <table style="width: 100%; border-collapse: collapse;">
