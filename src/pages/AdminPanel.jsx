@@ -59,6 +59,7 @@ const AdminPanel = () => {
     { id: 'orders', name: 'Rendelések', icon: ShoppingBag },
     { id: 'coupons', name: 'Kuponok', icon: Tag },
     { id: 'reviews', name: 'Értékelések', icon: Star },
+    { id: 'marketing', name: 'Hírlevél & Kosarak', icon: Mail },
     { id: 'ppc', name: 'PPC Statisztika', icon: TrendingUp },
     { id: 'reports', name: 'Riportok', icon: BarChart3 },
     { id: 'supplier', name: 'Beszállító ⓘ', icon: Bell },
@@ -173,6 +174,7 @@ const AdminPanel = () => {
         {activeTab === 'orders' && <OrdersList key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'reviews' && <ReviewsManager key={refreshKey} />}
+        {activeTab === 'marketing' && <MarketingManager key={refreshKey} />}
         {activeTab === 'ppc' && <PpcStats key={refreshKey} />}
         {activeTab === 'reports' && <ReportsTab key={refreshKey} />}
         {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} />}
@@ -2827,6 +2829,146 @@ const SeoTools = () => {
             </ul>
           </div>
         </div>
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// HÍRLEVÉL & KOSÁRELHAGYÓK
+// ============================================================
+const MarketingManager = () => {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+  const [tab, setTab] = useState('newsletter');
+
+  useEffect(() => {
+    if (!isSupabaseEnabled) { setError('Ez a nézet csak éles (Supabase) módban érhető el.'); return; }
+    adminApi('get_all')
+      .then(({ kv }) => setData({
+        newsletter: (kv && kv.ms_newsletter) || {},
+        carts: (kv && kv.ms_abandoned_carts) || {},
+        messages: (kv && kv.ms_contact_messages) || []
+      }))
+      .catch(e => setError(e.message || 'Betöltési hiba'));
+  }, []);
+
+  const exportCsv = (rows, filename) => {
+    const csv = rows.map(r => r.map(c => `"${String(c == null ? '' : c).replace(/"/g, '""')}"`).join(';')).join('\n');
+    const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  };
+
+  if (error) return <div><h1 style={{ color: '#0F2A1D' }}>✉️ Hírlevél &amp; Kosarak</h1><p style={{ color: '#d32f2f' }}>{error}</p></div>;
+  if (!data) return <div><h1 style={{ color: '#0F2A1D' }}>✉️ Hírlevél &amp; Kosarak</h1><p style={{ color: '#999' }}>Betöltés…</p></div>;
+
+  const subs = Object.entries(data.newsletter).filter(([, v]) => v && v.subscribed !== false);
+  const carts = Object.entries(data.carts);
+  const msgs = Array.isArray(data.messages) ? data.messages : [];
+
+  const th = { padding: '0.6rem 0.75rem', textAlign: 'left', backgroundColor: '#0F2A1D', color: 'white', fontSize: '0.85rem' };
+  const td = { padding: '0.55rem 0.75rem', borderBottom: '1px solid #eee', fontSize: '0.88rem' };
+  const tabBtn = (id, label, count) => (
+    <button onClick={() => setTab(id)} style={{
+      padding: '0.6rem 1rem', border: 'none', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem',
+      backgroundColor: tab === id ? '#0F2A1D' : '#e8e8e8', color: tab === id ? 'white' : '#555',
+      borderRadius: '6px 6px 0 0'
+    }}>{label} ({count})</button>
+  );
+
+  return (
+    <div>
+      <h1 style={{ color: '#0F2A1D' }}>✉️ Hírlevél &amp; Kosarak</h1>
+      <div style={{ display: 'flex', gap: '0.35rem', marginBottom: 0, flexWrap: 'wrap' }}>
+        {tabBtn('newsletter', '📧 Feliratkozók', subs.length)}
+        {tabBtn('carts', '🛒 Elhagyott kosarak', carts.length)}
+        {tabBtn('messages', '💬 Üzenetek', msgs.length)}
+      </div>
+
+      <div style={{ backgroundColor: 'white', padding: '1.25rem', borderRadius: '0 8px 8px 8px', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}>
+        {tab === 'newsletter' && (
+          <>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <p style={{ margin: 0, color: '#666', fontSize: '0.9rem' }}>
+                Hozzájárulással feliratkozott címek. Hírlevél küldése előtt mindig tegyél leiratkozó linket a levélbe.
+              </p>
+              <button onClick={() => exportCsv(
+                [['Email', 'Feliratkozás dátuma', 'Forrás'], ...subs.map(([e, v]) => [e, v.ts || '', v.source || ''])],
+                'hirlevel-feliratkozok.csv'
+              )} style={{ backgroundColor: '#0F2A1D', color: 'white', border: 'none', padding: '0.5rem 1rem', borderRadius: '4px', cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                ⬇ CSV export
+              </button>
+            </div>
+            {subs.length === 0 ? <p style={{ color: '#999' }}>Még nincs feliratkozó.</p> : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead><tr><th style={th}>Email</th><th style={th}>Dátum</th><th style={th}>Forrás</th></tr></thead>
+                  <tbody>{subs.map(([email, v]) => (
+                    <tr key={email}>
+                      <td style={td}>{email}</td>
+                      <td style={td}>{v.ts ? new Date(v.ts).toLocaleString('hu-HU') : '—'}</td>
+                      <td style={td}>{v.source === 'checkout' ? 'Pénztár' : 'Lábléc'}</td>
+                    </tr>
+                  ))}</tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === 'carts' && (
+          <>
+            <p style={{ margin: '0 0 1rem 0', color: '#666', fontSize: '0.9rem' }}>
+              Elhagyott kosarak. Az emlékeztetőt a rendszer automatikusan küldi 4–48 óra között, egyszer.
+            </p>
+            {carts.length === 0 ? <p style={{ color: '#999' }}>Nincs elhagyott kosár.</p> : (
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <thead><tr><th style={th}>Email</th><th style={th}>Tételek</th><th style={th}>Érték</th><th style={th}>Mikor</th><th style={th}>Emlékeztető</th></tr></thead>
+                  <tbody>{carts.map(([email, v]) => {
+                    const items = Array.isArray(v.cart) ? v.cart : [];
+                    const sum = items.reduce((s, i) => s + (i.price || 0) * (i.quantity || 0), 0);
+                    return (
+                      <tr key={email}>
+                        <td style={td}>{email}</td>
+                        <td style={td}>{items.length} db · {items.slice(0, 2).map(i => i.name).join(', ')}{items.length > 2 ? '…' : ''}</td>
+                        <td style={{ ...td, fontWeight: 'bold', color: '#C9A961' }}>{sum.toLocaleString('hu-HU')} Ft</td>
+                        <td style={td}>{v.ts ? new Date(v.ts).toLocaleString('hu-HU') : '—'}</td>
+                        <td style={td}>{v.remindedAt
+                          ? <span style={{ color: '#4CAF50' }}>✓ elküldve</span>
+                          : <span style={{ color: '#FF9800' }}>⏳ várakozik</span>}</td>
+                      </tr>
+                    );
+                  })}</tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+
+        {tab === 'messages' && (
+          <>
+            <p style={{ margin: '0 0 1rem 0', color: '#666', fontSize: '0.9rem' }}>
+              A kapcsolat-űrlapon beérkezett üzenetek (e-mailben is megkapod őket).
+            </p>
+            {msgs.length === 0 ? <p style={{ color: '#999' }}>Nincs beérkezett üzenet.</p> : (
+              msgs.slice().reverse().map((m, i) => (
+                <div key={i} style={{ borderBottom: '1px solid #eee', padding: '0.85rem 0' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <strong style={{ color: '#0F2A1D' }}>{m.name} &lt;{m.email}&gt;</strong>
+                    <span style={{ color: '#999', fontSize: '0.83rem' }}>{m.ts ? new Date(m.ts).toLocaleString('hu-HU') : ''}</span>
+                  </div>
+                  {m.subject && <div style={{ color: '#555', fontSize: '0.9rem', marginTop: '0.2rem' }}><em>{m.subject}</em></div>}
+                  <div style={{ color: '#444', marginTop: '0.4rem', whiteSpace: 'pre-wrap', fontSize: '0.9rem' }}>{m.message}</div>
+                </div>
+              ))
+            )}
+          </>
+        )}
       </div>
     </div>
   );
