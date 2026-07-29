@@ -9,7 +9,8 @@ import { trackBeginCheckout, trackPurchase } from '../utils/analytics';
 // szerződés megkötése után kerül be — addig utánvét és előreutalás érhető el.
 const PAYMENT_LABELS = {
   utanvet: 'Utánvét (készpénz vagy kártya a futárnál)',
-  atutalas: 'Előreutalás (banki átutalás)'
+  atutalas: 'Előreutalás (banki átutalás)',
+  kartya: 'Bankkártya (SimplePay)'
 };
 
 const CheckoutPage = () => {
@@ -51,6 +52,8 @@ const CheckoutPage = () => {
 
   // Fizetési mód (online fizetés a szolgáltatói szerződés megkötése után jön)
   const [payMethod, setPayMethod] = useState('utanvet');
+  // A bankkártyás opció csak akkor jelenik meg, ha a SimplePay tényleg be van kötve
+  const [cardEnabled, setCardEnabled] = useState(false);
 
   // Szállítási mód: házhozszállítás vagy Foxpost automata
   const [shipMethod, setShipMethod] = useState('home');
@@ -63,6 +66,14 @@ const CheckoutPage = () => {
     fetch('https://cdn.foxpost.hu/apms.json')
       .then(r => r.json())
       .then(list => { if (Array.isArray(list)) setFoxpostPoints(list); })
+      .catch(() => {});
+  }, []);
+
+  // Elérhető-e a bankkártyás fizetés? (SimplePay csak beállított kulcsokkal)
+  useEffect(() => {
+    fetch('/.netlify/functions/payment-status')
+      .then(r => r.json())
+      .then(d => setCardEnabled(Boolean(d && d.cardEnabled)))
       .catch(() => {});
   }, []);
 
@@ -176,6 +187,33 @@ const CheckoutPage = () => {
         });
       } catch (emailErr) {
         console.warn('Email küldés hiba (nem blokkoló):', emailErr);
+      }
+
+      // Bankkártyás fizetés: átirányítás a SimplePay felületére.
+      // A rendelés már mentve van (pending), a fizetés eredményét az IPN írja vissza.
+      if (payMethod === 'kartya') {
+        try {
+          const payRes = await fetch('/.netlify/functions/payment-start', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              orderId: savedOrder.id,
+              total: grandTotal,
+              customer: {
+                name: formData.name, email: formData.email, company: formData.company,
+                address: formData.address, city: formData.city, zip: formData.zip
+              }
+            })
+          });
+          const payData = await payRes.json();
+          if (payRes.ok && payData.paymentUrl) {
+            window.location.href = payData.paymentUrl;
+            return;
+          }
+          alert('A bankkártyás fizetés indítása nem sikerült. A rendelésed rögzítettük — az utalási adatokat e-mailben küldjük.');
+        } catch (e) {
+          alert('A bankkártyás fizetés indítása nem sikerült. A rendelésed rögzítettük — az utalási adatokat e-mailben küldjük.');
+        }
       }
 
       setSuccess(true);
@@ -681,10 +719,30 @@ const CheckoutPage = () => {
                       A visszaigazoló e-mailben küldjük az utalási adatokat
                     </div>
                   </label>
+                  {cardEnabled && (
+                    <label style={{
+                      flex: 1, minWidth: '200px', border: `2px solid ${payMethod === 'kartya' ? '#C9A961' : '#ddd'}`,
+                      borderRadius: '6px', padding: '0.75rem', cursor: 'pointer',
+                      backgroundColor: payMethod === 'kartya' ? '#fdf9f0' : 'white'
+                    }}>
+                      <input type="radio" name="payMethod" checked={payMethod === 'kartya'}
+                        onChange={() => setPayMethod('kartya')} style={{ marginRight: '0.5rem' }} />
+                      <strong>💳 Bankkártya</strong>
+                      <div style={{ color: '#666', fontSize: '0.85rem', marginTop: '0.25rem' }}>
+                        Azonnali, biztonságos fizetés a SimplePay felületén
+                      </div>
+                    </label>
+                  )}
                 </div>
                 {payMethod === 'atutalas' && (
                   <p style={{ color: '#666', fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>
                     A csomagot az összeg beérkezése után adjuk fel.
+                  </p>
+                )}
+                {payMethod === 'kartya' && (
+                  <p style={{ color: '#666', fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>
+                    A „Megrendelés elküldése" után a SimplePay biztonságos oldalára irányítunk.
+                    Kártyaadataidat a webshop nem látja és nem tárolja.
                   </p>
                 )}
               </div>
