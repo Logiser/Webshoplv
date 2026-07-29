@@ -13,6 +13,7 @@ import CookieConsent from './components/CookieConsent';
 import FaqPage from './pages/FaqPage';
 import OrderTrackingPage from './pages/OrderTrackingPage';
 import PaymentResultPage from './pages/PaymentResultPage';
+import AccountPage from './pages/AccountPage';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
@@ -184,6 +185,7 @@ function App() {
         <Route path="/gyik" element={<FaqPage />} />
         <Route path="/rendeles-kovetes" element={<OrderTrackingPage />} />
         <Route path="/fizetes-eredmeny" element={<PaymentResultPage />} />
+        <Route path="/fiok" element={<AccountPage />} />
 
         {/* Új v6.0 route-ok */}
         <Route path="/termek/:slug" element={<ProductDetailPage />} />
