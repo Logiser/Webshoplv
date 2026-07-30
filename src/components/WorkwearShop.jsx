@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronRight, Home, Filter, Star, Heart, Eye } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, Palette, Ruler as RulerIcon, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen } from '../data/storage';
@@ -8,6 +8,27 @@ import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from './SizeChartModal';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLang } from '../i18n/LanguageContext';
+
+const headerIconBtn = {
+  padding: '0.5rem 0.65rem', backgroundColor: 'transparent', border: 'none',
+  borderRadius: '8px', cursor: 'pointer', textDecoration: 'none',
+  display: 'flex', alignItems: 'center', gap: '0.35rem'
+};
+
+const mobileMenuItem = (active) => ({
+  display: 'flex', alignItems: 'center', gap: '0.6rem', width: '100%',
+  padding: '0.85rem 1.25rem', border: 'none', borderBottom: '1px solid #f2f2f2',
+  backgroundColor: active ? '#f5f7f5' : 'white', color: active ? '#0F2A1D' : '#333',
+  fontWeight: active ? 'bold' : 'normal', cursor: 'pointer', fontSize: '0.95rem', textAlign: 'left'
+});
+
+const headerBadge = {
+  position: 'absolute', top: '-4px', right: '-4px',
+  backgroundColor: '#d32f2f', color: 'white', borderRadius: '50%',
+  width: '18px', height: '18px',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  fontSize: '0.65rem', fontWeight: 'bold'
+};
 
 const WorkwearShop = () => {
   const navigate = useNavigate();
@@ -27,6 +48,9 @@ const WorkwearShop = () => {
   }, []);
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
+  const [openMegaMenu, setOpenMegaMenu] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const megaMenuCloseTimer = useRef(null);
   const [cart, setCart] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
@@ -264,6 +288,16 @@ const WorkwearShop = () => {
     setMinRating(0);
   };
 
+  // Aktív szűrők chip-sora — mindig levehető, egyenkénti X gombbal
+  const defaultMaxPrice = Math.ceil(Math.max(...products.map(p => p.price), 50000) / 1000) * 1000;
+  const activeChips = [
+    ...(selectedSubcategory ? [{ key: 'sub', label: productSubcategories.find(s => s.id === selectedSubcategory)?.name, onRemove: () => setSelectedSubcategory(null) }] : []),
+    ...((priceMin > 0 || priceMax < defaultMaxPrice) ? [{ key: 'price', label: `${priceMin.toLocaleString('hu-HU')}–${priceMax.toLocaleString('hu-HU')} Ft`, onRemove: () => { setPriceMin(0); setPriceMax(defaultMaxPrice); } }] : []),
+    ...selectedBrands.map(b => ({ key: `brand-${b}`, label: b, onRemove: () => toggleArrayItem(selectedBrands, setSelectedBrands, b) })),
+    ...selectedSizes.map(s => ({ key: `size-${s}`, label: `Méret: ${s}`, onRemove: () => toggleArrayItem(selectedSizes, setSelectedSizes, s) })),
+    ...(minRating > 0 ? [{ key: 'rating', label: `${minRating}+ ⭐`, onRemove: () => setMinRating(0) }] : [])
+  ];
+
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
       
@@ -290,140 +324,216 @@ const WorkwearShop = () => {
 
       {/* Header */}
       <header style={{
-        backgroundColor: 'white', padding: '1rem 1.5rem',
-        display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        backgroundColor: 'white', padding: '0.85rem 1.5rem',
         position: 'sticky', top: 0, zIndex: 100,
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderBottom: '3px solid #C9A961', flexWrap: 'wrap', gap: '1rem'
+        boxShadow: '0 2px 10px rgba(0,0,0,0.08)', borderBottom: '1px solid #eee'
       }}>
-        <Link to="/" style={{ textDecoration: 'none' }}>
-          <h1 style={{ margin: 0, fontSize: '1.5rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            🛡️ MunkavédelmiShop
-          </h1>
-        </Link>
-
         <div style={{
-          flex: 1, minWidth: '200px', maxWidth: '500px', position: 'relative',
-          display: 'flex', alignItems: 'center', backgroundColor: '#f5f5f5',
-          borderRadius: '4px', padding: '0.25rem 0.5rem', border: '1px solid #ddd'
+          maxWidth: '1400px', margin: '0 auto', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap'
         }}>
-          <Search size={20} style={{ color: '#999', marginRight: '0.5rem' }} />
-          <input
-            type="text" placeholder={t("nav.search")}
-            value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
-            onBlur={() => setTimeout(() => setSearchFocus(false), 200)}
-            onFocus={() => setSearchFocus(true)}
-            style={{ flex: 1, border: 'none', backgroundColor: 'transparent', padding: '0.5rem', fontSize: '0.95rem', outline: 'none' }}
-          />
-          {/* Kereső-előnézet: cikkszám-egyezés előre, aztán név-találatok */}
-          {searchFocus && searchTerm.trim().length >= 2 && (() => {
-            const q = searchTerm.trim().toLowerCase();
-            const byArt = products.filter(p => (p.articleNo || '').toLowerCase().startsWith(q));
-            const byName = products.filter(p => !byArt.includes(p) && p.name.toLowerCase().includes(q));
-            const hits = [...byArt, ...byName].slice(0, 6);
-            if (hits.length === 0) return null;
-            return (
-              <div style={{
-                position: 'absolute', top: '100%', left: 0, right: 0, zIndex: 60,
-                backgroundColor: 'white', borderRadius: '0 0 8px 8px', border: '1px solid #ddd',
-                borderTop: 'none', boxShadow: '0 8px 20px rgba(0,0,0,0.12)', overflow: 'hidden'
-              }}>
-                {hits.map(p => (
-                  <Link key={p.id} to={`/termek/${p.slug}`} onClick={() => { setSearchFocus(false); }}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', textDecoration: 'none', borderBottom: '1px solid #f2f2f2' }}>
-                    <img src={p.image} alt="" loading="lazy" style={{ width: '40px', height: '40px', objectFit: 'contain', backgroundColor: '#fafafa', borderRadius: '4px', flexShrink: 0 }} />
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ color: '#0F2A1D', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                      <div style={{ color: '#999', fontSize: '0.72rem' }}>{p.articleNo}</div>
-                    </div>
-                    <div style={{ color: '#C9A961', fontWeight: 'bold', fontSize: '0.88rem', flexShrink: 0 }}>
-                      {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            );
-          })()}
-        </div>
+          <button onClick={() => setMobileMenuOpen(o => !o)} aria-label="Menü" style={{
+            display: isMobile ? 'flex' : 'none', background: 'none', border: 'none',
+            color: '#0F2A1D', cursor: 'pointer', padding: '0.25rem'
+          }}>
+            <Menu size={26} />
+          </button>
 
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <Link to="/wishlist" title={t("nav.favorites")}
-            style={{ padding: '0.6rem', backgroundColor: 'white', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', position: 'relative', textDecoration: 'none', color: '#d32f2f', display: 'flex' }}>
-            <Heart size={22} fill={wishlist.length > 0 ? '#d32f2f' : 'none'} />
-            {wishlist.length > 0 && (
+          <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
+            <h1 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span style={{
-                position: 'absolute', top: '-6px', right: '-6px',
-                backgroundColor: '#d32f2f', color: 'white', borderRadius: '50%',
-                width: '20px', height: '20px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.7rem', fontWeight: 'bold'
-              }}>{wishlist.length}</span>
-            )}
+                display: 'inline-flex', width: '2.1rem', height: '2.1rem', borderRadius: '8px',
+                backgroundColor: '#0F2A1D', color: '#C9A961', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem'
+              }}>🛡️</span>
+              <span style={{ display: isMobile ? 'none' : 'inline' }}>MunkavédelmiShop</span>
+            </h1>
           </Link>
 
-          <button onClick={() => setCartOpen(!cartOpen)} style={{
-            backgroundColor: '#C9A961', color: '#0F2A1D',
-            padding: '0.75rem 1.25rem', borderRadius: '4px', border: 'none',
-            cursor: 'pointer', fontWeight: 'bold',
-            display: 'flex', alignItems: 'center', gap: '0.5rem', position: 'relative'
+          <div style={{
+            flex: 1, minWidth: '180px', maxWidth: '560px', position: 'relative',
+            display: 'flex', alignItems: 'center', backgroundColor: '#f5f6f5',
+            borderRadius: '999px', padding: '0.15rem 0.15rem 0.15rem 1rem', border: '1.5px solid #e5e5e0'
           }}>
-            <ShoppingCart size={20} />
-            <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.2 }}>
-              <span style={{ fontSize: '0.75rem' }}>Kosár</span>
-              <span style={{ fontSize: '0.9rem' }}>{cartTotal.toLocaleString('hu-HU')} Ft</span>
-            </span>
-            {cartCount > 0 && (
-              <span style={{
-                position: 'absolute', top: '-8px', right: '-8px',
-                backgroundColor: '#d32f2f', color: 'white', borderRadius: '50%',
-                width: '24px', height: '24px',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '0.8rem', fontWeight: 'bold'
-              }}>{cartCount}</span>
-            )}
-          </button>
+            <input
+              type="text" placeholder={t("nav.search")}
+              value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)}
+              onBlur={() => setTimeout(() => setSearchFocus(false), 200)}
+              onFocus={() => setSearchFocus(true)}
+              style={{ flex: 1, border: 'none', backgroundColor: 'transparent', padding: '0.55rem 0', fontSize: '0.95rem', outline: 'none', minWidth: 0 }}
+            />
+            <button aria-label="Keresés" style={{
+              backgroundColor: '#0F2A1D', border: 'none', borderRadius: '999px', width: '2.3rem', height: '2.3rem',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, color: '#C9A961'
+            }}>
+              <Search size={17} />
+            </button>
+            {/* Kereső-előnézet: cikkszám-egyezés előre, aztán név-találatok */}
+            {searchFocus && searchTerm.trim().length >= 2 && (() => {
+              const q = searchTerm.trim().toLowerCase();
+              const byArt = products.filter(p => (p.articleNo || '').toLowerCase().startsWith(q));
+              const byName = products.filter(p => !byArt.includes(p) && p.name.toLowerCase().includes(q));
+              const hits = [...byArt, ...byName].slice(0, 6);
+              if (hits.length === 0) return null;
+              return (
+                <div style={{
+                  position: 'absolute', top: 'calc(100% + 8px)', left: 0, right: 0, zIndex: 60,
+                  backgroundColor: 'white', borderRadius: '12px', border: '1px solid #eee',
+                  boxShadow: '0 12px 28px rgba(0,0,0,0.14)', overflow: 'hidden'
+                }}>
+                  {hits.map(p => (
+                    <Link key={p.id} to={`/termek/${p.slug}`} onClick={() => { setSearchFocus(false); }}
+                      style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.5rem 0.75rem', textDecoration: 'none', borderBottom: '1px solid #f2f2f2' }}>
+                      <img src={p.image} alt="" loading="lazy" style={{ width: '40px', height: '40px', objectFit: 'contain', backgroundColor: '#fafafa', borderRadius: '4px', flexShrink: 0 }} />
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ color: '#0F2A1D', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                        <div style={{ color: '#999', fontSize: '0.72rem' }}>{p.articleNo}</div>
+                      </div>
+                      <div style={{ color: '#C9A961', fontWeight: 'bold', fontSize: '0.88rem', flexShrink: 0 }}>
+                        {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              );
+            })()}
+          </div>
+
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+            <Link to="/fiok" title={t('account.title')} style={headerIconBtn}>
+              <User size={21} color="#0F2A1D" />
+              {!isMobile && <span style={{ fontSize: '0.78rem', color: '#0F2A1D', fontWeight: 600 }}>{t('account.title')}</span>}
+            </Link>
+
+            <Link to="/wishlist" title={t("nav.favorites")} style={{ ...headerIconBtn, position: 'relative' }}>
+              <Heart size={21} fill={wishlist.length > 0 ? '#d32f2f' : 'none'} color="#d32f2f" />
+              {wishlist.length > 0 && (
+                <span style={headerBadge}>{wishlist.length}</span>
+              )}
+            </Link>
+
+            <button onClick={() => setCartOpen(!cartOpen)} style={{
+              backgroundColor: '#0F2A1D', color: 'white',
+              padding: '0.6rem 1.1rem', borderRadius: '999px', border: 'none',
+              cursor: 'pointer', fontWeight: 'bold',
+              display: 'flex', alignItems: 'center', gap: '0.55rem', position: 'relative'
+            }}>
+              <ShoppingCart size={19} color="#C9A961" />
+              <span style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', lineHeight: 1.15 }}>
+                <span style={{ fontSize: '0.68rem', opacity: 0.8, fontWeight: 400 }}>{t('nav.cart')}</span>
+                <span style={{ fontSize: '0.92rem' }}>{cartTotal.toLocaleString('hu-HU')} Ft</span>
+              </span>
+              {cartCount > 0 && (
+                <span style={{ ...headerBadge, top: '-8px', right: '-8px', backgroundColor: '#C9A961', color: '#0F2A1D' }}>{cartCount}</span>
+              )}
+            </button>
+          </div>
         </div>
       </header>
 
-      {/* Category Navigation */}
-      <nav style={{
-        backgroundColor: '#0F2A1D', padding: '0.5rem 1.5rem',
-        position: 'sticky', top: '76px', zIndex: 99,
-        boxShadow: '0 2px 4px rgba(0,0,0,0.1)', overflowX: 'auto'
-      }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'nowrap' }}>
-          <button
-            onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); }}
-            style={{
-              padding: '0.5rem 1rem', border: 'none',
-              backgroundColor: selectedCategory === null ? '#C9A961' : 'transparent',
-              color: selectedCategory === null ? '#0F2A1D' : 'white',
-              cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px',
-              display: 'flex', alignItems: 'center', gap: '0.25rem', whiteSpace: 'nowrap'
-            }}
-          >
-            <Home size={16} /> Összes
-          </button>
-          {productCategories.map(category => (
+      {/* Category Navigation (mega-menü) — asztali nézet */}
+      {!isMobile && (
+        <nav style={{
+          backgroundColor: '#0F2A1D', padding: '0 1.5rem',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.1)', position: 'relative', zIndex: 90
+        }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', alignItems: 'stretch', flexWrap: 'nowrap' }}>
             <button
-              key={category.id}
-              onClick={() => { setSelectedCategory(category.id); setSelectedSubcategory(null); }}
+              onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); }}
               style={{
-                padding: '0.5rem 1rem', border: 'none',
-                backgroundColor: selectedCategory === category.id ? '#C9A961' : 'transparent',
-                color: selectedCategory === category.id ? '#0F2A1D' : 'white',
-                cursor: 'pointer', fontWeight: 'bold', borderRadius: '4px',
-                whiteSpace: 'nowrap'
+                padding: '0.75rem 1rem', border: 'none',
+                backgroundColor: selectedCategory === null ? '#C9A961' : 'transparent',
+                color: selectedCategory === null ? '#0F2A1D' : 'white',
+                cursor: 'pointer', fontWeight: 'bold',
+                display: 'flex', alignItems: 'center', gap: '0.3rem', whiteSpace: 'nowrap', fontSize: '0.9rem'
               }}
             >
-              {category.icon} {category.name}
+              <Home size={15} /> {t('nav.all')}
             </button>
-          ))}
-          <Link to="/blog" style={{
-            padding: '0.5rem 1rem', color: 'white', textDecoration: 'none', fontWeight: 'bold',
-            marginLeft: 'auto', whiteSpace: 'nowrap'
-          }}>📝 Blog</Link>
-        </div>
-      </nav>
+            {productCategories.map(category => {
+              const subs = productSubcategories.filter(s => s.categoryId === category.id);
+              const isOpen = openMegaMenu === category.id;
+              return (
+                <div key={category.id}
+                  onMouseEnter={() => { clearTimeout(megaMenuCloseTimer.current); setOpenMegaMenu(category.id); }}
+                  onMouseLeave={() => { megaMenuCloseTimer.current = setTimeout(() => setOpenMegaMenu(null), 150); }}
+                  style={{ position: 'relative' }}
+                >
+                  <button
+                    onClick={() => { setSelectedCategory(category.id); setSelectedSubcategory(null); setOpenMegaMenu(null); }}
+                    style={{
+                      padding: '0.75rem 1rem', border: 'none',
+                      backgroundColor: selectedCategory === category.id ? '#C9A961' : 'transparent',
+                      color: selectedCategory === category.id ? '#0F2A1D' : 'white',
+                      cursor: 'pointer', fontWeight: 'bold', whiteSpace: 'nowrap', fontSize: '0.9rem',
+                      display: 'flex', alignItems: 'center', gap: '0.3rem'
+                    }}
+                  >
+                    {category.icon} {category.name}
+                    {subs.length > 0 && <ChevronDown size={13} style={{ opacity: 0.7 }} />}
+                  </button>
+
+                  {isOpen && subs.length > 0 && (
+                    <div style={{
+                      position: 'absolute', top: '100%', left: 0, minWidth: '260px', zIndex: 95,
+                      backgroundColor: 'white', borderRadius: '0 0 10px 10px', boxShadow: '0 16px 32px rgba(0,0,0,0.18)',
+                      padding: '0.5rem', display: 'grid', gap: '0.15rem'
+                    }}>
+                      <Link to="#" onClick={(e) => { e.preventDefault(); setSelectedCategory(category.id); setSelectedSubcategory(null); setOpenMegaMenu(null); window.scrollTo({ top: 0 }); }}
+                        style={{ padding: '0.5rem 0.75rem', color: '#0F2A1D', textDecoration: 'none', fontWeight: 'bold', fontSize: '0.85rem', borderRadius: '6px', borderBottom: '1px solid #f0f0f0', marginBottom: '0.2rem' }}>
+                        Összes {category.name.toLowerCase()} →
+                      </Link>
+                      {subs.map(sub => (
+                        <Link key={sub.id} to="#"
+                          onClick={(e) => { e.preventDefault(); setSelectedCategory(category.id); setSelectedSubcategory(sub.id); setOpenMegaMenu(null); window.scrollTo({ top: 0 }); }}
+                          style={{ padding: '0.45rem 0.75rem', color: '#333', textDecoration: 'none', fontSize: '0.87rem', borderRadius: '6px' }}
+                          onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5f7f5'}
+                          onMouseLeave={e => e.currentTarget.style.backgroundColor = 'transparent'}
+                        >
+                          {sub.name}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+            <Link to="/blog" style={{
+              padding: '0.75rem 1rem', color: 'white', textDecoration: 'none', fontWeight: 'bold',
+              marginLeft: 'auto', whiteSpace: 'nowrap', fontSize: '0.9rem'
+            }}>📝 {t('nav.blog')}</Link>
+          </div>
+        </nav>
+      )}
+
+      {/* Mobil menü-fiók */}
+      {isMobile && mobileMenuOpen && (
+        <>
+          <div onClick={() => setMobileMenuOpen(false)} style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 199 }} />
+          <div style={{
+            position: 'fixed', left: 0, top: 0, bottom: 0, width: '82%', maxWidth: '320px',
+            backgroundColor: 'white', zIndex: 200, overflowY: 'auto', boxShadow: '4px 0 20px rgba(0,0,0,0.2)'
+          }}>
+            <div style={{ backgroundColor: '#0F2A1D', color: 'white', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <strong style={{ fontFamily: 'Georgia, serif' }}>🛡️ MunkavédelmiShop</strong>
+              <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X size={22} /></button>
+            </div>
+            <button onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); setMobileMenuOpen(false); }} style={mobileMenuItem(selectedCategory === null)}>
+              <Home size={16} /> {t('nav.all')}
+            </button>
+            {productCategories.map(cat => (
+              <div key={cat.id}>
+                <button onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); setMobileMenuOpen(false); window.scrollTo({ top: 0 }); }}
+                  style={mobileMenuItem(selectedCategory === cat.id)}>
+                  {cat.icon} {cat.name}
+                </button>
+              </div>
+            ))}
+            <Link to="/blog" onClick={() => setMobileMenuOpen(false)} style={{ ...mobileMenuItem(false), textDecoration: 'none' }}>📝 {t('nav.blog')}</Link>
+            <Link to="/fiok" onClick={() => setMobileMenuOpen(false)} style={{ ...mobileMenuItem(false), textDecoration: 'none' }}><User size={16} /> {t('account.title')}</Link>
+            <Link to="/rendeles-kovetes" onClick={() => setMobileMenuOpen(false)} style={{ ...mobileMenuItem(false), textDecoration: 'none' }}><PackageCheck size={16} /> {t('footer.tracking')}</Link>
+          </div>
+        </>
+      )}
 
       {/* Cart Sidebar */}
       {cartOpen && (
@@ -517,41 +627,60 @@ const WorkwearShop = () => {
 
       {/* Hero */}
       {!selectedCategory && !searchTerm && (
-        <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: '3.5rem 1.5rem 3rem', textAlign: 'center' }}>
-          <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-            <h2 style={{ fontSize: isMobile ? '1.7rem' : '2.6rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
-              A munkád megvéd minket.<br />
-              <span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span>
-            </h2>
-            <p style={{ fontSize: '1.15rem', margin: '0 0 1.75rem 0', opacity: 0.92, maxWidth: '720px', marginLeft: 'auto', marginRight: 'auto' }}>
-              {products.length.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés —
-              a legtöbbjét máshol nem kapod olcsóbban. 2-3 munkanapos kiszállítás, 14 napos csere,
-              és ha nem jó a méret, segítünk választani.
-            </p>
-            <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap', marginBottom: '2rem' }}>
-              <button onClick={() => { const el = document.getElementById('akcios-sav') || document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
-                backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.85rem 1.75rem',
-                borderRadius: '4px', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer'
-              }}>
-                🔥 Akciós ajánlatok
-              </button>
-              <button onClick={() => { const el = document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
-                backgroundColor: 'transparent', color: 'white', border: '2px solid #C9A961', padding: '0.85rem 1.75rem',
-                borderRadius: '4px', fontSize: '1.05rem', fontWeight: 'bold', cursor: 'pointer'
-              }}>
-                Kategóriák böngészése
-              </button>
+        <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: isMobile ? '2.5rem 1.5rem' : '3.5rem 1.5rem' }}>
+          <div style={{
+            maxWidth: '1200px', margin: '0 auto', display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1.35fr 1fr', gap: '2.5rem', alignItems: 'center'
+          }}>
+            <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
+              <h2 style={{ fontSize: isMobile ? '1.7rem' : '2.5rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
+                A munkád megvéd minket.<br />
+                <span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span>
+              </h2>
+              <p style={{ fontSize: '1.1rem', margin: '0 0 1.75rem 0', opacity: 0.92, maxWidth: '560px', marginLeft: isMobile ? 'auto' : 0, marginRight: isMobile ? 'auto' : 0 }}>
+                {products.length.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés —
+                a legtöbbjét máshol nem kapod olcsóbban.
+              </p>
+              <div style={{ display: 'flex', gap: '1rem', justifyContent: isMobile ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+                <button onClick={() => { const el = document.getElementById('akcios-sav') || document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
+                  backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.85rem 1.75rem',
+                  borderRadius: '6px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
+                }}>
+                  🔥 {t('hero.ctaDeals')}
+                </button>
+                <button onClick={() => { const el = document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
+                  backgroundColor: 'transparent', color: 'white', border: '2px solid #C9A961', padding: '0.85rem 1.75rem',
+                  borderRadius: '6px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
+                }}>
+                  {t('hero.ctaCategories')}
+                </button>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '2rem', justifyContent: 'center', flexWrap: 'wrap', fontSize: '0.95rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Truck size={22} style={{ color: '#C9A961' }} /> <span>1 290 Ft szállítás — 30 000 Ft felett ingyenes</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Shield size={22} style={{ color: '#C9A961' }} /> <span>100% eredeti Portwest, CE-tanúsítvánnyal</span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <Award size={22} style={{ color: '#C9A961' }} /> <span>14 napos csere és visszaküldés</span>
-              </div>
+
+            <div style={{
+              backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(201,169,97,0.35)',
+              borderRadius: '12px', padding: '1.5rem'
+            }}>
+              {[
+                { Icon: Truck, text: '1 290 Ft szállítás — 30 000 Ft felett ingyenes' },
+                { Icon: Shield, text: '100% eredeti Portwest, CE-tanúsítvánnyal' },
+                { Icon: Award, text: '14 napos csere és visszaküldés' },
+                { Icon: PackageCheck, text: '2-3 munkanapos országos kiszállítás' }
+              ].map((item, i) => (
+                <div key={i} style={{
+                  display: 'flex', alignItems: 'center', gap: '0.85rem',
+                  padding: '0.65rem 0', borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.1)' : 'none'
+                }}>
+                  <span style={{
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    width: '2.4rem', height: '2.4rem', borderRadius: '8px',
+                    backgroundColor: 'rgba(201,169,97,0.15)', flexShrink: 0
+                  }}>
+                    <item.Icon size={19} style={{ color: '#C9A961' }} />
+                  </span>
+                  <span style={{ fontSize: '0.92rem' }}>{item.text}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -727,15 +856,15 @@ const WorkwearShop = () => {
 
           {/* Sidebar with Filters */}
           <aside style={{
-            backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px',
-            boxShadow: '0 2px 8px rgba(0,0,0,0.05)', height: 'fit-content',
-            position: isMobile ? 'static' : 'sticky', top: '180px',
+            backgroundColor: 'white', padding: '1.5rem', borderRadius: '10px',
+            boxShadow: '0 2px 10px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0', height: 'fit-content',
+            position: isMobile ? 'static' : 'sticky', top: '84px',
             display: isMobile && !filtersOpen ? 'none' : 'block'
           }}>
             {/* Alkategóriák */}
             {selectedCategory && currentSubcategories.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '2px solid #C9A961', paddingBottom: '0.5rem' }}>
+                <h3 style={{ color: '#0F2A1D', marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   <Filter size={18} /> Alkategóriák
                 </h3>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '1.5rem' }}>
@@ -767,7 +896,7 @@ const WorkwearShop = () => {
             )}
 
             {/* Ár szűrő */}
-            <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '2px solid #C9A961', paddingBottom: '0.5rem' }}>
+            <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               💰 Ár
             </h3>
             <div style={{ marginBottom: '1.5rem' }}>
@@ -790,7 +919,7 @@ const WorkwearShop = () => {
             {/* Márka szűrő */}
             {allBrands.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '2px solid #C9A961', paddingBottom: '0.5rem' }}>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   🏷️ Márka
                 </h3>
                 <div style={{ marginBottom: '1.5rem', maxHeight: '200px', overflowY: 'auto' }}>
@@ -808,7 +937,7 @@ const WorkwearShop = () => {
             {/* Méret szűrő */}
             {allSizes.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '2px solid #C9A961', paddingBottom: '0.5rem' }}>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   📏 Méret
                 </h3>
                 <div style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
@@ -830,7 +959,7 @@ const WorkwearShop = () => {
             )}
 
             {/* Csillag szűrő */}
-            <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '2px solid #C9A961', paddingBottom: '0.5rem' }}>
+            <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               ⭐ Értékelés
             </h3>
             <div style={{ marginBottom: '1.5rem' }}>
@@ -861,21 +990,46 @@ const WorkwearShop = () => {
           {/* Termékek lista */}
           <div>
             <div style={{
-              backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px',
-              marginBottom: '1.5rem', display: 'flex',
+              backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '10px',
+              marginBottom: activeChips.length > 0 ? '0.75rem' : '1.5rem', display: 'flex',
               justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem',
-              boxShadow: '0 2px 4px rgba(0,0,0,0.05)'
+              boxShadow: '0 2px 8px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0'
             }}>
-              <span style={{ color: '#0F2A1D', fontWeight: 'bold' }}>{sortedProducts.length} termék</span>
+              <span style={{ color: '#0F2A1D', fontWeight: 'bold' }}>{sortedProducts.length} {t('section.products')}</span>
               <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                style={{ padding: '0.5rem 1rem', borderRadius: '4px', border: '1px solid #ddd', fontSize: '0.9rem', cursor: 'pointer' }}>
-                <option value="default">Rendezés: Alapértelmezett</option>
-                <option value="price-asc">Ár: növekvő</option>
-                <option value="price-desc">Ár: csökkenő</option>
-                <option value="name">Név szerint</option>
-                <option value="rating">Értékelés szerint</option>
+                style={{ padding: '0.5rem 1rem', borderRadius: '999px', border: '1px solid #ddd', fontSize: '0.9rem', cursor: 'pointer', backgroundColor: '#fafafa' }}>
+                <option value="default">{t('filter.sort')}: {t('filter.sortDefault')}</option>
+                <option value="price-asc">{t('filter.sortPriceAsc')}</option>
+                <option value="price-desc">{t('filter.sortPriceDesc')}</option>
+                <option value="name">{t('filter.sortName')}</option>
+                <option value="rating">{t('filter.sortRating')}</option>
               </select>
             </div>
+
+            {/* Aktív szűrő-chipek */}
+            {activeChips.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem', alignItems: 'center' }}>
+                {activeChips.map(chip => (
+                  <button key={chip.key} onClick={chip.onRemove} style={{
+                    display: 'flex', alignItems: 'center', gap: '0.35rem',
+                    backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+                    borderRadius: '999px', padding: '0.35rem 0.5rem 0.35rem 0.9rem',
+                    fontSize: '0.8rem', cursor: 'pointer', fontWeight: 600
+                  }}>
+                    {chip.label}
+                    <span style={{ backgroundColor: 'rgba(255,255,255,0.2)', borderRadius: '50%', width: '18px', height: '18px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <X size={11} />
+                    </span>
+                  </button>
+                ))}
+                <button onClick={() => { resetFilters(); setSelectedSubcategory(null); }} style={{
+                  background: 'none', border: 'none', color: '#0F2A1D', cursor: 'pointer',
+                  fontSize: '0.8rem', textDecoration: 'underline', fontWeight: 600, padding: '0.35rem 0.25rem'
+                }}>
+                  {t('filter.reset')}
+                </button>
+              </div>
+            )}
 
             {sortedProducts.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '4rem 1rem', color: '#666', backgroundColor: 'white', borderRadius: '8px' }}>
@@ -1056,8 +1210,8 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 
   return (
     <div onClick={onSelect} style={{
-      backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden',
-      boxShadow: '0 2px 8px rgba(0,0,0,0.08)', transition: 'all 0.3s', cursor: 'pointer',
+      backgroundColor: 'white', borderRadius: '10px', overflow: 'hidden',
+      boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #f0f0f0', transition: 'all 0.2s', cursor: 'pointer',
       display: 'flex', flexDirection: 'column', position: 'relative'
     }}
       onMouseEnter={(e) => {
@@ -1103,16 +1257,27 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
       </div>
 
       <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <p style={{ color: '#999', fontSize: '0.75rem', margin: '0 0 0.5rem 0', textTransform: 'uppercase' }}>
+        <p style={{ color: '#999', fontSize: '0.72rem', margin: '0 0 0.4rem 0', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
           {productCategories.find(c => c.id === product.categoryId)?.name}
         </p>
 
         <Link to={`/termek/${product.slug}`} onClick={e => e.stopPropagation()} style={{ textDecoration: 'none', color: '#0F2A1D' }}>
-          <h3 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0', fontSize: '0.95rem', fontWeight: 'bold', minHeight: '2.6em', lineHeight: 1.3 }}>
+          <h3 style={{ color: '#0F2A1D', margin: '0 0 0.35rem 0', fontSize: '0.95rem', fontWeight: 'bold', minHeight: '2.6em', lineHeight: 1.3 }}>
             {product.name}
           </h3>
         </Link>
 
+        {(() => {
+          const colorCount = (product.variants || []).length;
+          const sizeCount = (product.sizes || []).length;
+          if (colorCount <= 1 && sizeCount <= 1) return null;
+          return (
+            <p style={{ color: '#777', fontSize: '0.78rem', margin: '0 0 0.4rem 0', display: 'flex', gap: '0.6rem' }}>
+              {colorCount > 1 && <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}><Palette size={12} /> {colorCount} szín</span>}
+              {sizeCount > 1 && <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}><RulerIcon size={12} /> {sizeCount} méret</span>}
+            </p>
+          );
+        })()}
 
         <div style={{ marginTop: 'auto' }}>
           {product.sale && product.sale.active ? (
@@ -1146,9 +1311,16 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
               </p>
             );
           })()}
+
+          {product.stock > 0 && (
+            <p style={{ color: '#2e7d32', fontSize: '0.76rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+              <PackageCheck size={13} /> Raktáron · 2-3 munkanap
+            </p>
+          )}
+
           <button onClick={(e) => { e.stopPropagation(); onSelect(); }} style={{
             width: '100%', backgroundColor: '#0F2A1D', color: 'white',
-            padding: '0.6rem', borderRadius: '4px', border: 'none',
+            padding: '0.6rem', borderRadius: '6px', border: 'none',
             cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
           }}>
