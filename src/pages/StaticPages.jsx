@@ -11,7 +11,7 @@ export const TermsPage = () => {
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', lineHeight: '1.8', color: '#333' }}>
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>1. Bevezetés</h2>
           <p>
-            A jelen Általános Szerződési Feltételek (a továbbiakban: ÁSZF) szabályozza a MunkavédelmiShop weboldal 
+            A jelen Általános Szerződési Feltételek (a továbbiakban: ÁSZF) szabályozza a TridentShop weboldal 
             (a továbbiakban: Weboldal) által kínált szolgáltatások igénybevételének feltételeit.
           </p>
 
@@ -65,7 +65,7 @@ export const TermsPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>8. Felelősség</h2>
           <p>
-            A MunkavédelmiShop nem felel az olyan károkért, amelyek az oldal használatából közvetlenül 
+            A TridentShop nem felel az olyan károkért, amelyek az oldal használatából közvetlenül 
             vagy közvetetten erednek, ha ezeket az oldal üzemeltetője nem okozta. A terméken található 
             információk tájékoztató jellegűek.
           </p>
@@ -103,7 +103,7 @@ export const PrivacyPage = () => {
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', lineHeight: '1.8', color: '#333' }}>
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>1. Az Adatkezelő Adatai</h2>
           <p>
-            <strong>Szervezet neve:</strong> Trident Shield Group Kft. (MunkavédelmiShop)<br />
+            <strong>Szervezet neve:</strong> Trident Shield Group Kft. (TridentShop)<br />
             <strong>Felelős adatkezelő:</strong> Demeter Márk<br />
             <strong>E-mail:</strong> adatvedelem@munkavedelem.shop
           </p>
@@ -199,7 +199,7 @@ export const ImpressumPage = () => {
           <h2 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>Szolgáltató Adatai</h2>
           <p>
             <strong>Cégnév:</strong> Trident Shield Group Kft.<br />
-            <strong>Márkanév:</strong> MunkavédelmiShop<br />
+            <strong>Márkanév:</strong> TridentShop<br />
             <strong>Cégjegyzékszám:</strong> 15-09-093902<br />
             <strong>Adószám:</strong> 32873537-1-15<br />
             <strong>Székhely:</strong> 4485 Nagyhalász, Jókai utca 18.<br />
@@ -221,7 +221,7 @@ export const ImpressumPage = () => {
           <p>
             <strong>Domain:</strong> munkavedelem.shop<br />
             <strong>Hosting:</strong> Netlify<br />
-            <strong>Szerkesztő:</strong> MunkavédelmiShop Team
+            <strong>Szerkesztő:</strong> TridentShop Team
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Felügyeleti Hatóság</h2>
@@ -232,7 +232,7 @@ export const ImpressumPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Felelősség Korlátozása</h2>
           <p>
-            A MunkavédelmiShop nem felel az olyan technikai hibákért, amelyek a weboldal elérhetőségét 
+            A TridentShop nem felel az olyan technikai hibákért, amelyek a weboldal elérhetőségét 
             akadályozzák, valamint nem felel az internetes kapcsolat biztonságáért sem. Az oldalon kínált 
             termékinformációk a hatályos jogszabályok alapján wurden összeállítva, azonban a 
             jogszabályok módosulhatnak.
@@ -258,7 +258,7 @@ export const ShippingPage = () => {
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', lineHeight: '1.8', color: '#333' }}>
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>1. Szállítási Területek</h2>
           <p>
-            A MunkavédelmiShop az egész Magyarország területén szállít. Jelenleg nemzetközi szállítás nem 
+            A TridentShop az egész Magyarország területén szállít. Jelenleg nemzetközi szállítás nem 
             elérhető, de felkereshetjük lehetőségeit.
           </p>
 
@@ -493,7 +493,7 @@ export const AboutPage = () => {
         <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px', marginBottom: '2rem', lineHeight: '1.8' }}>
           <h2 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>Ki vagyunk?</h2>
           <p>
-            A MunkavédelmiShop a Trident Shield Group Kft. munkavédelmi e-commerce osztálya, amely 
+            A TridentShop a Trident Shield Group Kft. munkavédelmi e-commerce osztálya, amely 
             magas minőségű munkavédelmi ruházat és felszerelések forgalmazásában specializálódik. 
             Célunk, hogy megvédett és biztonságos munkakörnyezetet hozzunk létre vállalkozások 
             számára az egész Magyarország területén.
@@ -577,7 +577,7 @@ export const AboutPage = () => {
         <div style={{ backgroundColor: '#f0f0ec', padding: '2rem', borderRadius: '8px' }}>
           <h2 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>Szenvedélyünk</h2>
           <p style={{ color: '#333' }}>
-            Hiszünk abban, hogy a munkavédelem nem luxus, hanem kötelezettség. A MunkavédelmiShop-on 
+            Hiszünk abban, hogy a munkavédelem nem luxus, hanem kötelezettség. A TridentShop-on 
             keresztül mindent megtehetünk annak érdekében, hogy a munkavédelmi termékek könnyen elérhetőek 
             és megfizethetőek legyenek.
           </p>

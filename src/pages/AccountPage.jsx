@@ -23,7 +23,7 @@ const AccountPage = () => {
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => { document.title = 'Fiókom | MunkavédelmiShop'; }, []);
+  useEffect(() => { document.title = 'Fiókom | TridentShop'; }, []);
 
   useEffect(() => {
     getUser().then(u => { setUser(u); setReady(true); }).catch(() => setReady(true));
@@ -61,7 +61,7 @@ const AccountPage = () => {
     <header style={{ backgroundColor: 'white', padding: '1rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderBottom: '3px solid #C9A961' }}>
       <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
         <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.4rem' }}>
-          🛡️ MunkavédelmiShop
+          🛡️ TridentShop
         </Link>
         <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
           <ArrowLeft size={18} /> Vissza a webshopra

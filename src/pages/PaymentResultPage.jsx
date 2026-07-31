@@ -32,14 +32,14 @@ const PaymentResultPage = () => {
   const r = RESULTS[status] || RESULTS.fail;
   const Icon = r.icon;
 
-  useEffect(() => { document.title = `${r.title} | MunkavédelmiShop`; }, [r.title]);
+  useEffect(() => { document.title = `${r.title} | TridentShop`; }, [r.title]);
 
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
       <header style={{ backgroundColor: 'white', padding: '1rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderBottom: '3px solid #C9A961' }}>
         <div style={{ maxWidth: '760px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.4rem' }}>
-            🛡️ MunkavédelmiShop
+            🛡️ TridentShop
           </Link>
           <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             <ArrowLeft size={18} /> Vissza a webshopra

@@ -52,7 +52,7 @@ const ProductDetailPage = () => {
 
     // SEO meta tagok
     const cat = productCategories.find(c => c.id === p.categoryId);
-    document.title = `${p.name} | MunkavédelmiShop`;
+    document.title = `${p.name} | TridentShop`;
 
     const setMeta = (name, content, isProperty = false) => {
       const attr = isProperty ? 'property' : 'name';
@@ -65,7 +65,7 @@ const ProductDetailPage = () => {
       tag.content = content;
     };
 
-    const desc = p.description ? p.description.substring(0, 160) : `${p.name} - ${cat?.name || ''} - MunkavédelmiShop webshopjából`;
+    const desc = p.description ? p.description.substring(0, 160) : `${p.name} - ${cat?.name || ''} - TridentShop webshopjából`;
     setMeta('description', desc);
     setMeta('keywords', `${p.name}, ${p.brand || ''}, ${cat?.name || ''}, munkavédelem`);
     // Relatív képútvonal abszolúttá alakítása (OG + schema.org kötelező)
@@ -84,7 +84,7 @@ const ProductDetailPage = () => {
         "sku": p.articleNo || String(p.id),
         "image": absImage,
         "description": p.description,
-        "brand": { "@type": "Brand", "name": p.brand || 'MunkavédelmiShop' },
+        "brand": { "@type": "Brand", "name": p.brand || 'TridentShop' },
         "offers": {
           "@type": "Offer",
           "url": window.location.href,
@@ -194,7 +194,7 @@ const ProductDetailPage = () => {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
           <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.5rem' }}>
-            🛡️ MunkavédelmiShop
+            🛡️ TridentShop
           </Link>
           <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ArrowLeft size={18} /> Vissza a webshopra

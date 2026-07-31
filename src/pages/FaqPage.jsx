@@ -51,7 +51,7 @@ const FaqPage = () => {
   const [open, setOpen] = useState(null);
 
   useEffect(() => {
-    document.title = 'Gyakori kérdések (GYIK) | MunkavédelmiShop';
+    document.title = 'Gyakori kérdések (GYIK) | TridentShop';
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
@@ -77,7 +77,7 @@ const FaqPage = () => {
       <header style={{ backgroundColor: 'white', padding: '1rem 1.5rem', boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderBottom: '3px solid #C9A961' }}>
         <div style={{ maxWidth: '900px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.5rem' }}>
-            🛡️ MunkavédelmiShop
+            🛡️ TridentShop
           </Link>
           <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ArrowLeft size={18} /> Vissza a webshopra

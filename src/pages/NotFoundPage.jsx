@@ -6,7 +6,7 @@ import { Home, Search, ArrowLeft } from 'lucide-react';
 // visszavezetjük a kategóriákhoz és a keresőhöz.
 const NotFoundPage = () => {
   useEffect(() => {
-    document.title = 'A keresett oldal nem található | MunkavédelmiShop';
+    document.title = 'A keresett oldal nem található | TridentShop';
     // A keresők ne indexeljék a 404-eket
     let tag = document.querySelector('meta[name="robots"][data-404]');
     if (!tag) {

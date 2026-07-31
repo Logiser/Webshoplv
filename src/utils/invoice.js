@@ -135,7 +135,7 @@ export const generateInvoiceHTML = (order) => {
 
 <div class="header">
   <div>
-    <h1 class="logo">🛡️ MunkavédelmiShop</h1>
+    <h1 class="logo">🛡️ TridentShop</h1>
     <div class="seller">
       Trident Shield Group Kft.<br>
       4030 Debrecen, Keleti Ipartelep utca 4.<br>

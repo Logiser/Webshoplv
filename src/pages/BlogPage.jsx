@@ -14,7 +14,7 @@ const BlogPage = () => {
   const [activeTag, setActiveTag] = useState(null);
 
   useEffect(() => {
-    document.title = 'Szakértői blog - MunkavédelmiShop';
+    document.title = 'Szakértői blog - TridentShop';
     setPosts(getBlogPosts());
 
     const setMeta = (name, content) => {
@@ -44,7 +44,7 @@ const BlogPage = () => {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.5rem' }}>
-            🛡️ MunkavédelmiShop
+            🛡️ TridentShop
           </Link>
           <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ArrowLeft size={18} /> Vissza a webshopra

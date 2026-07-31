@@ -45,7 +45,7 @@ const WishlistPage = () => {
   };
 
   useEffect(() => {
-    document.title = 'Kedvencek - MunkavédelmiShop';
+    document.title = 'Kedvencek - TridentShop';
     const wishlistIds = getWishlist();
     const all = getAllProducts();
     setProducts(all.filter(p => wishlistIds.includes(p.id) && !p.hidden));
@@ -64,7 +64,7 @@ const WishlistPage = () => {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.5rem' }}>
-            🛡️ MunkavédelmiShop
+            🛡️ TridentShop
           </Link>
           <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
             <ArrowLeft size={18} /> Vissza a webshopra

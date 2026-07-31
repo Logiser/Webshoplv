@@ -1,4 +1,4 @@
-// MunkavédelmiShop - Termékek katalógusa
+// TridentShop - Termékek katalógusa
 // A termékadatokat a scripts/ alatti pipeline generálja a Depiend.hu beszállítói
 // katalógusból (Árukereső-népszerűség alapján válogatva): products.generated.json
 // Képek: /public/images/products/ - Portwest hivatalos (vízjelmentes) fotók,
@@ -41,11 +41,11 @@ export const productCategories = [
   },
   {
     id: 'kiegeszitok',
-    name: 'Kiegészítők & Védőfelszerelés',
+    name: 'Védőeszközök',
     brand: 'Portwest',
     slug: 'kiegeszitok',
     description: 'Védősisakok, védőszemüvegek, hallásvédők, láthatósági mellények, sapkák és térdvédők — teljes egyéni védőfelszerelés',
-    icon: '🪖'
+    icon: '🥽'
   }
 ];
 

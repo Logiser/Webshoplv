@@ -693,7 +693,7 @@ const defaultBlogPosts = [
 <p>A megfelelő munkacipő kiválasztásánál figyelj a méretre, illeszkedésre, anyagra (bőr lélegzőbb, mint a műanyag), és a talp típusára (csúszásgátló, SRC jelölésű).</p>
 <h2>Tippek a viseléshez</h2>
 <p>Az új cipő bejáratása minimum 1 hét. Mindennapi viseléshez vegyél 2 párat, és váltogasd! Tisztítsd rendszeresen, kezeld bőrápolóval.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2024-11-15',
     image: 'https://images.unsplash.com/photo-1512374382149-233c42b6a83b?w=800&h=400&fit=crop',
     tags: ['munkacipo', 'utmutato', 'tanacsok']
@@ -717,7 +717,7 @@ const defaultBlogPosts = [
 <p>Specifikus anyagok (savak, lúgok, oldószerek) ellen védő kesztyűk. A piktogramok jelzik, mire jó.</p>
 <h2>Hideg ellen (EN 511)</h2>
 <p>Konvektív hideg + kontakthideg + vízhatlanság jelölése. Téli kültéri munkához.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2024-11-22',
     image: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?w=800&h=400&fit=crop',
     tags: ['kesztyu', 'szabvany', 'utmutato']
@@ -743,7 +743,7 @@ const defaultBlogPosts = [
 </ul>
 <h2>Színek</h2>
 <p>Fluoreszcens sárga, narancs vagy piros háttér + retroreflektív (visszaverő) csíkok. A reflexcsík minimum 50 mm széles, és mosás után is meg kell őriznie funkcióját.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2024-12-01',
     image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
     tags: ['hi-vis', 'jogszabaly', 'kotelezo']
@@ -764,7 +764,7 @@ const defaultBlogPosts = [
 <p>Télen vastagabb zoknit viselünk — ha a bakancs szoros, a láb hamarabb fázik, mert a vérkeringés romlik és nincs szigetelő légréteg. Fél mérettel nagyobbat válassz, mint a nyári lábbelid.</p>
 <h2>Talp és csúszásvédelem</h2>
 <p>Jeges felületen az SRC jelölésű, mélyprofilos talp a minimum. A hőálló (HRO) talpgumi hidegben is rugalmasabb marad, kevésbé keményedik meg.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-01-14',
     image: '/images/products/fc12_bk.jpg',
     tags: ['bakancs', 'teli', 'utmutato']
@@ -788,7 +788,7 @@ const defaultBlogPosts = [
 <li>Téli kültéri munka → <strong>bélelt latex/nitril</strong> (pl. A140, A146)</li>
 </ul>
 <p>Tipp: az EN 388 kód 4 számjegye (kopás, vágás, tépés, átszúrás) alapján hasonlítsd össze a konkrét modelleket.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-02-20',
     image: '/images/products/a100_gn.jpg',
     tags: ['kesztyu', 'osszehasonlitas', 'utmutato']
@@ -811,7 +811,7 @@ const defaultBlogPosts = [
 </ul>
 <h2>Karbantartás</h2>
 <p>Langyos szappanos vízzel tisztítsd, oldószerrel soha. Ne tárold autó műszerfalán vagy tűző napon. A sisakkosár és izzadságpánt külön is cserélhető — érdemes évente frissíteni.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-03-18',
     image: '/images/products/ps55_wh.jpg',
     tags: ['sisak', 'szabvany', 'karbantartas']
@@ -833,7 +833,7 @@ const defaultBlogPosts = [
 <p>A munkanadrág akkor jó, ha guggolásnál nem húz és nem csúszik le. Hosszított szárú változatok magasabb (185 cm+) testalkathoz elérhetők a legtöbb Portwest modellnél.</p>
 <h2>UV védelem</h2>
 <p>Kültéri munkánál figyeld az UPF jelölést — a C701 például az UV sugárzás 96%-át blokkolja (50+ UPF).</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-04-22',
     image: '/images/products/c701_bk.jpg',
     tags: ['munkaruha', 'nadrag', 'utmutato']
@@ -853,7 +853,7 @@ const defaultBlogPosts = [
 </ul>
 <h2>Amire még figyelj</h2>
 <p>A hőveszteség jelentős része a fejnél és a végtagoknál történik: kötött, bélelt sapka (pl. B013 Insulatex), téli kesztyű (A140/A146) és CI jelölésű bakancs nélkül a legjobb kabát sem elég. Munkavédelmi szempont: a külső réteg legyen jól látható vagy viselj rá hi-vis mellényt, ha forgalom közelében dolgozol.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-10-15',
     image: '/images/products/cd864_bk.jpg',
     tags: ['munkaruha', 'teli', 'retegezes']
@@ -876,7 +876,7 @@ const defaultBlogPosts = [
 <p>Az EN 166 az alapszabvány: az 1-es optikai osztály tartós viselésre való. Az F jelölés kis energiájú ütés elleni védelmet jelent (45 m/s) — forgácsoló, köszörülő munkához a minimum.</p>
 <h2>Illeszkedés</h2>
 <p>A wrap-around (körbeölelő) forma oldalról is véd és kevésbé enged be port. Ha dioptriás szemüveget hordasz, keress ráhelyezhető (overspec) modellt vagy dioptriás betétes változatot.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-06-10',
     image: '/images/products/pr01_cl.jpg',
     tags: ['szemuveg', 'utmutato', 'szabvany']
@@ -897,7 +897,7 @@ const defaultBlogPosts = [
 </ul>
 <h2>Mit jelent ez vásárláskor?</h2>
 <p>Semmi pánik: az alapkategóriák (SB, S1, S1P, S2, S3) megmaradtak. Ha új jelölésű cipőt látsz (pl. "S3S SC FO SR"), az a legfrissebb vizsgálatok szerint tanúsított termék. A régi készletek 2011-es jelöléssel is teljesen legálisan forgalmazhatók.</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-08-05',
     image: '/images/products/fc19_bkb.jpg',
     tags: ['munkacipo', 'szabvany', 'valtozas']
@@ -919,7 +919,7 @@ const defaultBlogPosts = [
 <li>Változó intenzitású, vegyes munkakörök → <strong>kétrészes</strong></li>
 <li>Kültéri egész éves munka → <strong>kétrészes</strong>, téli kiegészítőkkel</li>
 </ul>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2025-09-12',
     image: '/images/products/2802_na.jpg',
     tags: ['munkaruha', 'overal', 'osszehasonlitas']
@@ -938,7 +938,7 @@ const defaultBlogPosts = [
 <h2>A dolgozó kötelezettségei</h2>
 <p>A munkavállaló köteles a védőeszközt rendeltetésszerűen használni és az észlelt hibát jelezni. A használat megtagadása munkajogi következményekkel járhat — de csak akkor, ha a munkáltató a megfelelő eszközt biztosította.</p>
 <p><em>Tipp: cégünk, a Trident Shield Group Kft. munkavédelmi szolgáltatásként EV juttatási rend készítésében is segít — keress minket elérhetőségeinken!</em></p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2026-01-20',
     image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
     tags: ['jogszabaly', 'munkaltato', 'vedoeszkoz']
@@ -966,7 +966,7 @@ const defaultBlogPosts = [
 </ul>
 <h2>Mikor kell cserélni?</h2>
 <p>Ha a talpprofil 1,5 mm alá kopott, az orrmerevítő ütést kapott, vagy a felsőrész-talp ragasztás enged — a cipő munkavédelmi szempontból elhasználódott, akkor is, ha még "hordható".</p>`,
-    author: 'MunkavédelmiShop',
+    author: 'TridentShop',
     date: '2026-03-08',
     image: '/images/products/fc17_br.jpg',
     tags: ['munkacipo', 'karbantartas', 'tippek']
@@ -1098,7 +1098,7 @@ export const saveBlogPost = (post) => {
       isCustom: true,
       slug: slugify(post.title),
       date: post.date || new Date().toISOString().split('T')[0],
-      author: post.author || 'MunkavédelmiShop'
+      author: post.author || 'TridentShop'
     });
   }
   safeSet(STORAGE_KEYS.BLOG_POSTS, posts);
@@ -1410,7 +1410,7 @@ export const generateGoogleShoppingFeed = (siteUrl = '') => {
       <g:image_link>${p.image}</g:image_link>
       <g:availability>${p.stock > 0 ? 'in stock' : 'out of stock'}</g:availability>
       <g:price>${price}.00 HUF</g:price>
-      <g:brand><![CDATA[${p.brand || 'MunkavédelmiShop'}]]></g:brand>
+      <g:brand><![CDATA[${p.brand || 'TridentShop'}]]></g:brand>
       <g:condition>new</g:condition>
       <g:product_type><![CDATA[${p.categoryId}]]></g:product_type>
     </item>`;
@@ -1419,7 +1419,7 @@ export const generateGoogleShoppingFeed = (siteUrl = '') => {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss xmlns:g="http://base.google.com/ns/1.0" version="2.0">
   <channel>
-    <title>MunkavédelmiShop - Google Shopping Feed</title>
+    <title>TridentShop - Google Shopping Feed</title>
     <link>${baseUrl}</link>
     <description>Munkavédelmi termékek webshopja</description>
     ${items}

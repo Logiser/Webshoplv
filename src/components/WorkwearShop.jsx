@@ -202,7 +202,7 @@ const WorkwearShop = () => {
 
   // SEO
   useEffect(() => {
-    document.title = 'MunkavédelmiShop - Munkaruházat és Munkavédelmi Felszerelés Webshop';
+    document.title = 'TridentShop - Munkaruházat és Munkavédelmi Felszerelés Webshop';
 
     const setMeta = (name, content, isProperty = false) => {
       const attr = isProperty ? 'property' : 'name';
@@ -218,7 +218,7 @@ const WorkwearShop = () => {
     setMeta('description', 'Munkavédelmi ruházat, biztonsági cipők, bakancsok, kesztyűk és védőfelszerelés webshopja. 75+ termék, gyors kiszállítás, kedvező árak.');
     setMeta('keywords', 'munkaruha, munkavédelmi ruházat, munkavédelmi cipő, bakancs, kesztyű, sisak, munkaruházat webshop');
     setMeta('robots', 'index, follow');
-    setMeta('og:title', 'MunkavédelmiShop - Munkaruházat Webshop', true);
+    setMeta('og:title', 'TridentShop - Munkaruházat Webshop', true);
     setMeta('og:type', 'website', true);
     setMeta('og:locale', 'hu_HU', true);
   }, []);
@@ -266,7 +266,7 @@ const WorkwearShop = () => {
       (p.description || '').toLowerCase().includes(searchTerm.toLowerCase());
     const matchesCategory = !selectedCategory || p.categoryId === selectedCategory;
     const matchesSubcategory = !selectedSubcategory || p.subcategoryId === selectedSubcategory;
-    const price = getEffectivePrice(p);
+    const price = (p.sale && p.sale.active ? p.sale.price : p.price);
     const matchesPrice = price >= priceMin && price <= priceMax;
     const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(p.brand);
     const matchesSize = selectedSizes.length === 0 || (p.sizes || []).some(s => selectedSizes.includes(s));
@@ -426,7 +426,7 @@ const WorkwearShop = () => {
       
       {/* Top Info Bar */}
       <div style={{
-        backgroundColor: '#0a1f19', color: 'white', padding: '0.5rem 1.5rem', fontSize: '0.85rem',
+        backgroundColor: '#0a1f19', color: 'white', padding: '0.9rem 1.5rem', fontSize: '0.9rem',
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem'
       }}>
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
@@ -468,7 +468,7 @@ const WorkwearShop = () => {
                 display: 'inline-flex', width: '2.1rem', height: '2.1rem', borderRadius: '8px',
                 backgroundColor: '#0F2A1D', color: '#C9A961', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem'
               }}>🛡️</span>
-              <span style={{ display: isMobile ? 'none' : 'inline' }}>MunkavédelmiShop</span>
+              <span style={{ display: isMobile ? 'none' : 'inline' }}>TridentShop</span>
             </h1>
           </Link>
 
@@ -512,7 +512,7 @@ const WorkwearShop = () => {
                         <div style={{ color: '#999', fontSize: '0.72rem' }}>{p.articleNo}</div>
                       </div>
                       <div style={{ color: '#C9A961', fontWeight: 'bold', fontSize: '0.88rem', flexShrink: 0 }}>
-                        {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
+                        {(p.sale && p.sale.active ? p.sale.price : p.price).toLocaleString('hu-HU')} Ft
                       </div>
                     </Link>
                   ))}
@@ -637,7 +637,9 @@ const WorkwearShop = () => {
             backgroundColor: 'white', zIndex: 200, overflowY: 'auto', boxShadow: '4px 0 20px rgba(0,0,0,0.2)'
           }}>
             <div style={{ backgroundColor: '#0F2A1D', color: 'white', padding: '1rem 1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <strong style={{ fontFamily: 'Georgia, serif' }}>🛡️ MunkavédelmiShop</strong>
+              <Link to="/" onClick={() => setMobileMenuOpen(false)} style={{ textDecoration: 'none', color: 'white' }}>
+                <strong style={{ fontFamily: 'Georgia, serif' }}>🛡️ TridentShop</strong>
+              </Link>
               <button onClick={() => setMobileMenuOpen(false)} style={{ background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}><X size={22} /></button>
             </div>
             <button onClick={() => { setSelectedCategory(null); setSelectedSubcategory(null); setMobileMenuOpen(false); }} style={mobileMenuItem(selectedCategory === null)}>
@@ -789,13 +791,16 @@ const WorkwearShop = () => {
         </div>
       )}
 
-      {/* Akciós ajánlatok sáv */}
+      {/* Akciós ajánlatok sáv — az 1. és 2. hely mindig a két legjobb akció, a 3. hely egy 1+1 ajánlat */}
       {!selectedCategory && !searchTerm && (() => {
         const saleItems = products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
           .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)
           .slice(0, 10);
         if (saleItems.length === 0) return null;
-        return <SaleCarouselRow items={saleItems} />;
+        const bundleProduct = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).find(p => p && p.stock > 1);
+        const items = [...saleItems];
+        if (bundleProduct) items.splice(2, 0, { ...bundleProduct, isBundleSlot: true });
+        return <SaleCarouselRow items={items} />;
       })()}
 
       {/* 1+1 ajánlatok — valódi kedvezmény: minden 2. darab ingyenes, a kosár és a számla is ekként számol */}
@@ -837,10 +842,10 @@ const WorkwearShop = () => {
                         }}>{p.name}</div>
                         <div style={{ margin: '0.35rem 0' }}>
                           <div style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.72rem' }}>
-                            {getEffectivePrice(p).toLocaleString('hu-HU')} Ft/db normál áron
+                            {(p.sale && p.sale.active ? p.sale.price : p.price).toLocaleString('hu-HU')} Ft/db normál áron
                           </div>
                           <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1rem' }}>
-                            {Math.round(getEffectivePrice(p) / 2).toLocaleString('hu-HU')} Ft <span style={{ color: '#2e7d32', fontWeight: 'bold', fontSize: '0.72rem' }}>/db 1+1-gyel</span>
+                            {Math.round((p.sale && p.sale.active ? p.sale.price : p.price) / 2).toLocaleString('hu-HU')} Ft <span style={{ color: '#2e7d32', fontWeight: 'bold', fontSize: '0.72rem' }}>/db 1+1-gyel</span>
                           </div>
                         </div>
                       </div>
@@ -1346,7 +1351,9 @@ const WorkwearShop = () => {
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
             <div>
-              <h4 style={{ color: 'white', marginTop: 0 }}>🛡️ MunkavédelmiShop</h4>
+              <Link to="/" style={{ textDecoration: 'none' }}>
+                <h4 style={{ color: 'white', marginTop: 0 }}>🛡️ TridentShop</h4>
+              </Link>
               <p style={{ lineHeight: 1.6 }}>
                 Munkavédelmi ruházat, cipők és felszerelések közvetlenül raktárról.
               </p>
@@ -1421,7 +1428,7 @@ const WorkwearShop = () => {
           </div>
 
           <div style={{ borderTop: '1px solid #333', paddingTop: '1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <p style={{ margin: 0 }}>© 2026 MunkavédelmiShop - Minden jog fenntartva</p>
+            <p style={{ margin: 0 }}>© 2026 TridentShop - Minden jog fenntartva</p>
           </div>
         </div>
       </footer>
@@ -1552,12 +1559,12 @@ const SaleCarouselRow = ({ items }) => {
   const scrollBy = (dx) => { if (scrollRef.current) scrollRef.current.scrollBy({ left: dx, behavior: 'smooth' }); };
 
   return (
-    <div id="akcios-sav" style={{ backgroundColor: '#fff5ee', borderBottom: '1px solid #f0e0d0', padding: '2rem 1.5rem' }}>
+    <div id="akcios-sav" style={{ backgroundColor: '#f5f5f5', padding: '2rem 1.5rem' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
         <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
           🔥 Akciós ajánlatok
         </h3>
-        <p style={{ color: '#8a6d3b', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
+        <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
           A beszállítói akciókat azonnal továbbadjuk — amíg a készlet tart.
         </p>
         <div style={{ position: 'relative' }}>
@@ -1567,22 +1574,39 @@ const SaleCarouselRow = ({ items }) => {
           <div ref={scrollRef} style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollBehavior: 'smooth' }}>
             {items.map(p => (
               <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #f0d0b0' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #eee' }}>
                   <div style={{ position: 'relative' }}>
                     <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
-                    <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#D32F2F', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                      −{Math.round((1 - p.sale.price / p.price) * 100)}%
+                    <span style={{
+                      position: 'absolute', top: '8px', left: '8px', color: 'white', padding: '2px 8px',
+                      borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold',
+                      backgroundColor: p.isBundleSlot ? '#C9A961' : '#D32F2F'
+                    }}>
+                      {p.isBundleSlot ? '1+1' : `−${Math.round((1 - p.sale.price / p.price) * 100)}%`}
                     </span>
                   </div>
                   <div style={{ padding: '0.75rem' }}>
                     <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
                     <div style={{ marginTop: '0.5rem' }}>
-                      <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
-                        {p.price.toLocaleString('hu-HU')} Ft
-                      </span>
-                      <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
-                        {p.sale.price.toLocaleString('hu-HU')} Ft
-                      </span>
+                      {p.isBundleSlot ? (
+                        <>
+                          <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
+                            {(p.sale && p.sale.active ? p.sale.price : p.price).toLocaleString('hu-HU')} Ft/db
+                          </span>
+                          <span style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                            {Math.round((p.sale && p.sale.active ? p.sale.price : p.price) / 2).toLocaleString('hu-HU')} Ft/db
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
+                            {p.price.toLocaleString('hu-HU')} Ft
+                          </span>
+                          <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                            {p.sale.price.toLocaleString('hu-HU')} Ft
+                          </span>
+                        </>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1764,7 +1788,10 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 
         {(() => {
           const colorCount = (product.variants || []).length;
-          const hasBigSizes = (product.sizes || []).some(s => /^(2|3|4|5|6|7|8)XL/i.test(s));
+          // "Nagy méretekben is!" csak felsőknél/nadrágoknál értelmezhető — cipőméretnél
+          // vagy kesztyűnél a 2XL/3XL... jelölés mást jelentene / félrevezető lenne.
+          const isTopOrPants = product.subcategoryId === 'felsok' || product.subcategoryId === 'nadragok';
+          const hasBigSizes = isTopOrPants && (product.sizes || []).some(s => /^(2|3|4|5|6|7|8)XL/i.test(s));
           const text = `${product.name} ${product.description || ''}`.toLowerCase();
           let season = null;
           if (/téli|bélelt|polár|thermo|hőszigetelt/.test(text)) season = { label: 'Téli', bg: '#e3edff', fg: '#1a56c4' };
@@ -1828,19 +1855,23 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
             );
           })()}
 
-          {product.stock > 0 && (
+          {product.stock > 0 ? (
             <p style={{ color: '#2e7d32', fontSize: '0.76rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
               <PackageCheck size={13} /> Raktáron · 2-3 munkanap
             </p>
+          ) : (
+            <p style={{ color: '#c62828', fontSize: '0.76rem', margin: '0 0 0.5rem 0', display: 'flex', alignItems: 'center', gap: '0.3rem', fontWeight: 'bold' }}>
+              <X size={13} /> Nincs raktáron
+            </p>
           )}
 
-          <button onClick={(e) => { e.stopPropagation(); onSelect(); }} style={{
-            width: '100%', backgroundColor: '#0F2A1D', color: 'white',
+          <button onClick={(e) => { e.stopPropagation(); onSelect(); }} disabled={product.stock === 0} style={{
+            width: '100%', backgroundColor: product.stock === 0 ? '#ccc' : '#0F2A1D', color: 'white',
             padding: '0.6rem', borderRadius: '6px', border: 'none',
-            cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem',
+            cursor: product.stock === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.9rem',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
           }}>
-            <ShoppingCart size={16} /> Kosárba
+            <ShoppingCart size={16} /> {product.stock === 0 ? 'Elfogyott' : 'Kosárba'}
           </button>
         </div>
       </div>

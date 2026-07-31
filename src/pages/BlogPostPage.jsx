@@ -51,7 +51,7 @@ const BlogPostPage = () => {
     setRecos(relatedProducts(p));
     window.scrollTo({ top: 0 });
 
-    document.title = `${p.title} | MunkavédelmiShop Blog`;
+    document.title = `${p.title} | TridentShop Blog`;
 
     const setMeta = (name, content, isProperty = false) => {
       const attr = isProperty ? 'property' : 'name';
@@ -83,7 +83,7 @@ const BlogPostPage = () => {
       "wordCount": wordCount,
       "articleSection": (p.tags || [])[0] || 'munkavédelem',
       "author": { "@type": "Organization", "name": p.author },
-      "publisher": { "@type": "Organization", "name": "MunkavédelmiShop" }
+      "publisher": { "@type": "Organization", "name": "TridentShop" }
     }];
     if (Array.isArray(p.faq) && p.faq.length > 0) {
       schemas.push({
@@ -122,7 +122,7 @@ const BlogPostPage = () => {
       }}>
         <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.5rem' }}>
-            🛡️ MunkavédelmiShop
+            🛡️ TridentShop
           </Link>
           <div style={{ display: 'flex', gap: '1rem' }}>
             <Link to="/blog" style={{ color: '#0F2A1D', textDecoration: 'none' }}>Blog</Link>
@@ -250,7 +250,7 @@ const BlogPostPage = () => {
           <div>
             <div style={{ color: '#0F2A1D', fontWeight: 'bold' }}>{post.author}</div>
             <div style={{ color: '#666', fontSize: '0.85rem', lineHeight: 1.5 }}>
-              A MunkavédelmiShop a Trident Shield Group Kft. webáruháza — munkavédelmi szakemberek
+              A TridentShop a Trident Shield Group Kft. webáruháza — munkavédelmi szakemberek
               válogatják a termékeket és írják az útmutatókat. Kérdésed van? Hívj: +36 30 272 2571
             </div>
           </div>

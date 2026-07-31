@@ -86,7 +86,7 @@ const AdminPanel = () => {
             🛡️ Admin Panel
           </h2>
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
-            MunkavédelmiShop
+            TridentShop
           </p>
         </div>
 
@@ -2668,7 +2668,7 @@ const BlogEditor = ({ post, onSave, onCancel }) => {
     content: post.content || '<p>Cikk tartalma...</p>',
     image: post.image || '',
     tags: (post.tags || []).join(', '),
-    author: post.author || 'MunkavédelmiShop',
+    author: post.author || 'TridentShop',
     date: post.date || new Date().toISOString().split('T')[0],
     id: post.id
   });
