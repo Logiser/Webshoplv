@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, Palette, Ruler as RulerIcon, PackageCheck } from 'lucide-react';
+import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, Palette, Ruler as RulerIcon, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen } from '../data/storage';
@@ -32,7 +32,7 @@ const headerBadge = {
 
 // Valódi "1+1" akció: kis értékű, fogyóeszköz-jellegű termékek (egy méret/szín), ahol
 // a 2. darab ténylegesen ingyenes — nem csak dekoratív felirat, a kosár/pénztár/számla is ekként számol.
-const BUNDLE_1PLUS1_IDS = [1498, 1873, 1685, 1541, 212, 1505];
+const BUNDLE_1PLUS1_IDS = [1873, 1541, 1505, 1501, 211, 1524];
 const isBundleProduct = (id) => BUNDLE_1PLUS1_IDS.includes(id);
 // Fizetendő darabszám 1+1 akciós tételre: minden 2. darab ingyenes.
 const chargeableQty = (item) => isBundleProduct(item.id) ? Math.ceil(item.quantity / 2) : item.quantity;
@@ -693,14 +693,17 @@ const WorkwearShop = () => {
                     onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5f7f5'}
                     onMouseLeave={e => e.currentTarget.style.backgroundColor = 'white'}
                   >
-                    <span style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
                     <span style={{ flex: 1 }}>{cat.name}</span>
                     <ChevronRight size={14} style={{ color: '#999' }} />
                   </button>
                 ))}
               </div>
             )}
-            <HeroCarousel t={t} productCount={products.length} isMobile={isMobile} />
+            <HeroCarousel
+              t={t} productCount={products.length} isMobile={isMobile}
+              bundleImage={(products.find(p => p.id === BUNDLE_1PLUS1_IDS[0]) || {}).image}
+              categoryImage={(products.find(p => p.categoryId === 'bakancs' && p.image) || {}).image}
+            />
           </div>
         </div>
       )}
@@ -711,43 +714,7 @@ const WorkwearShop = () => {
           .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)
           .slice(0, 10);
         if (saleItems.length === 0) return null;
-        return (
-          <div id="akcios-sav" style={{ backgroundColor: '#fff5ee', borderBottom: '1px solid #f0e0d0', padding: '2rem 1.5rem' }}>
-            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-                🔥 Akciós ajánlatok
-              </h3>
-              <p style={{ color: '#8a6d3b', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
-                A beszállítói akciókat azonnal továbbadjuk — amíg a készlet tart.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                {saleItems.map(p => (
-                  <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
-                    <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #f0d0b0' }}>
-                      <div style={{ position: 'relative' }}>
-                        <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
-                        <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#D32F2F', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                          −{Math.round((1 - p.sale.price / p.price) * 100)}%
-                        </span>
-                      </div>
-                      <div style={{ padding: '0.75rem' }}>
-                        <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
-                        <div style={{ marginTop: '0.5rem' }}>
-                          <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
-                            {p.price.toLocaleString('hu-HU')} Ft
-                          </span>
-                          <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
-                            {p.sale.price.toLocaleString('hu-HU')} Ft
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
+        return <SaleCarouselRow items={saleItems} />;
       })()}
 
       {/* 1+1 ajánlatok — valódi kedvezmény: minden 2. darab ingyenes, a kosár és a számla is ekként számol */}
@@ -787,8 +754,13 @@ const WorkwearShop = () => {
                         <div style={{
                           color: '#333', fontSize: '0.8rem', lineHeight: 1.3, height: '2.1rem', overflow: 'hidden'
                         }}>{p.name}</div>
-                        <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem', margin: '0.35rem 0' }}>
-                          {getEffectivePrice(p).toLocaleString('hu-HU')} Ft <span style={{ color: '#999', fontWeight: 'normal', fontSize: '0.75rem' }}>/db</span>
+                        <div style={{ margin: '0.35rem 0' }}>
+                          <div style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.72rem' }}>
+                            {getEffectivePrice(p).toLocaleString('hu-HU')} Ft/db normál áron
+                          </div>
+                          <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1rem' }}>
+                            {Math.round(getEffectivePrice(p) / 2).toLocaleString('hu-HU')} Ft <span style={{ color: '#2e7d32', fontWeight: 'bold', fontSize: '0.72rem' }}>/db 1+1-gyel</span>
+                          </div>
                         </div>
                       </div>
                     </Link>
@@ -816,7 +788,7 @@ const WorkwearShop = () => {
             <div style={{
               display: 'grid',
               gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
-              gridAutoRows: isMobile ? '130px' : '160px',
+              gridAutoRows: isMobile ? '155px' : '190px',
               gap: '0.85rem'
             }}>
               {productCategories.map((cat, idx) => {
@@ -825,25 +797,23 @@ const WorkwearShop = () => {
                 const featured = idx === 0;
                 return (
                   <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
-                    position: 'relative', border: 'none', borderRadius: '12px', padding: 0,
-                    cursor: 'pointer', overflow: 'hidden', textAlign: 'left', display: 'block',
+                    border: 'none', borderRadius: '12px', padding: '0.75rem',
+                    cursor: 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column',
                     backgroundColor: '#0F2A1D',
                     gridColumn: featured && !isMobile ? 'span 2' : 'span 1',
                     gridRow: featured && !isMobile ? 'span 2' : 'span 1'
                   }}>
                     {rep && (
-                      <img src={rep.image} alt={cat.name} loading="lazy" style={{
-                        position: 'absolute', inset: '0 0 34% 0', width: '100%', height: '66%',
-                        objectFit: 'contain', objectPosition: 'center'
-                      }} />
+                      <div style={{ flex: 1, minHeight: 0, position: 'relative', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+                        <img src={rep.image} alt={cat.name} loading="lazy" style={{
+                          position: 'absolute', inset: 0, width: '100%', height: '100%',
+                          objectFit: 'contain', objectPosition: 'center', padding: '0.6rem'
+                        }} />
+                      </div>
                     )}
-                    <div style={{
-                      position: 'absolute', inset: 0,
-                      background: 'linear-gradient(180deg, rgba(15,42,29,0) 55%, rgba(15,42,29,0.96) 100%)'
-                    }} />
-                    <div style={{ position: 'absolute', left: '1rem', right: '1rem', bottom: '0.9rem' }}>
+                    <div style={{ paddingTop: '0.65rem', flexShrink: 0 }}>
                       <div style={{ color: 'white', fontWeight: 'bold', fontSize: featured && !isMobile ? '1.3rem' : '0.95rem', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
-                        {cat.icon} {cat.name}
+                        {cat.name}
                       </div>
                       <div style={{ color: '#C9A961', fontSize: '0.8rem', marginTop: '3px', fontWeight: 600 }}>
                         {count} {t('section.products')} →
@@ -1309,7 +1279,7 @@ const WorkwearShop = () => {
 // ============================================================
 // HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
 // ============================================================
-const HeroCarousel = ({ t, productCount, isMobile }) => {
+const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage }) => {
   const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
 
   const slides = [
@@ -1317,21 +1287,23 @@ const HeroCarousel = ({ t, productCount, isMobile }) => {
       bg: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)',
       title: <>A munkád megvéd minket.<br /><span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span></>,
       text: `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés — a legtöbbjét máshol nem kapod olcsóbban.`,
-      ctaLabel: `🔥 ${t('hero.ctaDeals')}`, ctaTarget: 'akcios-sav',
+      ctaLabel: t('hero.ctaDeals'), ctaTarget: 'akcios-sav',
       cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
     {
       bg: 'linear-gradient(135deg, #C9A961 0%, #a9823f 100%)',
       dark: true,
-      title: <>🎁 Vegyél kettőt,<br />fizess egyet.</>,
+      title: <>Vegyél kettőt,<br />fizess egyet.</>,
       text: 'Kesztyű, füldugó, védőszemüveg és maszk — néhány kiválasztott terméknél minden 2. darab valóban ingyenes.',
-      ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy'
+      ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy',
+      image: bundleImage
     },
     {
       bg: 'linear-gradient(135deg, #1a3f33 0%, #0F2A1D 100%)',
       title: <>Ingyenes szállítás<br />30 000 Ft felett.</>,
       text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés, 2-3 munkanapos országos kiszállítás.',
-      ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak'
+      ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak',
+      image: categoryImage
     }
   ];
 
@@ -1355,10 +1327,11 @@ const HeroCarousel = ({ t, productCount, isMobile }) => {
       style={{
         position: 'relative', background: slide.bg, color: 'white', borderRadius: '10px',
         overflow: 'hidden', minHeight: isMobile ? '320px' : '360px',
-        display: 'flex', alignItems: 'center', padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
+        display: 'flex', alignItems: 'center', gap: '1.5rem',
+        padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
       }}
     >
-      <div style={{ maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
+      <div style={{ flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
         <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
           {slide.title}
         </h2>
@@ -1383,6 +1356,17 @@ const HeroCarousel = ({ t, productCount, isMobile }) => {
         </div>
       </div>
 
+      {!isMobile && slide.image && (
+        <div style={{
+          flexShrink: 0, width: '220px', height: '220px', backgroundColor: 'rgba(255,255,255,0.94)',
+          borderRadius: '12px', position: 'relative', overflow: 'hidden'
+        }}>
+          <img src={slide.image} alt="" loading="lazy" style={{
+            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '1rem'
+          }} />
+        </div>
+      )}
+
       <div style={{
         position: 'absolute', bottom: '1rem', left: 0, right: 0,
         display: 'flex', justifyContent: 'center', gap: '0.5rem'
@@ -1393,6 +1377,67 @@ const HeroCarousel = ({ t, productCount, isMobile }) => {
             backgroundColor: i === active ? '#C9A961' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'all 0.25s'
           }} />
         ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// AKCIÓS SÁV — vízszintesen görgethető kártyasor, nyíl-navigációval
+// ============================================================
+const arrowBtnStyle = (side) => ({
+  position: 'absolute', top: '50%', transform: 'translateY(-50%)', [side]: '-14px', zIndex: 2,
+  width: '36px', height: '36px', borderRadius: '50%', border: '1px solid #eee',
+  backgroundColor: 'white', boxShadow: '0 2px 8px rgba(0,0,0,0.15)', cursor: 'pointer',
+  display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#0F2A1D'
+});
+
+const SaleCarouselRow = ({ items }) => {
+  const scrollRef = useRef(null);
+  const scrollBy = (dx) => { if (scrollRef.current) scrollRef.current.scrollBy({ left: dx, behavior: 'smooth' }); };
+
+  return (
+    <div id="akcios-sav" style={{ backgroundColor: '#fff5ee', borderBottom: '1px solid #f0e0d0', padding: '2rem 1.5rem' }}>
+      <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+        <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
+          🔥 Akciós ajánlatok
+        </h3>
+        <p style={{ color: '#8a6d3b', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
+          A beszállítói akciókat azonnal továbbadjuk — amíg a készlet tart.
+        </p>
+        <div style={{ position: 'relative' }}>
+          <button onClick={() => scrollBy(-420)} aria-label="Előző" style={arrowBtnStyle('left')}>
+            <ChevronLeft size={20} />
+          </button>
+          <div ref={scrollRef} style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollBehavior: 'smooth' }}>
+            {items.map(p => (
+              <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #f0d0b0' }}>
+                  <div style={{ position: 'relative' }}>
+                    <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
+                    <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#D32F2F', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
+                      −{Math.round((1 - p.sale.price / p.price) * 100)}%
+                    </span>
+                  </div>
+                  <div style={{ padding: '0.75rem' }}>
+                    <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
+                    <div style={{ marginTop: '0.5rem' }}>
+                      <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
+                        {p.price.toLocaleString('hu-HU')} Ft
+                      </span>
+                      <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
+                        {p.sale.price.toLocaleString('hu-HU')} Ft
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+          <button onClick={() => scrollBy(420)} aria-label="Következő" style={arrowBtnStyle('right')}>
+            <ChevronRight size={20} />
+          </button>
+        </div>
       </div>
     </div>
   );
