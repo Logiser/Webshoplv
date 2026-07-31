@@ -969,16 +969,19 @@ const WorkwearShop = () => {
             {/* Alkategóriák */}
             {selectedCategory && currentSubcategories.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginTop: 0, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                  <Filter size={18} /> Alkategóriák
+                <h3 style={{ color: '#0F2A1D', marginTop: 0, marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', fontSize: '0.9rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  <Filter size={15} /> Alkategóriák
                 </h3>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', marginBottom: '1.5rem' }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'column', gap: '0.1rem', marginBottom: '0.85rem',
+                  maxHeight: '190px', overflowY: 'auto', paddingRight: '0.25rem'
+                }}>
                   <button onClick={() => setSelectedSubcategory(null)} style={{
-                    padding: '0.5rem 0.75rem', border: 'none',
+                    padding: '0.35rem 0.6rem', border: 'none',
                     backgroundColor: selectedSubcategory === null ? '#0F2A1D' : 'transparent',
                     color: selectedSubcategory === null ? 'white' : '#333',
-                    cursor: 'pointer', borderRadius: '4px', textAlign: 'left', fontSize: '0.9rem',
-                    fontWeight: selectedSubcategory === null ? 'bold' : 'normal'
+                    cursor: 'pointer', borderRadius: '4px', textAlign: 'left', fontSize: '0.85rem',
+                    fontWeight: selectedSubcategory === null ? 'bold' : 'normal', flexShrink: 0
                   }}>
                     Mind ({products.filter(p => p.categoryId === selectedCategory).length})
                   </button>
@@ -986,11 +989,11 @@ const WorkwearShop = () => {
                     const count = products.filter(p => p.subcategoryId === sub.id).length;
                     return (
                       <button key={sub.id} onClick={() => setSelectedSubcategory(sub.id)} style={{
-                        padding: '0.5rem 0.75rem', border: 'none',
+                        padding: '0.35rem 0.6rem', border: 'none',
                         backgroundColor: selectedSubcategory === sub.id ? '#0F2A1D' : 'transparent',
                         color: selectedSubcategory === sub.id ? 'white' : '#333',
-                        cursor: 'pointer', borderRadius: '4px', textAlign: 'left', fontSize: '0.9rem',
-                        fontWeight: selectedSubcategory === sub.id ? 'bold' : 'normal'
+                        cursor: 'pointer', borderRadius: '4px', textAlign: 'left', fontSize: '0.85rem',
+                        fontWeight: selectedSubcategory === sub.id ? 'bold' : 'normal', flexShrink: 0
                       }}>
                         {sub.name} ({count})
                       </button>
@@ -1001,10 +1004,10 @@ const WorkwearShop = () => {
             )}
 
             {/* Ár szűrő */}
-            <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               💰 Ár
             </h3>
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '0.85rem' }}>
               <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <input type="number" value={priceMin} onChange={e => setPriceMin(Math.max(0, parseInt(e.target.value) || 0))}
                   style={{ width: '50%', padding: '0.4rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
@@ -1026,12 +1029,12 @@ const WorkwearShop = () => {
             {/* Márka szűrő */}
             {allBrands.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   🏷️ Márka
                 </h3>
-                <div style={{ marginBottom: '1.5rem', maxHeight: '200px', overflowY: 'auto' }}>
+                <div style={{ marginBottom: '0.85rem', maxHeight: '160px', overflowY: 'auto' }}>
                   {allBrands.map(brand => (
-                    <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <label key={brand} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.15rem 0', cursor: 'pointer', fontSize: '0.85rem' }}>
                       <input type="checkbox" checked={selectedBrands.includes(brand)}
                         onChange={() => toggleArrayItem(selectedBrands, setSelectedBrands, brand)} />
                       {brand}
@@ -1044,12 +1047,12 @@ const WorkwearShop = () => {
             {/* Iparági szűrő — meglévő, pontosan címkézett alkategóriákból */}
             {allIndustries.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   🏭 Iparág
                 </h3>
-                <div style={{ marginBottom: '1.5rem' }}>
+                <div style={{ marginBottom: '0.85rem', maxHeight: '140px', overflowY: 'auto' }}>
                   {allIndustries.map(ind => (
-                    <label key={ind} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <label key={ind} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.15rem 0', cursor: 'pointer', fontSize: '0.85rem' }}>
                       <input type="checkbox" checked={selectedIndustries.includes(ind)}
                         onChange={() => toggleArrayItem(selectedIndustries, setSelectedIndustries, ind)} />
                       {ind}
@@ -1063,12 +1066,12 @@ const WorkwearShop = () => {
                 méteráru méretek összemosódnának, áttekinthetetlen listát adva) */}
             {selectedCategory && allSizes.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   📏 Méret
                 </h3>
                 <div style={{
-                  marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.35rem',
-                  maxHeight: '190px', overflowY: 'auto', paddingRight: '0.25rem'
+                  marginBottom: '0.85rem', display: 'flex', flexWrap: 'wrap', gap: '0.3rem',
+                  maxHeight: '150px', overflowY: 'auto', paddingRight: '0.25rem'
                 }}>
                   {allSizes.map(size => (
                     <button key={size}
@@ -1090,12 +1093,12 @@ const WorkwearShop = () => {
             {/* Szabvány szűrő — csak ott jelenik meg kód, ahol a leírás ténylegesen tartalmazza */}
             {allStandards.length > 0 && (
               <>
-                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   📋 Szabvány
                 </h3>
-                <div style={{ marginBottom: '1.5rem', maxHeight: '160px', overflowY: 'auto' }}>
+                <div style={{ marginBottom: '0.85rem', maxHeight: '130px', overflowY: 'auto' }}>
                   {allStandards.map(std => (
-                    <label key={std} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0', cursor: 'pointer', fontSize: '0.9rem' }}>
+                    <label key={std} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.15rem 0', cursor: 'pointer', fontSize: '0.85rem' }}>
                       <input type="checkbox" checked={selectedStandards.includes(std)}
                         onChange={() => toggleArrayItem(selectedStandards, setSelectedStandards, std)} />
                       {std}
@@ -1106,12 +1109,12 @@ const WorkwearShop = () => {
             )}
 
             {/* Csillag szűrő */}
-            <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+            <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
               ⭐ Értékelés
             </h3>
-            <div style={{ marginBottom: '1.5rem' }}>
+            <div style={{ marginBottom: '0.85rem' }}>
               {[4, 3, 2, 1, 0].map(r => (
-                <label key={r} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0', cursor: 'pointer' }}>
+                <label key={r} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.15rem 0', cursor: 'pointer' }}>
                   <input type="radio" name="rating" checked={minRating === r} onChange={() => setMinRating(r)} />
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.15rem' }}>
                     {[1, 2, 3, 4, 5].map(i => (
