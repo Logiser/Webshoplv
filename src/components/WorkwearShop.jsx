@@ -115,16 +115,6 @@ const WorkwearShop = () => {
 
   const getEffectivePrice = (p) => (p.sale && p.sale.active) ? p.sale.price : p.price;
 
-  // Beszállítói publikus listaár (igazolható referencia-ár az áthúzott megjelenítéshez).
-  // Az eladási ár ettől független — a marketplace-feedekkel mindig egyezik.
-  const getListPrice = (p) => (p.partnerPrice > 0) ? Math.round(p.partnerPrice / 0.7608 / 10) * 10 : null;
-  const getListDiscount = (p) => {
-    const lp = getListPrice(p);
-    const eff = getEffectivePrice(p);
-    if (!lp || lp <= eff) return 0;
-    return Math.round((1 - eff / lp) * 100);
-  };
-
   // SEO
   useEffect(() => {
     document.title = 'MunkavédelmiShop - Munkaruházat és Munkavédelmi Felszerelés Webshop';
@@ -731,47 +721,63 @@ const WorkwearShop = () => {
         );
       })()}
 
-      {/* Listaár alatti ajánlatok sáv */}
+      {/* Piaci összehasonlítás — rangsor-lista, valós versenytárs-árakkal (nem kártya-sáv, tudatosan más elrendezés) */}
       {!selectedCategory && !searchTerm && (() => {
-        const deals = products.filter(p => getListDiscount(p) >= 15)
-          .sort((a, b) => getListDiscount(b) - getListDiscount(a))
+        const ranked = products
+          .filter(p => p.competitorPrice > 0 && getEffectivePrice(p) < p.competitorPrice)
+          .map(p => ({ p, save: p.competitorPrice - getEffectivePrice(p) }))
+          .filter(x => x.save >= 300)
+          .sort((a, b) => b.save - a.save)
           .slice(0, 10);
-        if (deals.length === 0) return null;
+        if (ranked.length === 0) return null;
+        const half = Math.ceil(ranked.length / 2);
+        const columns = [ranked.slice(0, half), ranked.slice(half)];
         return (
-          <div style={{ backgroundColor: 'white', borderBottom: '1px solid #eee', padding: '2rem 1.5rem' }}>
+          <div style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
               <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-                💥 Listaár alatt
+                🏆 Ahol biztosan mi vagyunk a legolcsóbbak
               </h3>
-              <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
-                A gyártói listaárnál jóval olcsóbban — közvetlen beszállítói háttérrel.
+              <p style={{ color: '#666', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
+                Valódi piaci árösszevetés — ennyivel olcsóbbak vagyunk, mint a piac legolcsóbb ajánlata.
               </p>
-              <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem' }}>
-                {deals.map(p => (
-                  <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
-                    <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #e0e8e0' }}>
-                      <div style={{ position: 'relative' }}>
-                        <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
-                        <span style={{ position: 'absolute', top: '8px', left: '8px', backgroundColor: '#D32F2F', color: 'white', padding: '2px 8px', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold' }}>
-                          −{getListDiscount(p)}%
+              <div style={{
+                backgroundColor: 'white', borderRadius: '10px', border: '1px solid #eee',
+                boxShadow: '0 2px 10px rgba(0,0,0,0.05)', display: 'grid',
+                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', overflow: 'hidden'
+              }}>
+                {columns.map((col, ci) => (
+                  <div key={ci} style={{ borderLeft: ci === 1 && !isMobile ? '1px solid #f0f0f0' : 'none' }}>
+                    {col.map(({ p, save }, i) => (
+                      <Link key={p.id} to={`/termek/${p.slug}`} style={{
+                        textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.85rem',
+                        padding: '0.85rem 1.25rem', borderBottom: (i < col.length - 1 || (ci === 0 && !isMobile)) ? '1px solid #f2f2f2' : 'none'
+                      }}>
+                        <span style={{
+                          flexShrink: 0, width: '1.8rem', height: '1.8rem', borderRadius: '50%',
+                          backgroundColor: '#0F2A1D', color: '#C9A961', fontWeight: 'bold', fontSize: '0.85rem',
+                          display: 'flex', alignItems: 'center', justifyContent: 'center'
+                        }}>
+                          {ci * half + i + 1}
                         </span>
-                      </div>
-                      <div style={{ padding: '0.75rem' }}>
-                        <div style={{ color: '#333', fontSize: '0.85rem', height: '2.5em', overflow: 'hidden', lineHeight: 1.25 }}>{p.name}</div>
-                        <div style={{ marginTop: '0.5rem' }}>
-                          <span style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.85rem', marginRight: '0.5rem' }}>
-                            {getListPrice(p).toLocaleString('hu-HU')} Ft
-                          </span>
-                          <span style={{ color: '#D32F2F', fontWeight: 'bold', fontSize: '1.05rem' }}>
-                            {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
-                          </span>
-                          <div style={{ color: '#999', fontSize: '0.72rem', marginTop: '2px' }}>
-                            gyártói listaár helyett
+                        <img src={p.image} alt="" loading="lazy" style={{ width: '44px', height: '44px', objectFit: 'contain', backgroundColor: '#fafafa', borderRadius: '4px', flexShrink: 0 }} />
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ color: '#333', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
+                          <div style={{ fontSize: '0.75rem', color: '#999' }}>
+                            máshol <span style={{ textDecoration: 'line-through' }}>{p.competitorPrice.toLocaleString('hu-HU')} Ft</span>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                  </Link>
+                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                          <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem' }}>
+                            {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
+                          </div>
+                          <div style={{ color: '#2e7d32', fontSize: '0.72rem', fontWeight: 'bold' }}>
+                            −{save.toLocaleString('hu-HU')} Ft
+                          </div>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
                 ))}
               </div>
             </div>
@@ -779,27 +785,48 @@ const WorkwearShop = () => {
         );
       })()}
 
-      {/* Kategória-csempék */}
+      {/* Kategória-csempék — banner-stílusú "bento" elrendezés (tudatosan más mint a listák) */}
       {!selectedCategory && !searchTerm && (
-        <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2rem 1.5rem 0.5rem' }}>
+        <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
           <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
             <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 1.25rem 0' }}>
-              Mit keresel?
+              {t('section.categories')}
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
-              {productCategories.map(cat => {
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
+              gridAutoRows: isMobile ? '130px' : '160px',
+              gap: '0.85rem'
+            }}>
+              {productCategories.map((cat, idx) => {
                 const rep = products.find(p => p.categoryId === cat.id && p.image);
                 const count = products.filter(p => p.categoryId === cat.id).length;
+                const featured = idx === 0;
                 return (
                   <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
-                    backgroundColor: 'white', border: '1px solid #e5e5e5', borderRadius: '8px', padding: 0,
-                    cursor: 'pointer', overflow: 'hidden', textAlign: 'left', boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-                    transition: 'transform 0.15s', display: 'block'
+                    position: 'relative', border: 'none', borderRadius: '12px', padding: 0,
+                    cursor: 'pointer', overflow: 'hidden', textAlign: 'left', display: 'block',
+                    backgroundColor: '#0F2A1D',
+                    gridColumn: featured && !isMobile ? 'span 2' : 'span 1',
+                    gridRow: featured && !isMobile ? 'span 2' : 'span 1'
                   }}>
-                    {rep && <img src={rep.image} alt={cat.name} loading="lazy" style={{ width: '100%', height: '130px', objectFit: 'contain', backgroundColor: '#fafafa' }} />}
-                    <div style={{ padding: '0.75rem 1rem' }}>
-                      <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.98rem' }}>{cat.name}</div>
-                      <div style={{ color: '#999', fontSize: '0.82rem', marginTop: '2px' }}>{count} termék →</div>
+                    {rep && (
+                      <img src={rep.image} alt={cat.name} loading="lazy" style={{
+                        position: 'absolute', inset: 0, width: '100%', height: '100%',
+                        objectFit: 'cover', opacity: 0.55
+                      }} />
+                    )}
+                    <div style={{
+                      position: 'absolute', inset: 0,
+                      background: 'linear-gradient(180deg, rgba(15,42,29,0) 30%, rgba(15,42,29,0.92) 100%)'
+                    }} />
+                    <div style={{ position: 'absolute', left: '1rem', right: '1rem', bottom: '0.9rem' }}>
+                      <div style={{ color: 'white', fontWeight: 'bold', fontSize: featured && !isMobile ? '1.3rem' : '0.95rem', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
+                        {cat.icon} {cat.name}
+                      </div>
+                      <div style={{ color: '#C9A961', fontSize: '0.8rem', marginTop: '3px', fontWeight: 600 }}>
+                        {count} {t('section.products')} →
+                      </div>
                     </div>
                   </button>
                 );
@@ -1290,19 +1317,22 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
               </span>
             </div>
           ) : (() => {
-            // Gyártói listaár mint igazolható referencia-ár (áthúzva, ha érdemi a kedvezmény)
-            const listP = product.partnerPrice > 0 ? Math.round(product.partnerPrice / 0.7608 / 10) * 10 : null;
-            const disc = listP && listP > product.price ? Math.round((1 - product.price / listP) * 100) : 0;
-            return disc >= 10 ? (
+            // Valós piaci összevetés — CSAK ha tényleges, jelentős (>=300 Ft) a
+            // különbség a piacon talált legolcsóbb ajánlathoz képest. Nem
+            // mesterséges "listaár", ezért nem jelenik meg a katalógus minden
+            // elemén — csak ott, ahol tényleg igaz és számít.
+            const realSave = (product.competitorPrice > 0 && product.competitorPrice - product.price >= 300)
+              ? product.competitorPrice - product.price : 0;
+            return realSave > 0 ? (
               <div style={{ margin: '0.5rem 0' }}>
-                <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85rem', marginRight: '0.5rem' }} title="Gyártói listaár">
-                  {listP.toLocaleString('hu-HU')} Ft
+                <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '0.85rem', marginRight: '0.5rem' }} title="Piaci legolcsóbb ajánlat">
+                  {product.competitorPrice.toLocaleString('hu-HU')} Ft
                 </span>
-                <span style={{ color: '#d32f2f', fontSize: '1.3rem', fontWeight: 'bold' }}>
+                <span style={{ color: '#0F2A1D', fontSize: '1.3rem', fontWeight: 'bold' }}>
                   {product.price.toLocaleString('hu-HU')} Ft
                 </span>
-                <span style={{ backgroundColor: '#fdecea', color: '#d32f2f', fontSize: '0.72rem', fontWeight: 'bold', padding: '2px 6px', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle' }}>
-                  −{disc}%
+                <span style={{ backgroundColor: '#e8f5e9', color: '#2e7d32', fontSize: '0.72rem', fontWeight: 'bold', padding: '2px 6px', borderRadius: '4px', marginLeft: '0.5rem', verticalAlign: 'middle' }}>
+                  −{realSave.toLocaleString('hu-HU')} Ft
                 </span>
               </div>
             ) : (
