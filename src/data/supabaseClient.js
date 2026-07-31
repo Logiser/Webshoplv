@@ -18,6 +18,12 @@ export const getAdminPassword = () => sessionStorage.getItem('ms_admin_pw') || '
 export const setAdminPassword = (pw) => sessionStorage.setItem('ms_admin_pw', pw);
 export const clearAdminPassword = () => sessionStorage.removeItem('ms_admin_pw');
 
+// Admin szerepkör: 'admin' (teljes) vagy 'office' (iroda — korlátozott, ld. admin-api.js)
+export const getAdminRole = () => sessionStorage.getItem('ms_admin_role') || 'admin';
+export const setAdminRole = (role) => sessionStorage.setItem('ms_admin_role', role);
+export const clearAdminRole = () => sessionStorage.removeItem('ms_admin_role');
+export const isOfficeRole = () => getAdminRole() === 'office';
+
 // Admin API hívás (Netlify Function, service_role kulccsal ír a DB-be)
 export const adminApi = async (op, payload = {}) => {
   const res = await fetch('/.netlify/functions/admin-api', {

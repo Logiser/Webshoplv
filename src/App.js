@@ -18,7 +18,7 @@ import { LanguageProvider } from './i18n/LanguageContext';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
-import { isSupabaseEnabled, adminApi, setAdminPassword } from './data/supabaseClient';
+import { isSupabaseEnabled, adminApi, setAdminPassword, setAdminRole, clearAdminRole } from './data/supabaseClient';
 
 // Route változás követése GA4 + FB Pixel számára
 const RouteTracker = () => {
@@ -56,19 +56,23 @@ function App() {
       if (isSupabaseEnabled) {
         setAdminPassword(passwordInput);
         try {
-          await adminApi('login');
+          const res = await adminApi('login');
+          setAdminRole(res.role || 'admin');
         } catch (e) {
           // 401 = rossz jelszó; egyéb (pl. lokális dev, nincs function) → helyi ellenőrzés
           if ((e.message || '').includes('401') || (e.message || '').includes('Hibás jelszó')) throw e;
           localCheck();
+          setAdminRole('admin');
         }
       } else {
         localCheck();
+        setAdminRole('admin');
       }
       sessionStorage.setItem('admin_logged_in', 'true');
       window.location.href = '/admin';
     } catch (e) {
       setAdminPassword('');
+      clearAdminRole();
       alert('Hibás jelszó!');
       setPasswordInput('');
       setLoggingIn(false);

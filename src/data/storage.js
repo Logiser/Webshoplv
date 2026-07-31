@@ -20,13 +20,14 @@ const STORAGE_KEYS = {
   BLOG_POSTS: 'ms_blog_posts',
   SUPPLIER_NOTIF: 'ms_supplier_notifications',
   VIEW_ACTIVITY: 'ms_view_activity',  // élő készlet/aktivitás
-  COUPONS: 'ms_coupons'
+  COUPONS: 'ms_coupons',
+  HOMEPAGE_CONTENT: 'ms_homepage_content'  // kódolás nélkül szerkeszthető főoldal-szövegek
 };
 
 // Supabase módban is böngésző-lokális kulcsok (személyes / kozmetikai adatok)
 const LOCAL_ONLY_KEYS = [STORAGE_KEYS.WISHLIST, STORAGE_KEYS.VIEW_ACTIVITY];
 // Anon kulccsal is olvasható (publikus) kulcsok
-const PUBLIC_KEYS = [STORAGE_KEYS.OVERRIDES, STORAGE_KEYS.CUSTOM, STORAGE_KEYS.BLOG_POSTS];
+const PUBLIC_KEYS = [STORAGE_KEYS.OVERRIDES, STORAGE_KEYS.CUSTOM, STORAGE_KEYS.BLOG_POSTS, STORAGE_KEYS.HOMEPAGE_CONTENT];
 
 // ======================== ALAP HELPERS ========================
 
@@ -1137,6 +1138,17 @@ export const saveCoupon = (coupon) => {
 
 export const deleteCoupon = (code) => {
   safeSet(STORAGE_KEYS.COUPONS, getCoupons().filter(c => c.code !== code));
+  return true;
+};
+
+// ======================== FŐOLDAL TARTALOM (kódolás nélkül szerkeszthető) ========================
+// Az admin "Főoldal tartalom" füle innen olvas/ír; a storefront (WorkwearShop.jsx) ezt
+// az objektumot olvassa, és minden mezőnél a hardcode-olt alapértékre esik vissza, ha
+// az adott kulcs még nincs kitöltve — így egy üres/hiányos KV rekord sosem tör el semmit.
+export const getHomepageContent = () => safeGet(STORAGE_KEYS.HOMEPAGE_CONTENT, {});
+
+export const saveHomepageContent = (content) => {
+  safeSet(STORAGE_KEYS.HOMEPAGE_CONTENT, content);
   return true;
 };
 

@@ -4,7 +4,7 @@ import {
   Home, Package, TrendingUp, Tag, Plus, Upload, Download, Search,
   Edit2, Trash2, Eye, EyeOff, AlertTriangle, DollarSign, Box, ShoppingBag,
   X, BarChart3, LogOut, Save, RefreshCw, Bell, FileText, CheckSquare,
-  BookOpen, Mail, Printer, Star
+  BookOpen, Mail, Printer, Star, Layout, ArrowUp, ArrowDown
 } from 'lucide-react';
 import { productCategories, productSubcategories } from '../data/productData';
 import {
@@ -15,10 +15,11 @@ import {
   updateOrderStatus, ORDER_STATUSES, getSalesReport, bulkUpdateProducts,
   getSupplierNotifications, removeSupplierNotification,
   getBlogPosts, saveBlogPost, deleteBlogPost, generateGoogleShoppingFeed,
-  getCoupons, saveCoupon, deleteCoupon
+  getCoupons, saveCoupon, deleteCoupon,
+  getHomepageContent, saveHomepageContent
 } from '../data/storage';
 import { openInvoice } from '../utils/invoice';
-import { adminApi, isSupabaseEnabled } from '../data/supabaseClient';
+import { adminApi, isSupabaseEnabled, getAdminRole, clearAdminRole } from '../data/supabaseClient';
 
 // Forint-formázás: 1 millió felett "12,45 M Ft", alatta "123 456 Ft"
 const fmtFt = (n) => {
@@ -33,6 +34,8 @@ const AdminPanel = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [refreshKey, setRefreshKey] = useState(0);
+  const role = getAdminRole();
+  const isOffice = role === 'office';
 
   const triggerRefresh = () => setRefreshKey(k => k + 1);
 
@@ -46,26 +49,35 @@ const AdminPanel = () => {
   const handleLogout = () => {
     sessionStorage.removeItem('admin_logged_in');
     sessionStorage.removeItem('ms_admin_pw');
+    clearAdminRole();
     navigate('/');
   };
 
-  const tabs = [
+  const allTabs = [
     { id: 'dashboard', name: 'Áttekintés', icon: Home },
     { id: 'products', name: 'Termékek', icon: Package },
     { id: 'stock', name: 'FIFO Készlet', icon: Box },
-    { id: 'sales', name: 'Akciók', icon: Tag },
-    { id: 'add', name: 'Új Termék', icon: Plus },
-    { id: 'import', name: 'CSV/XML Import', icon: Upload },
+    { id: 'sales', name: 'Akciók', icon: Tag, adminOnly: true },
+    { id: 'add', name: 'Új Termék', icon: Plus, adminOnly: true },
+    { id: 'import', name: 'CSV/XML Import', icon: Upload, adminOnly: true },
     { id: 'orders', name: 'Rendelések', icon: ShoppingBag },
     { id: 'coupons', name: 'Kuponok', icon: Tag },
     { id: 'reviews', name: 'Értékelések', icon: Star },
+    { id: 'content', name: 'Főoldal tartalom', icon: Layout },
     { id: 'marketing', name: 'Hírlevél & Kosarak', icon: Mail },
     { id: 'ppc', name: 'PPC Statisztika', icon: TrendingUp },
-    { id: 'reports', name: 'Riportok', icon: BarChart3 },
+    { id: 'reports', name: 'Riportok', icon: BarChart3, adminOnly: true },
     { id: 'supplier', name: 'Beszállító ⓘ', icon: Bell },
     { id: 'blog', name: 'Blog', icon: BookOpen },
     { id: 'seo', name: 'SEO Eszközök', icon: FileText }
   ];
+  const tabs = isOffice ? allTabs.filter(t => !t.adminOnly) : allTabs;
+
+  // Iroda-szerepkörrel nem érhető el egy admin-only fülre mutató korábbi állapot (pl. bookmark)
+  useEffect(() => {
+    if (isOffice && !tabs.some(t => t.id === activeTab)) setActiveTab('dashboard');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOffice, activeTab]);
 
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f5f5f5', display: 'flex', fontFamily: 'Arial, sans-serif' }}>
@@ -88,6 +100,15 @@ const AdminPanel = () => {
           <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.8rem', opacity: 0.7 }}>
             TridentShop
           </p>
+          {isOffice && (
+            <span style={{
+              display: 'inline-block', marginTop: '0.5rem', padding: '0.15rem 0.55rem',
+              backgroundColor: 'rgba(201,169,97,0.2)', color: '#C9A961', borderRadius: '999px',
+              fontSize: '0.72rem', fontWeight: 'bold'
+            }}>
+              Iroda nézet
+            </span>
+          )}
         </div>
 
         <nav style={{ flex: 1, padding: '1rem 0' }}>
@@ -165,19 +186,20 @@ const AdminPanel = () => {
 
       {/* Main content */}
       <main style={{ flex: 1, padding: '2rem', overflow: 'auto' }}>
-        {activeTab === 'dashboard' && <Dashboard key={refreshKey} onChange={triggerRefresh} />}
-        {activeTab === 'products' && <ProductsManager key={refreshKey} onChange={triggerRefresh} />}
+        {activeTab === 'dashboard' && <Dashboard key={refreshKey} onChange={triggerRefresh} role={role} />}
+        {activeTab === 'products' && <ProductsManager key={refreshKey} onChange={triggerRefresh} role={role} />}
         {activeTab === 'stock' && <StockManager key={refreshKey} onChange={triggerRefresh} />}
-        {activeTab === 'sales' && <SalesManager key={refreshKey} onChange={triggerRefresh} />}
-        {activeTab === 'add' && <AddProduct onChange={triggerRefresh} setTab={setActiveTab} />}
-        {activeTab === 'import' && <ImportProducts onChange={triggerRefresh} setTab={setActiveTab} />}
+        {!isOffice && activeTab === 'sales' && <SalesManager key={refreshKey} onChange={triggerRefresh} />}
+        {!isOffice && activeTab === 'add' && <AddProduct onChange={triggerRefresh} setTab={setActiveTab} />}
+        {!isOffice && activeTab === 'import' && <ImportProducts onChange={triggerRefresh} setTab={setActiveTab} />}
         {activeTab === 'orders' && <OrdersList key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'reviews' && <ReviewsManager key={refreshKey} />}
+        {activeTab === 'content' && <ContentManager />}
         {activeTab === 'marketing' && <MarketingManager key={refreshKey} />}
         {activeTab === 'ppc' && <PpcStats key={refreshKey} />}
-        {activeTab === 'reports' && <ReportsTab key={refreshKey} />}
-        {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} />}
+        {!isOffice && activeTab === 'reports' && <ReportsTab key={refreshKey} />}
+        {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} role={role} />}
         {activeTab === 'blog' && <BlogManager key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'seo' && <SeoTools key={refreshKey} />}
       </main>
@@ -188,8 +210,9 @@ const AdminPanel = () => {
 // ============================================================
 // DASHBOARD
 // ============================================================
-const Dashboard = ({ onChange }) => {
+const Dashboard = ({ onChange, role }) => {
   const stats = getStatistics();
+  const isOffice = role === 'office';
   
   // Lejárt akciók takarítása
   useEffect(() => {
@@ -276,9 +299,11 @@ const Dashboard = ({ onChange }) => {
         <StatCard icon={X} title="Elfogyott" value={stats.outOfStockCount} color="#d32f2f"
           subtitle="0 készlet" badge={stats.outOfStockCount > 0 ? '!' : null} />
         <StatCard icon={ShoppingBag} title="Rendelések" value={stats.totalOrders} color="#9C27B0"
-          subtitle={`${fmtFt(stats.totalRevenue)} bevétel`} />
-        <StatCard icon={TrendingUp} title="Bevétel" value={fmtFt(stats.totalRevenue)} color="#00897B"
-          subtitle="Összes rendelésből" />
+          subtitle={isOffice ? 'Összes rendelés' : `${fmtFt(stats.totalRevenue)} bevétel`} />
+        {!isOffice && (
+          <StatCard icon={TrendingUp} title="Bevétel" value={fmtFt(stats.totalRevenue)} color="#00897B"
+            subtitle="Összes rendelésből" />
+        )}
       </div>
 
       {/* Kategória + Figyelmeztetések */}
@@ -398,7 +423,8 @@ const Dashboard = ({ onChange }) => {
 // ============================================================
 // PRODUCTS MANAGER
 // ============================================================
-const ProductsManager = ({ onChange }) => {
+const ProductsManager = ({ onChange, role }) => {
+  const isOffice = role === 'office';
   const [search, setSearch] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
@@ -566,8 +592,8 @@ const ProductsManager = ({ onChange }) => {
             <CheckSquare size={16} style={{ display: 'inline', verticalAlign: 'middle' }} /> {selected.length} termék kijelölve
           </span>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <button onClick={handleBulkSale} style={bulkBtnStyle('#d32f2f')}>🏷️ Akció kiírás</button>
-            <button onClick={handleBulkRemoveSale} style={bulkBtnStyle('#FF9800')}>🚫 Akció törlés</button>
+            {!isOffice && <button onClick={handleBulkSale} style={bulkBtnStyle('#d32f2f')}>🏷️ Akció kiírás</button>}
+            {!isOffice && <button onClick={handleBulkRemoveSale} style={bulkBtnStyle('#FF9800')}>🚫 Akció törlés</button>}
             <button onClick={handleBulkHide} style={bulkBtnStyle('#666')}>👁️‍🗨️ Elrejtés</button>
             <button onClick={handleBulkShow} style={bulkBtnStyle('#4CAF50')}>👁️ Megjelenítés</button>
             <button onClick={handleBulkChangeCategory} style={bulkBtnStyle('#9C27B0')}>📂 Kategória</button>
@@ -647,7 +673,7 @@ const ProductsManager = ({ onChange }) => {
                     <button onClick={() => handleToggleHidden(p)} title={p.hidden ? 'Megjelenítés' : 'Elrejtés'} style={iconBtnStyle('#FF9800')}>
                       {p.hidden ? <Eye size={14} /> : <EyeOff size={14} />}
                     </button>
-                    {!p.isCustom && (
+                    {!p.isCustom && !isOffice && (
                       <button onClick={() => handleResetOverride(p)} title="Visszaállítás alapra" style={iconBtnStyle('#999')}>
                         <RefreshCw size={14} />
                       </button>
@@ -666,10 +692,11 @@ const ProductsManager = ({ onChange }) => {
       </div>
 
       {editingProduct && (
-        <EditProductModal 
-          product={editingProduct} 
-          onClose={() => setEditingProduct(null)} 
+        <EditProductModal
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
           onSave={() => { onChange(); setEditingProduct(null); }}
+          isOffice={isOffice}
         />
       )}
     </div>
@@ -803,7 +830,7 @@ const VariantsEditor = ({ variants, onChange, sizes }) => {
 // ============================================================
 // EDIT PRODUCT MODAL
 // ============================================================
-const EditProductModal = ({ product, onClose, onSave }) => {
+const EditProductModal = ({ product, onClose, onSave, isOffice }) => {
   const [form, setForm] = useState({
     name: product.name,
     price: product.price,
@@ -841,12 +868,14 @@ const EditProductModal = ({ product, onClose, onSave }) => {
       : parseInt(form.stock);
     updateProduct(product.id, {
       ...form,
-      price: parseFloat(form.price),
+      // Iroda szerepkör nem módosíthat árat — mentéskor mindig az eredeti ár megy,
+      // a mező is le van tiltva a felületen, de itt is biztosítjuk (szerver is ellenőrzi).
+      price: isOffice ? product.price : parseFloat(form.price),
       stock: totalStock,
       rating: parseFloat(form.rating),
       sizes: sizesArr,
       variants: cleanVariants,
-      priceManual,
+      priceManual: isOffice ? (product.priceManual === true) : priceManual,
       // A korábbi rendelés-csökkentések felülírása: az admin által beírt érték a friss
       variantStock: null,
       variantSizeStock: null
@@ -878,12 +907,20 @@ const EditProductModal = ({ product, onClose, onSave }) => {
         </FormField>
 
         <FormField label="Ár (Ft)">
-          <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} style={inputStyle} />
-          <label style={{ display: 'block', marginTop: '0.4rem', fontSize: '0.85rem', color: '#666', cursor: 'pointer' }}>
-            <input type="checkbox" checked={priceManual} onChange={e => setPriceManual(e.target.checked)}
-              style={{ marginRight: '0.4rem', verticalAlign: 'middle' }} />
-            🔒 Kézi ár — az automatikus Depiend ár-szinkron NEM írja felül
-          </label>
+          <input type="number" value={form.price} disabled={isOffice}
+            onChange={e => setForm({...form, price: e.target.value})}
+            style={{ ...inputStyle, ...(isOffice ? { backgroundColor: '#f0f0f0', cursor: 'not-allowed' } : {}) }} />
+          {isOffice ? (
+            <p style={{ margin: '0.4rem 0 0 0', fontSize: '0.8rem', color: '#999' }}>
+              🔒 Az árat iroda szerepkörrel nem lehet módosítani.
+            </p>
+          ) : (
+            <label style={{ display: 'block', marginTop: '0.4rem', fontSize: '0.85rem', color: '#666', cursor: 'pointer' }}>
+              <input type="checkbox" checked={priceManual} onChange={e => setPriceManual(e.target.checked)}
+                style={{ marginRight: '0.4rem', verticalAlign: 'middle' }} />
+              🔒 Kézi ár — az automatikus Depiend ár-szinkron NEM írja felül
+            </label>
+          )}
         </FormField>
 
         <FormField label="Készlet (db)">
@@ -2424,7 +2461,8 @@ const CouponsManager = ({ onChange }) => {
   );
 };
 
-const SupplierTab = ({ onChange }) => {
+const SupplierTab = ({ onChange, role }) => {
+  const isOffice = role === 'office';
   const [notifs, setNotifs] = useState([]);
   const [marginPct, setMarginPct] = useState('60');
   const [pricingMsg, setPricingMsg] = useState('');
@@ -2502,25 +2540,27 @@ iroda@tuz-munkavedelmiszaki.hu
     <div>
       <h1 style={{ margin: '0 0 1.5rem 0', color: '#0F2A1D' }}>🔔 Beszállító Értesítések</h1>
 
-      {/* Kézzel állítható árrés */}
-      <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #0F2A1D' }}>
-        <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#0F2A1D' }}>💰 Árrés beállítása (a beszerzési árra)</p>
-        <p style={{ margin: '0 0 0.75rem 0', color: '#666', fontSize: '0.85rem' }}>
-          Az eladási ár = Depiend partner-ár × (1 + árrés). Módosítás után az összes nem-kézi ár automatikusan átszámolódik, és a webshop + PPC-feedek azonnal követik.
-        </p>
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-          <input type="number" min="0" max="300" value={marginPct} onChange={e => { setMarginPct(e.target.value); setPricingMsg(''); }}
-            style={{ width: '90px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'right', fontWeight: 'bold' }} />
-          <span style={{ fontWeight: 'bold' }}>%</span>
-          <button onClick={handleSaveMargin} style={{
-            padding: '0.5rem 1.2rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
-            borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
-          }}>
-            Árrés mentése
-          </button>
+      {/* Kézzel állítható árrés — csak admin */}
+      {!isOffice && (
+        <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '1rem', borderLeft: '4px solid #0F2A1D' }}>
+          <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold', color: '#0F2A1D' }}>💰 Árrés beállítása (a beszerzési árra)</p>
+          <p style={{ margin: '0 0 0.75rem 0', color: '#666', fontSize: '0.85rem' }}>
+            Az eladási ár = Depiend partner-ár × (1 + árrés). Módosítás után az összes nem-kézi ár automatikusan átszámolódik, és a webshop + PPC-feedek azonnal követik.
+          </p>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+            <input type="number" min="0" max="300" value={marginPct} onChange={e => { setMarginPct(e.target.value); setPricingMsg(''); }}
+              style={{ width: '90px', padding: '0.5rem', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'right', fontWeight: 'bold' }} />
+            <span style={{ fontWeight: 'bold' }}>%</span>
+            <button onClick={handleSaveMargin} style={{
+              padding: '0.5rem 1.2rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+              borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold'
+            }}>
+              Árrés mentése
+            </button>
+          </div>
+          {pricingMsg && <p style={{ margin: '0.6rem 0 0 0', color: '#4CAF50', fontSize: '0.85rem', fontWeight: 'bold' }}>{pricingMsg}</p>}
         </div>
-        {pricingMsg && <p style={{ margin: '0.6rem 0 0 0', color: '#4CAF50', fontSize: '0.85rem', fontWeight: 'bold' }}>{pricingMsg}</p>}
-      </div>
+      )}
 
       <div style={{ backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '8px', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap', borderLeft: '4px solid #C9A961' }}>
         <div style={{ flex: '1 1 300px' }}>
@@ -2969,6 +3009,197 @@ const MarketingManager = () => {
             )}
           </>
         )}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// FŐOLDAL TARTALOM — kódolás nélkül szerkeszthető szövegek/listák,
+// amiket a storefront (WorkwearShop.jsx) getHomepageContent()-tel olvas ki.
+// Minden mező opcionális: üresen hagyva a kódban lévő alapérték marad érvényben.
+// ============================================================
+const ContentManager = () => {
+  const saved = getHomepageContent();
+  const [form, setForm] = useState({
+    heroTitle1: saved.heroTitle1 || '',
+    heroTitle2: saved.heroTitle2 || '',
+    heroText: saved.heroText || '',
+    heroCtaLabel: saved.heroCtaLabel || '',
+    newsletterHeading: saved.newsletterHeading || '',
+    newsletterBullets: (saved.newsletterBullets && saved.newsletterBullets.length > 0)
+      ? saved.newsletterBullets : ['', '', ''],
+    topBarPhone: saved.topBarPhone || '',
+    topBarEmail: saved.topBarEmail || ''
+  });
+  const [bundleIds, setBundleIds] = useState(saved.bundleProductIds || []);
+  const [bundleSearch, setBundleSearch] = useState('');
+  const [catOrder, setCatOrder] = useState(
+    saved.featuredCategoryOrder && saved.featuredCategoryOrder.length > 0
+      ? saved.featuredCategoryOrder
+      : productCategories.map(c => c.id)
+  );
+  const [saveMsg, setSaveMsg] = useState('');
+
+  const allProducts = getAllProducts();
+  const bundleProducts = bundleIds.map(id => allProducts.find(p => p.id === id)).filter(Boolean);
+  const searchResults = bundleSearch.trim().length >= 2
+    ? allProducts.filter(p => p.name.toLowerCase().includes(bundleSearch.toLowerCase()) && !bundleIds.includes(p.id)).slice(0, 8)
+    : [];
+
+  const moveCategory = (idx, dir) => {
+    const next = [...catOrder];
+    const target = idx + dir;
+    if (target < 0 || target >= next.length) return;
+    [next[idx], next[target]] = [next[target], next[idx]];
+    setCatOrder(next);
+  };
+
+  const handleSave = () => {
+    saveHomepageContent({
+      ...form,
+      newsletterBullets: form.newsletterBullets.filter(b => b.trim()),
+      bundleProductIds: bundleIds,
+      featuredCategoryOrder: catOrder
+    });
+    setSaveMsg('✅ Mentve! A módosítás azonnal élesedik a főoldalon.');
+    setTimeout(() => setSaveMsg(''), 4000);
+  };
+
+  const sectionStyle = { backgroundColor: 'white', padding: '1.5rem', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)', marginBottom: '1.5rem' };
+  const hintStyle = { color: '#999', fontSize: '0.8rem', margin: '0.25rem 0 0.75rem 0' };
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem', flexWrap: 'wrap', gap: '1rem' }}>
+        <div>
+          <h1 style={{ margin: 0, color: '#0F2A1D' }}>🖋️ Főoldal tartalom</h1>
+          <p style={{ margin: '0.25rem 0 0 0', color: '#666' }}>
+            Ezek a mezők kódolás nélkül szerkeszthetők — üresen hagyva a jelenlegi alapszöveg marad érvényben.
+          </p>
+        </div>
+        <button onClick={handleSave} style={{
+          padding: '0.7rem 1.4rem', backgroundColor: '#0F2A1D', color: 'white',
+          border: 'none', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold',
+          display: 'flex', alignItems: 'center', gap: '0.5rem'
+        }}>
+          <Save size={16} /> Mentés
+        </button>
+      </div>
+      {saveMsg && <p style={{ color: '#4CAF50', fontWeight: 'bold', marginTop: '-0.5rem' }}>{saveMsg}</p>}
+
+      {/* Hero-karusszel első diája */}
+      <div style={sectionStyle}>
+        <h3 style={{ margin: '0 0 1rem 0', color: '#0F2A1D' }}>Hero-karusszel — első dia</h3>
+        <FormField label="Főcím 1. sora">
+          <input type="text" value={form.heroTitle1} onChange={e => setForm({ ...form, heroTitle1: e.target.value })}
+            placeholder="A munkád megvéd minket." style={inputStyle} />
+        </FormField>
+        <FormField label="Főcím 2. sora (arany színnel jelenik meg)">
+          <input type="text" value={form.heroTitle2} onChange={e => setForm({ ...form, heroTitle2: e.target.value })}
+            placeholder="Mi megvédünk téged." style={inputStyle} />
+        </FormField>
+        <FormField label="Leírás szöveg">
+          <textarea value={form.heroText} onChange={e => setForm({ ...form, heroText: e.target.value })}
+            rows={2} style={{ ...inputStyle, resize: 'vertical' }}
+            placeholder="Automatikusan generált szöveg jelenik meg, ha üres." />
+        </FormField>
+        <FormField label="Gomb felirata">
+          <input type="text" value={form.heroCtaLabel} onChange={e => setForm({ ...form, heroCtaLabel: e.target.value })}
+            placeholder="Akciós ajánlatok" style={inputStyle} />
+        </FormField>
+      </div>
+
+      {/* 1+1 ajánlatok termékei */}
+      <div style={sectionStyle}>
+        <h3 style={{ margin: '0 0 0.25rem 0', color: '#0F2A1D' }}>1+1 ajánlatok — kiválasztott termékek</h3>
+        <p style={hintStyle}>Ezeknél a termékeknél a 2. darab valóban ingyenes (kosár + számla is ekként számol). Keress rá egy termékre, majd add hozzá.</p>
+        <input type="text" value={bundleSearch} onChange={e => setBundleSearch(e.target.value)}
+          placeholder="Termék keresése név szerint…" style={{ ...inputStyle, marginBottom: '0.5rem' }} />
+        {searchResults.length > 0 && (
+          <div style={{ border: '1px solid #eee', borderRadius: '4px', marginBottom: '0.75rem' }}>
+            {searchResults.map(p => (
+              <button key={p.id} onClick={() => { setBundleIds([...bundleIds, p.id]); setBundleSearch(''); }} style={{
+                display: 'block', width: '100%', textAlign: 'left', padding: '0.5rem 0.75rem',
+                border: 'none', borderBottom: '1px solid #f2f2f2', backgroundColor: 'white', cursor: 'pointer', fontSize: '0.88rem'
+              }}>
+                + {p.name} <span style={{ color: '#999' }}>({p.price.toLocaleString('hu-HU')} Ft)</span>
+              </button>
+            ))}
+          </div>
+        )}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          {bundleProducts.length === 0 && <p style={{ color: '#999', fontSize: '0.88rem' }}>Nincs kiválasztott termék — a kódban beállított alaplista lesz érvényben.</p>}
+          {bundleProducts.map(p => (
+            <div key={p.id} style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+              padding: '0.5rem 0.75rem', backgroundColor: '#f9f9f9', borderRadius: '4px'
+            }}>
+              <span style={{ fontSize: '0.88rem' }}>{p.name} <span style={{ color: '#999' }}>({p.price.toLocaleString('hu-HU')} Ft)</span></span>
+              <button onClick={() => setBundleIds(bundleIds.filter(id => id !== p.id))} style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer' }}>
+                <X size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Hírlevél-banner */}
+      <div style={sectionStyle}>
+        <h3 style={{ margin: '0 0 1rem 0', color: '#0F2A1D' }}>Hírlevél-banner</h3>
+        <FormField label="Cím">
+          <input type="text" value={form.newsletterHeading} onChange={e => setForm({ ...form, newsletterHeading: e.target.value })}
+            placeholder="Iratkozz fel, hogy segíthessünk a tökéletes választásban!" style={inputStyle} />
+        </FormField>
+        {form.newsletterBullets.map((b, i) => (
+          <FormField key={i} label={`${i + 1}. pont`}>
+            <input type="text" value={b} onChange={e => {
+              const next = [...form.newsletterBullets]; next[i] = e.target.value;
+              setForm({ ...form, newsletterBullets: next });
+            }} style={inputStyle} />
+          </FormField>
+        ))}
+      </div>
+
+      {/* Felső infosáv elérhetőségek */}
+      <div style={sectionStyle}>
+        <h3 style={{ margin: '0 0 1rem 0', color: '#0F2A1D' }}>Felső infosáv — elérhetőségek</h3>
+        <FormField label="Telefonszám">
+          <input type="text" value={form.topBarPhone} onChange={e => setForm({ ...form, topBarPhone: e.target.value })}
+            placeholder="+36 30 272 2571" style={inputStyle} />
+        </FormField>
+        <FormField label="Email">
+          <input type="text" value={form.topBarEmail} onChange={e => setForm({ ...form, topBarEmail: e.target.value })}
+            placeholder="iroda@tuz-munkavedelmiszaki.hu" style={inputStyle} />
+        </FormField>
+      </div>
+
+      {/* Kategória-csempék sorrendje */}
+      <div style={sectionStyle}>
+        <h3 style={{ margin: '0 0 0.25rem 0', color: '#0F2A1D' }}>Kategória-csempék sorrendje a főoldalon</h3>
+        <p style={hintStyle}>A lista első eleme jelenik meg kiemelt (nagy) csempeként.</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+          {catOrder.map((catId, idx) => {
+            const cat = productCategories.find(c => c.id === catId);
+            if (!cat) return null;
+            return (
+              <div key={catId} style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                padding: '0.5rem 0.75rem', backgroundColor: '#f9f9f9', borderRadius: '4px'
+              }}>
+                <span style={{ fontSize: '0.9rem' }}>{cat.icon} {cat.name}</span>
+                <div style={{ display: 'flex', gap: '0.3rem' }}>
+                  <button onClick={() => moveCategory(idx, -1)} disabled={idx === 0} style={iconBtnStyle('#2196F3')}>
+                    <ArrowUp size={14} />
+                  </button>
+                  <button onClick={() => moveCategory(idx, 1)} disabled={idx === catOrder.length - 1} style={iconBtnStyle('#2196F3')}>
+                    <ArrowDown size={14} />
+                  </button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

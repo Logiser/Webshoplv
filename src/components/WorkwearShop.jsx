@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen, getBlogPosts } from '../data/storage';
+import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen, getBlogPosts, getHomepageContent } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from './SizeChartModal';
@@ -97,7 +97,16 @@ const extractStandards = (product) => {
 
 // Valódi "1+1" akció: kis értékű, fogyóeszköz-jellegű termékek (egy méret/szín), ahol
 // a 2. darab ténylegesen ingyenes — nem csak dekoratív felirat, a kosár/pénztár/számla is ekként számol.
-const BUNDLE_1PLUS1_IDS = [1873, 1541, 1505, 1501, 211, 1524];
+// Alapérték kódban; admin a "Főoldal tartalom" fülön felülírhatja (ld. applyHomepageContentOverrides).
+let BUNDLE_1PLUS1_IDS = [1873, 1541, 1505, 1501, 211, 1524];
+// Admin-felülírás alkalmazása a modulszintű konstansra — a helper függvények (isBundleProduct,
+// chargeableQty stb.) mindig a friss értéket olvassák, mert a tömb referenciáját cseréljük, nem
+// másolatot készítünk belőle.
+const applyHomepageContentOverrides = (content) => {
+  if (content && Array.isArray(content.bundleProductIds) && content.bundleProductIds.length > 0) {
+    BUNDLE_1PLUS1_IDS = content.bundleProductIds;
+  }
+};
 const isBundleProduct = (id) => BUNDLE_1PLUS1_IDS.includes(id);
 // Fizetendő darabszám 1+1 akciós tételre: minden 2. darab ingyenes.
 const chargeableQty = (item) => isBundleProduct(item.id) ? Math.ceil(item.quantity / 2) : item.quantity;
@@ -116,6 +125,22 @@ const expandBundleCart = (cart) => cart.flatMap(item => {
 const WorkwearShop = () => {
   const navigate = useNavigate();
   const { t } = useLang();
+  // Admin által kódolás nélkül szerkeszthető főoldal-tartalom (ld. AdminPanel "Főoldal tartalom" fül)
+  const [homepageContent] = useState(() => {
+    const c = getHomepageContent();
+    applyHomepageContentOverrides(c);
+    return c;
+  });
+  // A "Kategória-csempék" és a hero bal oldali sáv sorrendje admin által állítható;
+  // ismeretlen/hiányzó id-k figyelmen kívül maradnak, új kategória a végére kerül.
+  const orderedCategories = (() => {
+    const order = homepageContent.featuredCategoryOrder;
+    if (!order || order.length === 0) return productCategories;
+    const byId = Object.fromEntries(productCategories.map(c => [c.id, c]));
+    const ordered = order.map(id => byId[id]).filter(Boolean);
+    productCategories.forEach(c => { if (!order.includes(c.id)) ordered.push(c); });
+    return ordered;
+  })();
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFocus, setSearchFocus] = useState(false);
@@ -439,10 +464,10 @@ const WorkwearShop = () => {
       }}>
         <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Phone size={14} /> +36 30 272 2571
+            <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Mail size={14} /> iroda@tuz-munkavedelmiszaki.hu
+            <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -775,7 +800,7 @@ const WorkwearShop = () => {
           }}>
             {!isMobile && (
               <div style={{ backgroundColor: 'white', borderRadius: '10px', border: '1px solid #eee', overflow: 'hidden' }}>
-                {productCategories.map(cat => (
+                {orderedCategories.map(cat => (
                   <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
                     width: '100%', display: 'flex', alignItems: 'center', gap: '0.65rem',
                     padding: '0.8rem 1rem', border: 'none', borderBottom: '1px solid #f2f2f2',
@@ -796,6 +821,7 @@ const WorkwearShop = () => {
               categoryImage={(products.find(p => p.categoryId === 'bakancs' && p.image) || {}).image}
               bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
                 .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
+              content={homepageContent}
             />
           </div>
         </div>
@@ -887,7 +913,7 @@ const WorkwearShop = () => {
               gridAutoRows: isMobile ? '155px' : '190px',
               gap: '0.85rem'
             }}>
-              {productCategories.map((cat, idx) => {
+              {orderedCategories.map((cat, idx) => {
                 const rep = products.find(p => p.categoryId === cat.id && p.image);
                 const count = products.filter(p => p.categoryId === cat.id).length;
                 const featured = idx === 0;
@@ -1269,7 +1295,7 @@ const WorkwearShop = () => {
             <div>
               <Phone size={48} style={{ color: '#C9A961', marginBottom: '1rem' }} />
               <h3 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0' }}>Ügyfélszolgálat</h3>
-              <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>+36 30 272 2571</p>
+              <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>{homepageContent.topBarPhone || '+36 30 272 2571'}</p>
             </div>
           </div>
         </div>
@@ -1327,15 +1353,20 @@ const WorkwearShop = () => {
 
           <div style={{ flex: 1, minWidth: '260px', textAlign: isMobile ? 'center' : 'left' }}>
             <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.3rem', margin: '0 0 0.6rem 0' }}>
-              Iratkozz fel, hogy segíthessünk a tökéletes választásban!
+              {homepageContent.newsletterHeading || 'Iratkozz fel, hogy segíthessünk a tökéletes választásban!'}
             </h3>
             <ul style={{
               margin: 0, padding: 0, listStyle: 'none', color: '#cfd8d1', fontSize: '0.88rem',
               display: 'flex', flexDirection: 'column', gap: '0.3rem'
             }}>
-              <li>✓ Az aktuális beszállítói akciókat elsőként nálunk éred el</li>
-              <li>✓ Szezonális ajánlatok és vásárlási tippek egy helyen</li>
-              <li>✓ Havonta max. 2 email, bármikor leiratkozhatsz</li>
+              {((homepageContent.newsletterBullets && homepageContent.newsletterBullets.length > 0)
+                ? homepageContent.newsletterBullets
+                : [
+                    'Az aktuális beszállítói akciókat elsőként nálunk éred el',
+                    'Szezonális ajánlatok és vásárlási tippek egy helyen',
+                    'Havonta max. 2 email, bármikor leiratkozhatsz'
+                  ]
+              ).map((b, i) => <li key={i}>✓ {b}</li>)}
             </ul>
           </div>
 
@@ -1402,10 +1433,10 @@ const WorkwearShop = () => {
             <div>
               <h4 style={{ color: 'white', marginTop: 0 }}>Kapcsolat</h4>
               <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <Phone size={14} /> +36 30 272 2571
+                <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
               </p>
               <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <Mail size={14} /> iroda@tuz-munkavedelmiszaki.hu
+                <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
               </p>
               <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                 <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.
@@ -1452,15 +1483,19 @@ const WorkwearShop = () => {
 // ============================================================
 // HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
 // ============================================================
-const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, bestSaleProduct }) => {
+const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, bestSaleProduct, content = {} }) => {
   const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
 
   const slides = [
     {
       bg: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)',
-      title: <>A munkád megvéd minket.<br /><span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span></>,
-      text: `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés — a legtöbbjét máshol nem kapod olcsóbban.`,
-      ctaLabel: t('hero.ctaDeals'), ctaTarget: 'akcios-sav',
+      title: (content.heroTitle1 || content.heroTitle2) ? (
+        <>{content.heroTitle1 || 'A munkád megvéd minket.'}<br /><span style={{ color: '#C9A961' }}>{content.heroTitle2 || 'Mi megvédünk téged.'}</span></>
+      ) : (
+        <>A munkád megvéd minket.<br /><span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span></>
+      ),
+      text: content.heroText || `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés — a legtöbbjét máshol nem kapod olcsóbban.`,
+      ctaLabel: content.heroCtaLabel || t('hero.ctaDeals'), ctaTarget: 'akcios-sav',
       cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
     ...(bestSaleProduct ? [{
