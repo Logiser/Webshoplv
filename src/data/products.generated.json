@@ -19379,7 +19379,7 @@
     "price": 10520,
     "partnerPrice": 10015,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/S573GRR.webp",
+    "image": "/images/products/s573grr.webp",
     "images": [],
     "description": "Új kabát modell, mely új típusú bélésalapanyaggal készül, puhább tapintású és melegebb a korábban használtaknál. Két fedett cipzáros zsebbel és polár bélelt gallérral készül.",
     "stock": 1,
@@ -19390,9 +19390,9 @@
       {
         "code": "GR",
         "color": "Szürke",
-        "image": "https://www.depiend.hu/productimages/800/S573GRR.webp",
+        "image": "/images/products/s573grr.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/S573GRR.webp"
+          "/images/products/s573grr.webp"
         ],
         "stock": 1
       }
@@ -25666,9 +25666,9 @@
       {
         "code": "OL",
         "color": "Oliva",
-        "image": "https://www.depiend.hu/productimages/800/T750OGR2.webp",
+        "image": "/images/products/t750ogr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/T750OGR2.webp"
+          "/images/products/t750ogr2.webp"
         ],
         "stock": 40,
         "sizeStock": {
@@ -26378,7 +26378,7 @@
     "price": 10960,
     "partnerPrice": 10432,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+    "image": "/images/products/tx10grr_.webp",
     "images": [],
     "description": "A termék modellváltást kapott (2 felső zseb helyett 1), de a raktárkészlet miatt még előfordulhat 2 felső zsebes változat! Új modell színek: szürke, tengerészkék, fekete. A fekete színből korlátozott méretválaszték áll rendelkezésre. Rendelés leadás előtt érdeklődjön ügyfélszolgálatunkon! Extra komfortot nyújtó magas pamut tartalommal, a stílusos külsőért kontraszt színnel, az elemek elleni védelem érdekében viharlebenyes elülső résszel, a biztonságos illeszkedésért tépőzáras, állítható mandzsettával, 11 sokoldalú, praktikus tárolózsebbel, levehető azonosító tartóval, 2 hátsó zsebbel, telefontartó zsebbel, az egyedülálló kényelemért oldalt gumírozott derékkal, 40+ UPF minősítésű alapanyaggal (az UV-sugarak 98%-át blokkolja) és minden fontos helyen megerősítéssel rendelkező kabát, amely alapanyag nem zsugorodik, megőrzi a termék eredeti méretét a mosások után és gépben mosható (60°C).",
     "stock": 112,
@@ -26389,72 +26389,72 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "BD",
         "color": "Fekete / piros",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "EK",
         "color": "Keki",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "RB",
         "color": "Royal kék",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "GR",
         "color": "Szürke",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "NA",
         "color": "Tengerészkék",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "NO",
         "color": "Tengerészkék/narancs",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       },
       {
         "code": "BG",
         "color": "Üvegzöld",
-        "image": "https://www.depiend.hu/productimages/800/TX10GRR_.webp",
+        "image": "/images/products/tx10grr_.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/TX10GRR_.webp"
+          "/images/products/tx10grr_.webp"
         ],
         "stock": 14
       }
@@ -27143,7 +27143,7 @@
     "price": 13960,
     "partnerPrice": 13292,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/CD885WHR_01.webp",
+    "image": "/images/products/cd885whr_01.webp",
     "images": [],
     "description": "Ezek a super work kabátok, tartós újrahasznosított poliészterrel és pamuttal kombinálva, stretch panelek kiegészítve egy modern, de kényelmes kabátot eredményeznek, amelyekben a mozgás könnyű. 31 PET-PALACKOT ÚJRAHASZNOSÍTANAK A TERMÉK ELKÉSZÍTÉSÉHEZ, ami által csökkenthető az ökológiai lábnyom. Innovatív rugalmas panelek kulcs fontosságú részeken melyek kiváló kényelmet és rugalmsságot biztosítanak 4 sokoldalú, praktikus tárolózsebbel Tartós poliészter/pamut szövet, mely nagy teljesítményt és maximális viselési komfortot biztosít Gumírozott mandzsetták a biztonságos illeszkedésért Rejtett zippzáros zseb Zsinórral állítható szegély Toll zseb 40+ UPF minősítésű alapanyag, amely az UV-sugarak 98%-át blokkolja.",
     "stock": 264,
@@ -27159,9 +27159,9 @@
       {
         "code": "WH",
         "color": "Fehér",
-        "image": "https://www.depiend.hu/productimages/800/CD885WHR_01.webp",
+        "image": "/images/products/cd885whr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/CD885WHR_01.webp"
+          "/images/products/cd885whr_01.webp"
         ],
         "stock": 33,
         "sizeStock": {
@@ -28508,7 +28508,7 @@
     "price": 19840,
     "partnerPrice": 18887,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/KA360ZGR.webp",
+    "image": "/images/products/ka360zgr.webp",
     "images": [],
     "description": "Rendkívül vízálló, PFAS-mentes Texpel Splash Eco szövetkikészítéssel (a víz lepereg a szövet felületéről), 6 sokoldalú, praktikus tárolózsebbel, biztonságos tárolást biztosító belső cipzáras zsebbel, kényelmes kialakítással, a fokozott védelem érdekében állvédővel, minden cipzárhoz kiváló tapadású húzóval és maximális kényelmet biztosító, teljesen gumírozott derékkal rendelkező bomber dzseki, amely teljesen bélelt és párnázott.",
     "stock": 0,
@@ -28525,9 +28525,9 @@
       {
         "code": "ZGR",
         "color": "Zoom szürke",
-        "image": "https://www.depiend.hu/productimages/800/KA360ZGR.webp",
+        "image": "/images/products/ka360zgr.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/KA360ZGR.webp"
+          "/images/products/ka360zgr.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -30137,7 +30137,7 @@
     "price": 8280,
     "partnerPrice": 6850,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/LW13HBR2.webp",
+    "image": "/images/products/lw13hbr2.webp",
     "images": [],
     "description": "Stílusos és elegáns, modern női tunika. A tartós poliészter/pamutszövet nagy teljesítményt, garantált minőséget és maximális viselési komfortot biztosít a viselőjének. Mosás után is megtartja színét és méretét. Ez a munkaruha modell 3 sokoldalú, praktikus tárolózsebbel, rejtett ollós zsebbel van ellátva. Anyaga az UV sugárzás 96 %-át blokkolja (50+ UPF értékkel rendelkezik).",
     "stock": 0,
@@ -30149,9 +30149,9 @@
       {
         "code": "HB",
         "color": "Hamilton kék",
-        "image": "https://www.depiend.hu/productimages/800/LW13HBR2.webp",
+        "image": "/images/products/lw13hbr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/LW13HBR2.webp"
+          "/images/products/lw13hbr2.webp"
         ],
         "stock": 0
       }
@@ -32125,7 +32125,7 @@
     "price": 6160,
     "partnerPrice": 5860,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/SW32BRR.webp",
+    "image": "/images/products/sw32brr.webp",
     "images": [],
     "description": "Prémium minőségű hasított bőrből készülő cipővédő mely védi viselője lábát hegesztési munkák esetén.",
     "stock": 4,
@@ -32136,9 +32136,9 @@
       {
         "code": "TA",
         "color": "Barna",
-        "image": "https://www.depiend.hu/productimages/800/SW32BRR.webp",
+        "image": "/images/products/sw32brr.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/SW32BRR.webp"
+          "/images/products/sw32brr.webp"
         ],
         "stock": 4
       }
@@ -34700,7 +34700,7 @@
     "price": 63490,
     "partnerPrice": 60458,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/FR528YBR.webp",
+    "image": "/images/products/fr528ybr.webp",
     "images": [],
     "description": "Sugárzó, konvektív és kontakt hő ellen védelmet nyújtó jól láthatósági lángálló overál, amely anyagában lángálló tulajdonságai nem csökkennek a mosási ciklusokkal, ATEX környezetben való viselésre alkalmas, colstok tartó zsebbel, hátsó zsebbel, tépőzáras, állítható mandzsettával, Action hátrésszel, 8 sokoldalú, praktikus tárolózsebbel, két szintes térdvédő zsebekkel (két pozicionálási lehetőséget biztosítanak), rejtett kétutas réz cipzárral, lángálló, ipari mosásra alkalmas szalaggal, tárolást segítő rádió hurokkal, 40+ UPF minősítésű alapanyaggal (az UV-sugarak 98%-át blokkolja) és CE minősítéssel rendelkezik.",
     "stock": 0,
@@ -34716,9 +34716,9 @@
       {
         "code": "YE",
         "color": "Sárga",
-        "image": "https://www.depiend.hu/productimages/800/FR528YBR.webp",
+        "image": "/images/products/fr528ybr.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/FR528YBR.webp"
+          "/images/products/fr528ybr.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -37423,9 +37423,9 @@
       {
         "code": "NA",
         "color": "Tengerészkék",
-        "image": "https://www.depiend.hu/productimages/800/FR10NAR.webp",
+        "image": "/images/products/fr10nar.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/FR10NAR.webp"
+          "/images/products/fr10nar.webp"
         ],
         "stock": 170,
         "sizeStock": {
@@ -37574,9 +37574,9 @@
       {
         "code": "NA",
         "color": "Tengerészkék",
-        "image": "https://www.depiend.hu/productimages/800/FR11NAR.webp",
+        "image": "/images/products/fr11nar.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/FR11NAR.webp"
+          "/images/products/fr11nar.webp"
         ],
         "stock": 249,
         "sizeStock": {
@@ -46896,7 +46896,7 @@
     "price": 41120,
     "partnerPrice": 39161,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/S427YER2.webp",
+    "image": "/images/products/s427yer2.webp",
     "images": [],
     "description": "Viselője minden időjárási körülményhez képes alkalmazkodni ebben az egyedi, innovatív, 7 az 1-ben munkavédelmi kabátban, hiszen akár egész évben hordható hét különböző funkciójának köszönhetően. Vízálló és lélegző, a legmagasabb EN követelményeknek megfelelő anyagból készül. A vízálló és lélegző ragasztott varratok, és a munkavédelmi kabát külső extrém vízálló bevonata megakadályozzák a nedvesség behatolását. Többfunkciós zsebekkel, rejtett kapucnival éspolár béléses gallérral rendelkezik, valamint 13 sokoldalú, praktikus tárolózsebbel van ellátva. A kétutas cipzár a gyors és könnyű hozzáférésért segíti.",
     "stock": 13,
@@ -46917,9 +46917,9 @@
       {
         "code": "YE",
         "color": "Sárga",
-        "image": "https://www.depiend.hu/productimages/800/S427YER2.webp",
+        "image": "/images/products/s427yer2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/S427YER2.webp"
+          "/images/products/s427yer2.webp"
         ],
         "stock": 13,
         "sizeStock": {
@@ -47191,7 +47191,7 @@
     "price": 11980,
     "partnerPrice": 11406,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/S463ORR2.webp",
+    "image": "/images/products/s463orr2.webp",
     "images": [],
     "description": "Jól láthatósági dzseki fazonú munkavédelmi kabát, a komfort és minőség jegyében gyártva, kombinálva a vízálló Portwest termékek kiváló tulajdonságaival. Extrém vízálló bevonatú, teljesen bélelt és párnázott, emiatt megőrzi a hőt, növeli a melegség érzetet. Praktikus rejtett kapucnival, extra védelmet nyújtó ragasztott varrásokkal, és 4 sokoldalú, praktikus tárolózsebbel készül. Kötött mandzsettákkal, valamint kétutas cipzárral rendelkezik, ami a gyors és könnyű hozzáférést segíti.",
     "stock": 81,
@@ -47211,9 +47211,9 @@
       {
         "code": "OR",
         "color": "Narancs",
-        "image": "https://www.depiend.hu/productimages/800/S463ORR2.webp",
+        "image": "/images/products/s463orr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/S463ORR2.webp"
+          "/images/products/s463orr2.webp"
         ],
         "stock": 27,
         "sizeStock": {
@@ -47232,9 +47232,9 @@
       {
         "code": "RE",
         "color": "Piros",
-        "image": "https://www.depiend.hu/productimages/800/S463RER2.webp",
+        "image": "/images/products/s463rer2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/S463RER2.webp"
+          "/images/products/s463rer2.webp"
         ],
         "stock": 27,
         "sizeStock": {
@@ -51984,7 +51984,7 @@
     "price": 45630,
     "partnerPrice": 43452,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/BX323YBR_2.webp",
+    "image": "/images/products/bx323ybr_2.webp",
     "images": [],
     "description": "Prémium lélegző és szélálló alapanyaggal (mechanikai sztreccs tulajdonságokkal), a víz behatolását megakadályozó vízálló ragasztott varratokkal, rendkívül vízálló, PFAS-mentes Texpel Splash Eco szövetkikészítéssel (a víz lepereg a szövet felületéről), a kiemelkedő tartósságért dupla varrásokkal, minden cipzárhoz kiváló tapadású húzóval, zsinórral állítható szegéllyel, a komfortos viseletért gyorsan száradó kötött mandzsettával, a biztonságos illeszkedésért tépőzáras, állítható mandzsettával, hasznos, többfunkciós tárolózsebekkel, a biztonságos tárolásért 2 cipzáras oldalzsebbel, mellzsebekkel, toll zsebbel, a fokozott lélegzés érdekében hónalj cipzárakkal, sisakkal kompatibilis állítható kapucnival, íves hátsó kialakítással, a szennyeződések ellen kontraszt panelekkel, tartós, légáteresztő, szélálló és vízálló szövettel, a hozzáadott jól láthatóságért hőillesztett, szegmentált fényvisszaverő szalaggal, 15 sokoldalú, praktikus tárolózsebbel, tárolást segítő rádió hurokkal, levehető azonosító tartóval és telefontartó zsebbel rendelkező jól láthatósági esőkabát, amely mellény része a kabát zsebébe csomagolható és külön is hordható.",
     "stock": 1,
@@ -52000,9 +52000,9 @@
       {
         "code": "YB",
         "color": "Sárga/fekete",
-        "image": "https://www.depiend.hu/productimages/800/BX323YBR_2.webp",
+        "image": "/images/products/bx323ybr_2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/BX323YBR_2.webp"
+          "/images/products/bx323ybr_2.webp"
         ],
         "stock": 1,
         "sizeStock": {
@@ -53200,7 +53200,7 @@
     "price": 26190,
     "partnerPrice": 24934,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/DX402YER.webp",
+    "image": "/images/products/dx402yer.webp",
     "images": [],
     "description": "4 irányban nyúló anyaggal, stretch ágyék erősítéssel, háromszoros varrásokkal, tépőzárral állítható szegéllyel, hasznos, többfunkciós tárolózsebekkel, megerősített oldalsó zsebekkel, 2 cipzáras oldalzsebbel, 2 oldalsó cipzáras cargo zsebbel, hátsó nagy cipzáras zsebbel, colstok tartó zsebbel, a munkaeszközök biztonságos tárolásához kalapács hurokkal, D gyűrűvel, magasított derékkal, hajlított térd kialakítással, slim fit designnal, felülről tölthető térdvédő zsebekkel, sokoldalú lecipzárazható lengőzsebekkel, oldalt gumírozott derékkal, hőillesztett, szegmentált fényvisszaverő szalaggal, 18 zsebbel, azonosítókártya tartóval, rejtett telefontartó zsebbel, 40+ UPF minősítésű alapanyaggal (z UV-sugarak 98%-át blokkolja), az EN ISO 20471 szabvány szerint 25 mosásra minősítéssel és CE minősítéssel rendelkező jól láthatósági nadrág, amely megfelel a RIS 3279-TOM vasúti szabványnak (csak a narancs szín!). Ez a termék a DX442 3/4 hosszúságú verziója.",
     "stock": 0,
@@ -53218,9 +53218,9 @@
       {
         "code": "YB",
         "color": "Sárga/fekete",
-        "image": "https://www.depiend.hu/productimages/800/DX402YER.webp",
+        "image": "/images/products/dx402yer.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/DX402YER.webp"
+          "/images/products/dx402yer.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -53950,7 +53950,7 @@
     "price": 26420,
     "partnerPrice": 25155,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/DX446OBR_01.webp",
+    "image": "/images/products/dx446obr_01.webp",
     "images": [],
     "description": "A DX4 levehető Hi-Vis Holster rövidnadrág a DX4 termékcsalád legújabb tagja, és a DX442 nagyszerű nyári alternatívája. A DX4 lengőzsebes nadrág okosan megtervezett, a dinamikus 4X stretch anyag célzott elhelyezésével biztosítja a maximális mozgástartományt munka közben. A rövidnadrág magasított hátsó derékszíjjal rendelkezik, oldalsó elasztikával, amely minden munkapozícióban védelmet biztosít, nagyméretű elülső zsebekkel és többfunkciós zippzáras combzsebekkel, amelyek biztonságos tárolást, valamint levehető Holster zsebeket kínálnak a további tárolás és kényelem érdekében. Mint minden munkaruházatunk esetében, a varratok a maximális tartósság érdekében végig háromszorosan vannak varrva. 4 irányban nyúló anyaggal a nagyobb mozgásszabadság és a kényelem érdekében. Könnyű, rugalmas HiVisTex Pro szegmentált fényvisszaverő szalaggal a jobb láthatóság érdekében. 14 sokoldalú, praktikus tárolózsebbel és sokoldalú lezippzározható lengőzsebekkel.",
     "stock": 2,
@@ -53966,9 +53966,9 @@
       {
         "code": "ORB",
         "color": "Narancs/fekete",
-        "image": "https://www.depiend.hu/productimages/800/DX446OBR_01.webp",
+        "image": "/images/products/dx446obr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/DX446OBR_01.webp"
+          "/images/products/dx446obr_01.webp"
         ],
         "stock": 1,
         "sizeStock": {
@@ -53983,9 +53983,9 @@
       {
         "code": "YBL",
         "color": "Sárga/fekete",
-        "image": "https://www.depiend.hu/productimages/800/DX446YBR_01.webp",
+        "image": "/images/products/dx446ybr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/DX446YBR_01.webp"
+          "/images/products/dx446ybr_01.webp"
         ],
         "stock": 1,
         "sizeStock": {
@@ -57916,9 +57916,9 @@
       {
         "code": "YB",
         "color": "Sárga / fekete",
-        "image": "https://www.depiend.hu/productimages/800/PW306YBR-.webp",
+        "image": "/images/products/pw306ybr-.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/PW306YBR-.webp"
+          "/images/products/pw306ybr-.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -61196,9 +61196,9 @@
       {
         "code": "YNB",
         "color": "Sárga/tengerészkék",
-        "image": "https://www.depiend.hu/productimages/800/L043YNR_01.webp",
+        "image": "/images/products/l043ynr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/L043YNR_01.webp"
+          "/images/products/l043ynr_01.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -61213,9 +61213,9 @@
       {
         "code": "YNG",
         "color": "Sárga/zöld",
-        "image": "https://www.depiend.hu/productimages/800/L043YTR_01.webp",
+        "image": "/images/products/l043ytr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/L043YTR_01.webp"
+          "/images/products/l043ytr_01.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -64928,7 +64928,7 @@
     "price": 42100,
     "partnerPrice": 40095,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/BX321BKY_00.webp",
+    "image": "/images/products/bx321bky_00.webp",
     "images": [],
     "description": "Az Ultimate Modular 3 az 1-ben nadrágkialakítás minden igényt kielégít. A 3 az 1-ben kialakítás a munkanadrágot rövidnadrággá vagy EN20471 1. osztályú munkanadrággá alakítja át. Mindened megvan, amire szükséged van Zsebek mágneses patentokkal vannak ellátva, hogy ne legyenek útban, térdpárna zsebek, nagy beépített oldalsó zsebek a nagy szerszámok, spray dobozok számára, vagy csak hajtsd fel a lábakat rövidnadrágos üzemmódban, és tartsd őket biztonságban. Beépített derékpánt, Lábszár elülső cargo zseb a könnyebb használatért munka közben, Hálós mobiltelefon zseb. Plusz az egyedülálló klipszes zsebrendszer a három zseb használatával, amelyeket a nadrág elejére vagy hátuljára lehet klipszelni. 4 irányban nyúló anyag a nagyobb mozgásszabadság és a kényelem érdekében. Slim fit design a kivételes komfortért, 15 sokoldalú, praktikus tárolózsebbel. Állítható derékrész a tökéletes illeszkedésért. B920, B921, B922 cikkszámon moduláris kiegészítő zsebek rendelhetőek.",
     "stock": 13,
@@ -64946,9 +64946,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/BX321BKY_00.webp",
+        "image": "/images/products/bx321bky_00.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/BX321BKY_00.webp"
+          "/images/products/bx321bky_00.webp"
         ],
         "stock": 13,
         "sizeStock": {
@@ -65356,9 +65356,9 @@
       {
         "code": "BY",
         "color": "Fekete/szürke",
-        "image": "https://www.depiend.hu/productimages/800/CD131BYR_1.webp",
+        "image": "/images/products/cd131byr_1.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/CD131BYR_1.webp"
+          "/images/products/cd131byr_1.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -66265,7 +66265,7 @@
     "price": 12760,
     "partnerPrice": 12149,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/CD883WHR_01.webp",
+    "image": "/images/products/cd883whr_01.webp",
     "images": [],
     "description": "A tartós pamut-poliészter keverékszövet lehetővé teszi mind a nagy teljesítményű, maximális hatékonyságú munkavégzést, mind a kényelmet. Stretch burkolat lehetővé teszi a könnyű mozgást. Az okos funkciók közé tartozik a felülről betölthető térdvédő zseb és a könnyen hozzáférhető, többirányú combzseb a telefon, a kulcsok és a szerszámok biztonságos tárolására. Innovatív rugalmas panelek kulcs fontosságú részeken melyek kiváló kényelmet és rugalmasságot biztosítanak. Tartós poliészter/pamut szövet, mely nagy teljesítményt és maximális viselési komfortot biztosít. 10 sokoldalú, praktikus tárolózseb, kalapács hurok a munkaeszközök biztonságos tárolásához és könnyű hozzáférést biztosító tárolózseb. Oldalt gumírozott derék az egyedülálló kényelemért. 40 UPF minősítésű alapanyag, amely az UV-sugarak 98%-át blokkolja.",
     "stock": 60,
@@ -66283,9 +66283,9 @@
       {
         "code": "WH",
         "color": "Fehér",
-        "image": "https://www.depiend.hu/productimages/800/CD883WHR_01.webp",
+        "image": "/images/products/cd883whr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/CD883WHR_01.webp"
+          "/images/products/cd883whr_01.webp"
         ],
         "stock": 10,
         "sizeStock": {
@@ -66775,7 +66775,7 @@
     "price": 11820,
     "partnerPrice": 10449,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/CD886WHR_01.webp",
+    "image": "/images/products/cd886whr_01.webp",
     "images": [],
     "description": "A 4 zseb kiváló tárolási lehetőséget biztosít anélkül, hogy növelné a nadrág tömegét. Az oldalsó elasztikus és 4 irányú sztreccs kiváló kényelmet és alkalmasságot biztosít ezen a munkanadrágon, mindezt újrahasznosított poliészterből. 31 PET-PALACKOT ÚJRAHASZNOSÍTANAK A TERMÉK ELKÉSZÍTÉSÉHEZ. 4 irányban nyúló anyag a nagyobb mozgásszabadság és a kényelem érdekében. 4 sokoldalú, praktikus tárolózsebbel. Zippzáras oldalsó zseb. Slim fit design a kivételes komfortért. 40+ UPF minősítésű alapanyag, amely az UV-sugarak 98%-át blokkolja.",
     "stock": 258,
@@ -66793,9 +66793,9 @@
       {
         "code": "WH",
         "color": "Fehér",
-        "image": "https://www.depiend.hu/productimages/800/CD886WHR_01.webp",
+        "image": "/images/products/cd886whr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/CD886WHR_01.webp"
+          "/images/products/cd886whr_01.webp"
         ],
         "stock": 43,
         "sizeStock": {
@@ -66924,7 +66924,7 @@
     "price": 12910,
     "partnerPrice": 12292,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/CD887BKR_01.webp",
+    "image": "/images/products/cd887bkr_01.webp",
     "images": [],
     "description": "A WX2 munkanadrágunk női változata 4 zsebbel rendelkezik, amelyek kiváló tárolási lehetőséget biztosítanak anélkül, hogy a ruhadarabot növelnék. Az oldalsó elasztikus és 4 irányú sztreccs kiváló kényelmet és alkalmasságot biztosít ezen a munkanadrágon, mindezt újrahasznosított poliészterből. 4 irányban nyúló anyag a nagyobb mozgásszabadság és a kényelem érdekében. Könnyű súly a fokozott kényelem érdekében. 4 sokoldalú, praktikus tárolózsebbel, állítható szegéllyel, normál és hosszú szár között.",
     "stock": 6,
@@ -66938,9 +66938,9 @@
       {
         "code": "BKR",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/CD887BKR_01.webp",
+        "image": "/images/products/cd887bkr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/CD887BKR_01.webp"
+          "/images/products/cd887bkr_01.webp"
         ],
         "stock": 2,
         "sizeStock": {
@@ -66969,9 +66969,9 @@
       {
         "code": "GR",
         "color": "Szürke",
-        "image": "https://www.depiend.hu/productimages/800/CD887MGR_01.webp",
+        "image": "/images/products/cd887mgr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/CD887MGR_01.webp"
+          "/images/products/cd887mgr_01.webp"
         ],
         "stock": 2,
         "sizeStock": {
@@ -67739,9 +67739,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/DX452BKR_001.webp",
+        "image": "/images/products/dx452bkr_001.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/DX452BKR_001.webp"
+          "/images/products/dx452bkr_001.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -70294,7 +70294,7 @@
     "price": 4120,
     "partnerPrice": 3868,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/PW-KS11.webp",
+    "image": "/images/products/pw-ks11.webp",
     "images": [],
     "description": "Portwest KS11 Carbon nadrág — eredeti Portwest minőség, CE minősítéssel. Kényelmes, strapabíró kialakítás mindennapi munkavégzéshez.",
     "stock": 1,
@@ -70305,9 +70305,9 @@
       {
         "code": "GR",
         "color": "Zoom szürke",
-        "image": "https://www.depiend.hu/productimages/800/PW-KS11.webp",
+        "image": "/images/products/pw-ks11.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/PW-KS11.webp"
+          "/images/products/pw-ks11.webp"
         ],
         "stock": 1
       }
@@ -74898,7 +74898,7 @@
     "price": 3480,
     "partnerPrice": 2040,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/S822.webp",
+    "image": "/images/products/s822.webp",
     "images": [],
     "description": "Stílusos és kifinomult séfkabát modellünk strapabíró anyagból, patentos kivitelben, tolltartó zsebbel ellátva.",
     "stock": 1,
@@ -74909,9 +74909,9 @@
       {
         "code": "WH",
         "color": "Fehér",
-        "image": "https://www.depiend.hu/productimages/800/S822.webp",
+        "image": "/images/products/s822.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/S822.webp"
+          "/images/products/s822.webp"
         ],
         "stock": 1
       }
@@ -77320,7 +77320,7 @@
     "price": 18510,
     "partnerPrice": 17625,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/FE11BKG_SF.webp",
+    "image": "/images/products/fe11bkg_sf.webp",
     "images": [],
     "description": "Vízálló felsőrésszel, hátsó és elülső húzófüllel, kiválóan párnázott komfortos talpbetéttel, fényvisszaverő szegéllyel, párnázott bokarésszel, kompozit talpátszúrás elleni talplemezzel, csúszásmentes PU/PU talppal, kétrétegű talpszerkezettel, energiaelnyelő sarokkal, kompozit orrmerevítővel és CE minősítéssel rendelkező antisztatikus munkavédelmi cipő, amely olaj- és vízálló, 100% fémmentes és alkalmas ESD környezetben történő használatra.",
     "stock": 12,
@@ -77340,9 +77340,9 @@
       {
         "code": "BKG",
         "color": "Fekete/szürke",
-        "image": "https://www.depiend.hu/productimages/800/FE11BKG_SF.webp",
+        "image": "/images/products/fe11bkg_sf.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/FE11BKG_SF.webp"
+          "/images/products/fe11bkg_sf.webp"
         ],
         "stock": 6,
         "sizeStock": {
@@ -77361,9 +77361,9 @@
       {
         "code": "BT",
         "color": "Fekete/tengerzöld",
-        "image": "https://www.depiend.hu/productimages/800/FE11BKB_SF.webp",
+        "image": "/images/products/fe11bkb_sf.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/FE11BKB_SF.webp"
+          "/images/products/fe11bkb_sf.webp"
         ],
         "stock": 6,
         "sizeStock": {
@@ -78642,7 +78642,7 @@
     "price": 27690,
     "partnerPrice": 26366,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/FV06BKR_SF.webp",
+    "image": "/images/products/fv06bkr_sf.webp",
     "images": [],
     "description": "Kiválóan párnázott komfortos talpbetéttel, fényvisszaverő felirattal, ívelt felső vonallal, párnázott bokarésszel, zárt cipőnyelv kialakítással, hátsó és elülső húzófüllel, vízálló membránnal, kompozit orrmerevítővel, kompozit talpátszúrás elleni talplemezzel, üzemanyag- és olajálló PU/gumi talppal, létra markolatokkal, energiaelnyelő sarokkal és CE minősítéssel rendelkező antisztatikus munkavédelmi bakancs, amely csúszásgátló.",
     "stock": 0,
@@ -78665,9 +78665,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/FV06BKR_SF.webp",
+        "image": "/images/products/fv06bkr_sf.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/FV06BKR_SF.webp"
+          "/images/products/fv06bkr_sf.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -81506,7 +81506,7 @@
     "price": 43230,
     "partnerPrice": 41163,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/A123.webp",
+    "image": "/images/products/a123.webp",
     "images": [],
     "description": "13 kötésű poliészter- és latexmentes rugalmas bélés PU tenyér bevonattal Latexmentes összetételével ezek a kesztyűk a tökéletes megoldás azok számára, akik allergiásak a latexre vagy érzékeny bőrűek. Tökéletes olyan bonyolult feladatokhoz, ahol elengedhetetlen az kézügyesség és a légáteresztő képesség. Eladási egység: 144 pár/karton. 100% latexmentes, Sima PU bevonat, mely fokozott kopásállóságot biztosít, Kötési sűrűség 13, Légáteresztő varrat nélküli bélés, Tökéletes választás összetett feladatokhoz, Ezt a terméket kartonban értékesítik, CE minősítés, Tenyér bevonat, mely jobb fogásbiztonságot és szellőzést biztosít, Maximális fogásbiztonság, ANSI vágásbiztosság A1 szint, Új modell, UKCA jelöléssel",
     "stock": 10,
@@ -81523,9 +81523,9 @@
       {
         "code": "K8",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/A123.webp",
+        "image": "/images/products/a123.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A123.webp"
+          "/images/products/a123.webp"
         ],
         "stock": 10,
         "sizeStock": {
@@ -82391,7 +82391,7 @@
     "price": 670,
     "partnerPrice": 629,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/A300NAR2.webp",
+    "image": "/images/products/a300nar2.webp",
     "images": [],
     "description": "Ez a munkavédelmi kesztyű teljesen mártott, maximálisan kopásálló nitril bevonata kiváló védelmet nyújt olajokkal, zsírokkal és vízzel szemben. Ideális minden olyan munkakörnyezetben, ahol víz-, olaj-, és zsírállóságra van szükség. Tökéletesen megfelel például karbantartási és kommunális feladatokhoz. Jersey pamutbéléssel és kötött csuklórésszel rendelkező védőkesztyű.",
     "stock": 380,
@@ -82405,9 +82405,9 @@
       {
         "code": "NA",
         "color": "Tengerészkék",
-        "image": "https://www.depiend.hu/productimages/800/A300NAR2.webp",
+        "image": "/images/products/a300nar2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A300NAR2.webp"
+          "/images/products/a300nar2.webp"
         ],
         "stock": 380,
         "sizeStock": {
@@ -83708,7 +83708,7 @@
     "price": 1000,
     "partnerPrice": 772,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/A435RER2.webp",
+    "image": "/images/products/a435rer2.webp",
     "images": [],
     "description": "Piros PVC-vel mártott munkavédelmi kesztyű, puha pamut béléssel. Kiváló kopásálló és szakítószilárdsággal rendelkezik. Puha és kényelmes teljes pamut béléssel készül. Teljesen mártott a maximális folyadékállóság érdekében. Ez a típus elérhető 27 cm és 45 cm szárhosszal is.",
     "stock": 48,
@@ -83719,9 +83719,9 @@
       {
         "code": "RE",
         "color": "Piros",
-        "image": "https://www.depiend.hu/productimages/800/A435RER2.webp",
+        "image": "/images/products/a435rer2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A435RER2.webp"
+          "/images/products/a435rer2.webp"
         ],
         "stock": 48,
         "sizeStock": {
@@ -84277,7 +84277,7 @@
     "price": 2260,
     "partnerPrice": 2150,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/A700BKR2.webp",
+    "image": "/images/products/a700bkr2.webp",
     "images": [],
     "description": "Általános, nagy teljesítményű, többfunkciós munkavédelmi kesztyű. Könnyű és kényelmes viselet. A csuklón a tépőzáras kialakítás a jobb illeszkedést segíti. Strapabíró anyagból, megerősített varrásokkal és csuklóvédelemmel rendelkezik. A hüvelykujjnál erősített varrások biztosítják az extra tartósságot. A szöszmentes konstrukció a szennyeződések minimalizálása érdekében lett kialakítva. Kiakasztható kisker csomagolással készülő termék. CE minősítés.",
     "stock": 138,
@@ -84291,9 +84291,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/A700BKR2.webp",
+        "image": "/images/products/a700bkr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A700BKR2.webp"
+          "/images/products/a700bkr2.webp"
         ],
         "stock": 138,
         "sizeStock": {
@@ -84318,7 +84318,7 @@
     "price": 3470,
     "partnerPrice": 3296,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/A710BKR2.webp",
+    "image": "/images/products/a710bkr2.webp",
     "images": [],
     "description": "Nagyfokú védelmet biztosító munkavédelmi kesztyű, fényvisszaverő, reflektív kiegészítő csíkokkal, általános használatra. Kényelmes, tartós alapanyagból (szintetikus bőr, spandex-szel és neoprénnel kombinálva), izzadságtörlővel, megerősített varrásokkal az ujjaknál és a tenyéren, valamint csuklóvédelemmel készül. Az ujjpercek védelme érdekében párnázott extra kialakítással rendelkezik. A tépőzáras rögzítés a csuklón a biztonságos illeszkedést segíti.",
     "stock": 0,
@@ -84330,18 +84330,18 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/A710BKR2.webp",
+        "image": "/images/products/a710bkr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A710BKR2.webp"
+          "/images/products/a710bkr2.webp"
         ],
         "stock": 0
       },
       {
         "code": "YE",
         "color": "Sárga",
-        "image": "https://www.depiend.hu/productimages/800/A710BKR2.webp",
+        "image": "/images/products/a710bkr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A710BKR2.webp"
+          "/images/products/a710bkr2.webp"
         ],
         "stock": 0
       }
@@ -85260,7 +85260,7 @@
     "price": 5270,
     "partnerPrice": 5016,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/A790BKR1.webp",
+    "image": "/images/products/a790bkr1.webp",
     "images": [],
     "description": "Egyedi tervezésű kesztyű, mely lecsökkenti a rezgések káros hatásait. Kiváló fogásbiztonság, ideális védőeszköz betontörők, légkalapácsok használata esetén. 40%-kal csökkenti a rezgést erős, 10 kötési sűrűségű légáteresztő varrat nélküli bélés. Kiakasztható kisker csomagolással készülő termék. CE minősítés.",
     "stock": 30,
@@ -85274,9 +85274,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/A790BKR1.webp",
+        "image": "/images/products/a790bkr1.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A790BKR1.webp"
+          "/images/products/a790bkr1.webp"
         ],
         "stock": 30,
         "sizeStock": {
@@ -85888,7 +85888,7 @@
     "price": 2080,
     "partnerPrice": 1601,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/A845GNR2.webp",
+    "image": "/images/products/a845gnr2.webp",
     "images": [],
     "description": "Duplán mártott vegyszerálló PVC munkavédelmi kesztyű csúszásmentesített tenyérrel. A strukturált tenyérbevonat a jobb tapadást segíti elő. Actifresh jersey bélése kimagasló kényelmet biztosít. Szárhossza 45 cm. Ez a típus elérhető 27 cm-es, és 35 cm-es szárhosszúságban is. 1,6mm vastag, Ftalát mentes. CE-CAT III, CE minősítés.",
     "stock": 60,
@@ -85899,9 +85899,9 @@
       {
         "code": "GN",
         "color": "Zöld",
-        "image": "https://www.depiend.hu/productimages/800/A845GNR2.webp",
+        "image": "/images/products/a845gnr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A845GNR2.webp"
+          "/images/products/a845gnr2.webp"
         ],
         "stock": 60,
         "sizeStock": {
@@ -86075,7 +86075,7 @@
     "price": 5660,
     "partnerPrice": 5389,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/A930BLK_1.webp",
+    "image": "/images/products/a930blk_1.webp",
     "images": [],
     "description": "Prémium erősségű egyszerhasználatos kesztyű Crystal Grip technológiával. 0.18 mm vastagság a nagy szakítószilárdság érdekében. A rendkívül erős szintetikus nitril alapanyag háromszor erősebb mint a standard nitril. Ideális választás az ipar minden területén. Szilikonmentes - Ideális gyártáshoz, festéshez, elektronikai munkákhoz és üvegkezeléshez, ahol a szilikon problémát jelenthet. Ideális autószereléshez, építőipari- és egyéb munkákhoz is. Élelmiszeripari használatra fejlesztett termék, ellenáll a zsíroknak, állati zsiradéknak és olajoknak, 240 mm hosszú - CE Foodsafe minősítéssel. Kiskereskedelmi kihelyezést segítő doboz. Elfogadható minőségi határérték (AQL) 1,5. CE minősítés. 100 db kesztyű egy dobozban.",
     "stock": 2396,
@@ -86090,9 +86090,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/A930BLK_1.webp",
+        "image": "/images/products/a930blk_1.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A930BLK_1.webp"
+          "/images/products/a930blk_1.webp"
         ],
         "stock": 1198,
         "sizeStock": {
@@ -86193,7 +86193,7 @@
     "price": 8130,
     "partnerPrice": 7738,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/AC05WHR_2.webp",
+    "image": "/images/products/ac05whr_2.webp",
     "images": [],
     "description": "A feszítő használata segíti a biztonságos illeszkedést hogy ne csússzon el a lánckesztyű a használat közben. 50 db-os csomagolásban, kétkezes, rendkívül rugalmas PVC anyagból.",
     "stock": 0,
@@ -86204,9 +86204,9 @@
       {
         "code": "WH",
         "color": "Fehér",
-        "image": "https://www.depiend.hu/productimages/800/AC05WHR_2.webp",
+        "image": "/images/products/ac05whr_2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/AC05WHR_2.webp"
+          "/images/products/ac05whr_2.webp"
         ],
         "stock": 0
       }
@@ -87717,7 +87717,7 @@
     "price": 62440,
     "partnerPrice": 59458,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/VA120WHR_01.webp",
+    "image": "/images/products/va120whr_01.webp",
     "images": [],
     "description": "Bemutatjuk a kifejezetten automatákhoz tervezett tenyérmártott PU kesztyűt. Ezek a kesztyűk a bonyolult feladatokban is kiválóak, és sima PU bevonattal rendelkeznek a fokozott kopásállóság érdekében. A kiváló kézügyességet és szellőzést biztosító tenyérmártással optimális teljesítményt biztosítanak. A csomagolás átgondoltan tömörített, hogy maximalizálja a gép kapacitását, így tökéletes választás. Egyedi csomagolás automatákhoz Kompressziós csomagolás, mely maximális helykihasználást biztosít Sima PU bevonat, mely fokozott kopásállóságot biztosít Tenyér bevonat, mely jobb fogásbiztonságot és szellőzést biztosít Varratmentes 13-as kötésű anyag Tökéletes választás összetett feladatokhoz Eléri a legmagasabb, 5. szintű kézügyességi szintet. CE minősítés UKCA jelöléssel 288 párat tartalmazó teljes kartondobozban kapható. Új modell",
     "stock": 0,
@@ -87730,9 +87730,9 @@
       {
         "code": "WH",
         "color": "Fehér",
-        "image": "https://www.depiend.hu/productimages/800/VA120WHR_01.webp",
+        "image": "/images/products/va120whr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/VA120WHR_01.webp"
+          "/images/products/va120whr_01.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -87744,9 +87744,9 @@
       {
         "code": "K8",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/VA120BKR_01.webp",
+        "image": "/images/products/va120bkr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/VA120BKR_01.webp"
+          "/images/products/va120bkr_01.webp"
         ],
         "stock": 0,
         "sizeStock": {
@@ -89916,9 +89916,9 @@
       {
         "code": "MB",
         "color": "Metró kék",
-        "image": "https://www.depiend.hu/productimages/800/A774MBR-.webp",
+        "image": "/images/products/a774mbr-.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/A774MBR-.webp"
+          "/images/products/a774mbr-.webp"
         ],
         "stock": 46,
         "sizeStock": {
@@ -90151,7 +90151,7 @@
     "price": 2470,
     "partnerPrice": 2344,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/AP32K7R2.webp",
+    "image": "/images/products/ap32k7r2.webp",
     "images": [],
     "description": "Tartós, kopásálló, B szintű vágásbiztos, nitril bevonatú munkavédelmi kesztyű, amely kiváló fogásbiztonságot nyújt, és ergonomikus kialakítása következtében megakadályozza a kéz fáradását. A textúrált nitril tenyérbevonat ellenáll, és kiváló tapadást biztosít, vizes, zsíros és olajos környezetben is. A tartósság érdekében hüvelykujj erősítéssel van ellátva. Kiváló választás magas szintű kézügyességet igénylő munkákhoz.",
     "stock": 773,
@@ -90166,9 +90166,9 @@
       {
         "code": "K7",
         "color": "Fekete / szürke",
-        "image": "https://www.depiend.hu/productimages/800/AP32K7R2.webp",
+        "image": "/images/products/ap32k7r2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/AP32K7R2.webp"
+          "/images/products/ap32k7r2.webp"
         ],
         "stock": 773,
         "sizeStock": {
@@ -96655,9 +96655,9 @@
       {
         "code": "GR",
         "color": "Szürke",
-        "image": "https://www.depiend.hu/productimages/800/B029GRR2.webp",
+        "image": "/images/products/b029grr2.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/B029GRR2.webp"
+          "/images/products/b029grr2.webp"
         ],
         "stock": 410
       },
@@ -98128,7 +98128,7 @@
     "price": 290,
     "partnerPrice": 254,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/W0031.webp",
+    "image": "/images/products/w0031.webp",
     "images": [],
     "description": "Biztosítja a sisak stabil rögzítését és kényelmes viseletét. Tartós anyagának köszönhetően növeli a biztonságot ipari és építőipari környezetben.",
     "stock": 607,
@@ -98139,9 +98139,9 @@
       {
         "code": "BK",
         "color": "Fekete",
-        "image": "https://www.depiend.hu/productimages/800/W0031.webp",
+        "image": "/images/products/w0031.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/W0031.webp"
+          "/images/products/w0031.webp"
         ],
         "stock": 607
       }
@@ -99312,7 +99312,7 @@
     "price": 1240,
     "partnerPrice": 1174,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/PW15SKR_01.webp",
+    "image": "/images/products/pw15skr_01.webp",
     "images": [],
     "description": "Körkörös védelmet biztosító védőszemüveg. Stílusos kialakítása a legkülönbözőbb arcformákhoz alkalmazható. Ultrakönnyű, ezért hosszan tartó hordásra is alkalmas. A puha szárvégek az extra komfortot biztosítják. 99%-os UV védelem. Ajándék szemüvegtartó zsinórral csomagolva.",
     "stock": 88,
@@ -99323,9 +99323,9 @@
       {
         "code": "SK",
         "color": "Füst",
-        "image": "https://www.depiend.hu/productimages/800/PW15SKR_01.webp",
+        "image": "/images/products/pw15skr_01.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/PW15SKR_01.webp"
+          "/images/products/pw15skr_01.webp"
         ],
         "stock": 44
       },
@@ -101676,7 +101676,7 @@
     "price": 1590,
     "partnerPrice": 1223,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/Z125.webp",
+    "image": "/images/products/z125.webp",
     "images": [],
     "description": "Termékkatalógus egyedi gyártású",
     "stock": 0,
@@ -101687,9 +101687,9 @@
       {
         "code": "HUL",
         "color": "-",
-        "image": "https://www.depiend.hu/productimages/800/Z125.webp",
+        "image": "/images/products/z125.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/Z125.webp"
+          "/images/products/z125.webp"
         ],
         "stock": 0
       }
@@ -101893,7 +101893,7 @@
     "price": 20490,
     "partnerPrice": 15763,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/Z541.webp",
+    "image": "/images/products/z541.webp",
     "images": [],
     "description": "Környezetbarát papír doboz, mely kiváló promóciós eszköz.",
     "stock": 0,
@@ -101904,9 +101904,9 @@
       {
         "code": "NA",
         "color": "Navy",
-        "image": "https://www.depiend.hu/productimages/800/Z541.webp",
+        "image": "/images/products/z541.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/Z541.webp"
+          "/images/products/z541.webp"
         ],
         "stock": 0
       }
@@ -101924,7 +101924,7 @@
     "price": 18850,
     "partnerPrice": 14502,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/Z543.webp",
+    "image": "/images/products/z543.webp",
     "images": [],
     "description": "Környezetbarát papír cipőszeparátor, mely kiváló promóciós eszköz.",
     "stock": 0,
@@ -101935,9 +101935,9 @@
       {
         "code": "NA",
         "color": "Navy",
-        "image": "https://www.depiend.hu/productimages/800/Z543.webp",
+        "image": "/images/products/z543.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/Z543.webp"
+          "/images/products/z543.webp"
         ],
         "stock": 0
       }
@@ -102017,7 +102017,7 @@
     "price": 370,
     "partnerPrice": 281,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/Z580.webp",
+    "image": "/images/products/z580.webp",
     "images": [],
     "description": "Környezetbarát szalagfüles papírtáska, mely kiváló promóciós eszköz.",
     "stock": 0,
@@ -102028,9 +102028,9 @@
       {
         "code": "NA",
         "color": "Navy",
-        "image": "https://www.depiend.hu/productimages/800/Z580.webp",
+        "image": "/images/products/z580.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/Z580.webp"
+          "/images/products/z580.webp"
         ],
         "stock": 0
       }
@@ -102110,7 +102110,7 @@
     "price": 950,
     "partnerPrice": 730,
     "priceSource": "keplet",
-    "image": "https://www.depiend.hu/productimages/800/Z596.webp",
+    "image": "/images/products/z596.webp",
     "images": [],
     "description": "8 oldalas magyar nyelvű termékkatalógus",
     "stock": 0,
@@ -102121,9 +102121,9 @@
       {
         "code": "HUL",
         "color": "-",
-        "image": "https://www.depiend.hu/productimages/800/Z596.webp",
+        "image": "/images/products/z596.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/Z596.webp"
+          "/images/products/z596.webp"
         ],
         "stock": 0
       },
@@ -103495,7 +103495,7 @@
     "price": 2890,
     "partnerPrice": 2751,
     "priceSource": "arukereso",
-    "image": "https://www.depiend.hu/productimages/800/HV20-tabla-.webp",
+    "image": "/images/products/hv20-tabla-.webp",
     "images": [],
     "description": "Csúszásveszély figyelmeztető tábla mindkét oldalán magyar és angol nyelvű feliratozással és nedves padló szimbólummal.",
     "stock": 1390,
@@ -103506,9 +103506,9 @@
       {
         "code": "YE",
         "color": "Sárga",
-        "image": "https://www.depiend.hu/productimages/800/HV20-tabla-.webp",
+        "image": "/images/products/hv20-tabla-.webp",
         "images": [
-          "https://www.depiend.hu/productimages/800/HV20-tabla-.webp"
+          "/images/products/hv20-tabla-.webp"
         ],
         "stock": 1390
       }

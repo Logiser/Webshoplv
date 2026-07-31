@@ -1162,7 +1162,7 @@ const WorkwearShop = () => {
               margin: 0, padding: 0, listStyle: 'none', color: '#cfd8d1', fontSize: '0.88rem',
               display: 'flex', flexDirection: 'column', gap: '0.3rem'
             }}>
-              <li>✓ Az aktuális Depiend-akciókat elsőként nálunk éred el</li>
+              <li>✓ Az aktuális beszállítói akciókat elsőként nálunk éred el</li>
               <li>✓ Szezonális ajánlatok és vásárlási tippek egy helyen</li>
               <li>✓ Havonta max. 2 email, bármikor leiratkozhatsz</li>
             </ul>
