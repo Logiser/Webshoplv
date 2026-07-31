@@ -2022,6 +2022,10 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
 
           {product.sizes && product.sizes.length > 0 && (() => {
             const sizeStock = activeVariant && activeVariant.sizeStock ? activeVariant.sizeStock : null;
+            // Csak a ténylegesen raktáron lévő méretek jelenjenek meg — nem kitöltő,
+            // áthúzott "elfogyott" gombokkal. Ha sizeStock nincs (nincs szín-szintű
+            // adat), minden méret látszik; a lista minden render-nél élőben újraszámol.
+            const visibleSizes = sizeStock ? product.sizes.filter(size => (sizeStock[size] || 0) > 0) : product.sizes;
             return (
               <div style={{ marginBottom: '1rem' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -2035,24 +2039,24 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
                     </button>
                   )}
                 </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
-                  {product.sizes.map(size => {
-                    const qty = sizeStock ? (sizeStock[size] || 0) : null;
-                    const out = qty !== null && qty === 0;
-                    return (
-                      <button key={size} onClick={() => !out && setSelectedSize(size)} disabled={out}
-                        title={out ? 'Ebből a méretből elfogyott' : ''}
-                        style={{
-                          padding: '0.5rem', borderRadius: '4px',
+                {visibleSizes.length === 0 ? (
+                  <p style={{ color: '#c62828', fontSize: '0.85rem', margin: 0 }}>Ebből a színből minden méret elfogyott.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    {visibleSizes.map(size => {
+                      const qty = sizeStock ? sizeStock[size] : null;
+                      return (
+                        <button key={size} onClick={() => setSelectedSize(size)} style={{
+                          padding: '0.5rem 0.85rem', borderRadius: '4px',
                           border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
                           backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
-                          color: out ? '#bbb' : (selectedSize === size ? 'white' : '#0F2A1D'),
-                          cursor: out ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.85rem',
-                          textDecoration: out ? 'line-through' : 'none'
+                          color: selectedSize === size ? 'white' : '#0F2A1D',
+                          cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
                         }}>{size}{qty !== null && qty > 0 && qty < 10 ? ` (${qty})` : ''}</button>
-                    );
-                  })}
-                </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             );
           })()}
