@@ -30,6 +30,24 @@ const headerBadge = {
   fontSize: '0.65rem', fontWeight: 'bold'
 };
 
+// Valódi "1+1" akció: kis értékű, fogyóeszköz-jellegű termékek (egy méret/szín), ahol
+// a 2. darab ténylegesen ingyenes — nem csak dekoratív felirat, a kosár/pénztár/számla is ekként számol.
+const BUNDLE_1PLUS1_IDS = [1498, 1873, 1685, 1541, 212, 1505];
+const isBundleProduct = (id) => BUNDLE_1PLUS1_IDS.includes(id);
+// Fizetendő darabszám 1+1 akciós tételre: minden 2. darab ingyenes.
+const chargeableQty = (item) => isBundleProduct(item.id) ? Math.ceil(item.quantity / 2) : item.quantity;
+// A kosarat pénztárra/számlázásra bontja: 1+1 tételnél külön, 0 Ft-os "ajándék" sort kap a kedvezmény,
+// így a szerver (place-order.js) semmilyen módosítás nélkül, a meglévő price×quantity logikájával is helyesen számláz.
+const expandBundleCart = (cart) => cart.flatMap(item => {
+  if (!isBundleProduct(item.id) || item.quantity < 2) return [item];
+  const freeQty = Math.floor(item.quantity / 2);
+  const paidQty = item.quantity - freeQty;
+  return [
+    { ...item, quantity: paidQty },
+    { ...item, quantity: freeQty, price: 0, name: `${item.name} (1+1 ajándék)` }
+  ];
+});
+
 const WorkwearShop = () => {
   const navigate = useNavigate();
   const { t } = useLang();
@@ -243,6 +261,29 @@ const WorkwearShop = () => {
     setCart(cart.filter(item => !(item.id === id && item.size === size && item.colorCode === colorCode)));
   };
 
+  // Gyors "1+1" kosárba tétel a főoldali promó-blokkból: a kurált termékek egyetlen
+  // szín/méret-variánsban léteznek, ezért a méret/szín-választó modál nélkül, 2 db-bal adjuk kosárba.
+  const addBundleToCart = (product) => {
+    const variant = (product.variants || [])[0] || null;
+    const effectivePrice = getEffectivePrice(product);
+    const existingItem = cart.find(item => item.id === product.id && item.size === null && item.colorCode === (variant ? variant.code : null));
+    if (existingItem) {
+      setCart(cart.map(item =>
+        item.id === product.id && item.size === null && item.colorCode === (variant ? variant.code : null)
+          ? { ...item, quantity: item.quantity + 2 } : item
+      ));
+    } else {
+      setCart([...cart, {
+        id: product.id, name: product.name, price: effectivePrice,
+        quantity: 2, size: null, image: (variant && variant.image) || product.image,
+        color: variant ? variant.color : null, colorCode: variant ? variant.code : null,
+        variantStock: variant ? variant.stock : null, sizeStockAtAdd: null
+      }]);
+    }
+    trackAddToCart(product, 2);
+    setCartOpen(true);
+  };
+
   const handleWishlist = (e, productId) => {
     e.preventDefault();
     e.stopPropagation();
@@ -255,7 +296,18 @@ const WorkwearShop = () => {
     setWishlistState(getWishlist());
   };
 
-  const cartTotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  const subscribeNewsletter = async (source) => {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(newsletterEmail)) { alert('Kérlek, érvényes email-címet adj meg.'); return; }
+    try {
+      await fetch('/.netlify/functions/newsletter-api', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ op: 'subscribe', email: newsletterEmail, source })
+      });
+    } catch (e) { /* offline dev: nem blokkolunk */ }
+    setNewsletterDone(true);
+  };
+
+  const cartTotal = cart.reduce((sum, item) => sum + (item.price * chargeableQty(item)), 0);
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const currentSubcategories = selectedCategory 
     ? productSubcategories.filter(sub => sub.categoryId === selectedCategory)
@@ -420,8 +472,8 @@ const WorkwearShop = () => {
         </div>
       </header>
 
-      {/* Category Navigation (mega-menü) — asztali nézet */}
-      {!isMobile && (
+      {/* Category Navigation (mega-menü) — asztali nézet; a főoldalon a bal oldali kategória-sáv veszi át a szerepét */}
+      {!isMobile && (selectedCategory || searchTerm) && (
         <nav style={{
           backgroundColor: '#0F2A1D', padding: '0 1.5rem',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)', position: 'relative', zIndex: 90
@@ -560,11 +612,19 @@ const WorkwearShop = () => {
                       {(item.size || item.color) && <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.8rem', color: '#666' }}>
                         {item.size && <>Méret: <strong>{item.size}</strong></>}{item.size && item.color && ' · '}{item.color && <>Szín: <strong>{item.color}</strong></>}
                       </p>}
+                      {isBundleProduct(item.id) && (
+                        <p style={{ margin: '0 0 0.25rem 0', fontSize: '0.72rem', fontWeight: 'bold', color: '#2e7d32' }}>
+                          🎁 1+1 Akció — minden 2. darab ingyenes
+                        </p>
+                      )}
                       <p style={{ margin: 0, color: '#0F2A1D', fontWeight: 'bold' }}>
                         {item.quantity} × {item.price.toLocaleString('hu-HU')} Ft
                       </p>
                       <p style={{ margin: '0.25rem 0 0 0', color: '#C9A961', fontWeight: 'bold' }}>
-                        = {(item.quantity * item.price).toLocaleString('hu-HU')} Ft
+                        = {(chargeableQty(item) * item.price).toLocaleString('hu-HU')} Ft
+                        {chargeableQty(item) < item.quantity && (
+                          <span style={{ color: '#2e7d32', fontWeight: 'normal', fontSize: '0.78rem' }}> ({item.quantity - chargeableQty(item)} db ingyen)</span>
+                        )}
                       </p>
                     </div>
                     <button onClick={() => removeFromCart(item.id, item.size, item.colorCode)} style={{ background: 'none', border: 'none', color: '#d32f2f', cursor: 'pointer', alignSelf: 'flex-start' }}>
@@ -596,7 +656,7 @@ const WorkwearShop = () => {
 
                   <button
                     onClick={() => {
-                      navigate('/checkout', { state: { cart, total: cartTotal + (cartTotal >= 30000 ? 0 : 1290) } });
+                      navigate('/checkout', { state: { cart: expandBundleCart(cart), total: cartTotal + (cartTotal >= 30000 ? 0 : 1290) } });
                       setCartOpen(false);
                     }}
                     style={{
@@ -615,63 +675,32 @@ const WorkwearShop = () => {
         </>
       )}
 
-      {/* Hero */}
+      {/* Hero: bal oldali állandó kategória-sáv + jobb oldali forgó promó-karusszel (eMAG-struktúra) */}
       {!selectedCategory && !searchTerm && (
-        <div style={{ background: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)', color: 'white', padding: isMobile ? '2.5rem 1.5rem' : '3.5rem 1.5rem' }}>
+        <div style={{ backgroundColor: '#f5f5f5', padding: isMobile ? '1.25rem 1.5rem' : '1.5rem' }}>
           <div style={{
-            maxWidth: '1200px', margin: '0 auto', display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '1.35fr 1fr', gap: '2.5rem', alignItems: 'center'
+            maxWidth: '1400px', margin: '0 auto', display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '260px 1fr', gap: '1rem', alignItems: 'stretch'
           }}>
-            <div style={{ textAlign: isMobile ? 'center' : 'left' }}>
-              <h2 style={{ fontSize: isMobile ? '1.7rem' : '2.5rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
-                A munkád megvéd minket.<br />
-                <span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span>
-              </h2>
-              <p style={{ fontSize: '1.1rem', margin: '0 0 1.75rem 0', opacity: 0.92, maxWidth: '560px', marginLeft: isMobile ? 'auto' : 0, marginRight: isMobile ? 'auto' : 0 }}>
-                {products.length.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés —
-                a legtöbbjét máshol nem kapod olcsóbban.
-              </p>
-              <div style={{ display: 'flex', gap: '1rem', justifyContent: isMobile ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
-                <button onClick={() => { const el = document.getElementById('akcios-sav') || document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
-                  backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.85rem 1.75rem',
-                  borderRadius: '6px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
-                }}>
-                  🔥 {t('hero.ctaDeals')}
-                </button>
-                <button onClick={() => { const el = document.getElementById('kategoriak'); if (el) el.scrollIntoView({ behavior: 'smooth' }); }} style={{
-                  backgroundColor: 'transparent', color: 'white', border: '2px solid #C9A961', padding: '0.85rem 1.75rem',
-                  borderRadius: '6px', fontSize: '1rem', fontWeight: 'bold', cursor: 'pointer'
-                }}>
-                  {t('hero.ctaCategories')}
-                </button>
+            {!isMobile && (
+              <div style={{ backgroundColor: 'white', borderRadius: '10px', border: '1px solid #eee', overflow: 'hidden' }}>
+                {productCategories.map(cat => (
+                  <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
+                    width: '100%', display: 'flex', alignItems: 'center', gap: '0.65rem',
+                    padding: '0.8rem 1rem', border: 'none', borderBottom: '1px solid #f2f2f2',
+                    backgroundColor: 'white', color: '#333', cursor: 'pointer', textAlign: 'left', fontSize: '0.9rem'
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5f7f5'}
+                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'white'}
+                  >
+                    <span style={{ fontSize: '1.1rem' }}>{cat.icon}</span>
+                    <span style={{ flex: 1 }}>{cat.name}</span>
+                    <ChevronRight size={14} style={{ color: '#999' }} />
+                  </button>
+                ))}
               </div>
-            </div>
-
-            <div style={{
-              backgroundColor: 'rgba(255,255,255,0.06)', border: '1px solid rgba(201,169,97,0.35)',
-              borderRadius: '12px', padding: '1.5rem'
-            }}>
-              {[
-                { Icon: Truck, text: '1 290 Ft szállítás — 30 000 Ft felett ingyenes' },
-                { Icon: Shield, text: '100% eredeti Portwest, CE-tanúsítvánnyal' },
-                { Icon: Award, text: '14 napos csere és visszaküldés' },
-                { Icon: PackageCheck, text: '2-3 munkanapos országos kiszállítás' }
-              ].map((item, i) => (
-                <div key={i} style={{
-                  display: 'flex', alignItems: 'center', gap: '0.85rem',
-                  padding: '0.65rem 0', borderBottom: i < 3 ? '1px solid rgba(255,255,255,0.1)' : 'none'
-                }}>
-                  <span style={{
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    width: '2.4rem', height: '2.4rem', borderRadius: '8px',
-                    backgroundColor: 'rgba(201,169,97,0.15)', flexShrink: 0
-                  }}>
-                    <item.Icon size={19} style={{ color: '#C9A961' }} />
-                  </span>
-                  <span style={{ fontSize: '0.92rem' }}>{item.text}</span>
-                </div>
-              ))}
-            </div>
+            )}
+            <HeroCarousel t={t} productCount={products.length} isMobile={isMobile} />
           </div>
         </div>
       )}
@@ -721,62 +750,54 @@ const WorkwearShop = () => {
         );
       })()}
 
-      {/* Piaci összehasonlítás — rangsor-lista, valós versenytárs-árakkal (nem kártya-sáv, tudatosan más elrendezés) */}
+      {/* 1+1 ajánlatok — valódi kedvezmény: minden 2. darab ingyenes, a kosár és a számla is ekként számol */}
       {!selectedCategory && !searchTerm && (() => {
-        const ranked = products
-          .filter(p => p.competitorPrice > 0 && getEffectivePrice(p) < p.competitorPrice)
-          .map(p => ({ p, save: p.competitorPrice - getEffectivePrice(p) }))
-          .filter(x => x.save >= 300)
-          .sort((a, b) => b.save - a.save)
-          .slice(0, 10);
-        if (ranked.length === 0) return null;
-        const half = Math.ceil(ranked.length / 2);
-        const columns = [ranked.slice(0, half), ranked.slice(half)];
+        const bundles = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).filter(Boolean);
+        if (bundles.length === 0) return null;
         return (
-          <div style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
+          <div id="egy-plusz-egy" style={{ backgroundColor: '#0F2A1D', padding: '2.5rem 1.5rem' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-                🏆 Ahol biztosan mi vagyunk a legolcsóbbak
+              <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
+                🎁 1+1 Ajánlataink
               </h3>
-              <p style={{ color: '#666', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
-                Valódi piaci árösszevetés — ennyivel olcsóbbak vagyunk, mint a piac legolcsóbb ajánlata.
+              <p style={{ color: '#cfd8d1', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
+                Vegyél kettőt, fizess egyet — a kedvezmény a kosárban és a számlán is valós.
               </p>
               <div style={{
-                backgroundColor: 'white', borderRadius: '10px', border: '1px solid #eee',
-                boxShadow: '0 2px 10px rgba(0,0,0,0.05)', display: 'grid',
-                gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', overflow: 'hidden'
+                display: 'grid', gap: '1rem',
+                gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)'
               }}>
-                {columns.map((col, ci) => (
-                  <div key={ci} style={{ borderLeft: ci === 1 && !isMobile ? '1px solid #f0f0f0' : 'none' }}>
-                    {col.map(({ p, save }, i) => (
-                      <Link key={p.id} to={`/termek/${p.slug}`} style={{
-                        textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.85rem',
-                        padding: '0.85rem 1.25rem', borderBottom: (i < col.length - 1 || (ci === 0 && !isMobile)) ? '1px solid #f2f2f2' : 'none'
-                      }}>
+                {bundles.map(p => (
+                  <div key={p.id} style={{
+                    backgroundColor: 'white', borderRadius: '10px', overflow: 'hidden',
+                    display: 'flex', flexDirection: 'column'
+                  }}>
+                    <Link to={`/termek/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div style={{ position: 'relative', backgroundColor: '#fafafa', paddingTop: '90%' }}>
+                        <img src={p.image} alt={p.name} loading="lazy" style={{
+                          position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.75rem'
+                        }} />
                         <span style={{
-                          flexShrink: 0, width: '1.8rem', height: '1.8rem', borderRadius: '50%',
-                          backgroundColor: '#0F2A1D', color: '#C9A961', fontWeight: 'bold', fontSize: '0.85rem',
-                          display: 'flex', alignItems: 'center', justifyContent: 'center'
-                        }}>
-                          {ci * half + i + 1}
-                        </span>
-                        <img src={p.image} alt="" loading="lazy" style={{ width: '44px', height: '44px', objectFit: 'contain', backgroundColor: '#fafafa', borderRadius: '4px', flexShrink: 0 }} />
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ color: '#333', fontSize: '0.85rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.name}</div>
-                          <div style={{ fontSize: '0.75rem', color: '#999' }}>
-                            máshol <span style={{ textDecoration: 'line-through' }}>{p.competitorPrice.toLocaleString('hu-HU')} Ft</span>
-                          </div>
+                          position: 'absolute', top: '0.5rem', left: '0.5rem',
+                          backgroundColor: '#C9A961', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.7rem',
+                          padding: '0.2rem 0.5rem', borderRadius: '4px'
+                        }}>1+1</span>
+                      </div>
+                      <div style={{ padding: '0.65rem 0.75rem 0' }}>
+                        <div style={{
+                          color: '#333', fontSize: '0.8rem', lineHeight: 1.3, height: '2.1rem', overflow: 'hidden'
+                        }}>{p.name}</div>
+                        <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem', margin: '0.35rem 0' }}>
+                          {getEffectivePrice(p).toLocaleString('hu-HU')} Ft <span style={{ color: '#999', fontWeight: 'normal', fontSize: '0.75rem' }}>/db</span>
                         </div>
-                        <div style={{ textAlign: 'right', flexShrink: 0 }}>
-                          <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.95rem' }}>
-                            {getEffectivePrice(p).toLocaleString('hu-HU')} Ft
-                          </div>
-                          <div style={{ color: '#2e7d32', fontSize: '0.72rem', fontWeight: 'bold' }}>
-                            −{save.toLocaleString('hu-HU')} Ft
-                          </div>
-                        </div>
-                      </Link>
-                    ))}
+                      </div>
+                    </Link>
+                    <button onClick={() => addBundleToCart(p)} style={{
+                      margin: '0 0.75rem 0.75rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+                      borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold'
+                    }}>
+                      2 db kosárba
+                    </button>
                   </div>
                 ))}
               </div>
@@ -812,13 +833,13 @@ const WorkwearShop = () => {
                   }}>
                     {rep && (
                       <img src={rep.image} alt={cat.name} loading="lazy" style={{
-                        position: 'absolute', inset: 0, width: '100%', height: '100%',
-                        objectFit: 'cover', opacity: 0.55
+                        position: 'absolute', inset: '0 0 34% 0', width: '100%', height: '66%',
+                        objectFit: 'contain', objectPosition: 'center'
                       }} />
                     )}
                     <div style={{
                       position: 'absolute', inset: 0,
-                      background: 'linear-gradient(180deg, rgba(15,42,29,0) 30%, rgba(15,42,29,0.92) 100%)'
+                      background: 'linear-gradient(180deg, rgba(15,42,29,0) 55%, rgba(15,42,29,0.96) 100%)'
                     }} />
                     <div style={{ position: 'absolute', left: '1rem', right: '1rem', bottom: '0.9rem' }}>
                       <div style={{ color: 'white', fontWeight: 'bold', fontSize: featured && !isMobile ? '1.3rem' : '0.95rem', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
@@ -885,6 +906,7 @@ const WorkwearShop = () => {
           <aside style={{
             backgroundColor: 'white', padding: '1.5rem', borderRadius: '10px',
             boxShadow: '0 2px 10px rgba(0,0,0,0.05)', border: '1px solid #f0f0f0', height: 'fit-content',
+            maxHeight: isMobile ? 'none' : 'calc(100vh - 100px)', overflowY: isMobile ? 'visible' : 'auto',
             position: isMobile ? 'static' : 'sticky', top: '84px',
             display: isMobile && !filtersOpen ? 'none' : 'block'
           }}>
@@ -935,9 +957,11 @@ const WorkwearShop = () => {
                   style={{ width: '50%', padding: '0.4rem', border: '1px solid #ddd', borderRadius: '4px', fontSize: '0.85rem' }}
                   placeholder="Max" />
               </div>
-              <input type="range" min="0" max="50000" step="1000" value={priceMax}
-                onChange={e => setPriceMax(parseInt(e.target.value))}
-                style={{ width: '100%', accentColor: '#C9A961' }} />
+              <DualRangeSlider
+                min={0} max={defaultMaxPrice} step={100}
+                valueMin={priceMin} valueMax={priceMax}
+                onChange={(mn, mx) => { setPriceMin(mn); setPriceMax(mx); }}
+              />
               <p style={{ fontSize: '0.8rem', color: '#666', margin: '0.25rem 0 0 0' }}>
                 {priceMin.toLocaleString('hu-HU')} - {priceMax.toLocaleString('hu-HU')} Ft
               </p>
@@ -961,22 +985,26 @@ const WorkwearShop = () => {
               </>
             )}
 
-            {/* Méret szűrő */}
-            {allSizes.length > 0 && (
+            {/* Méret szűrő — csak kategórián belül (kategória nélkül a cipő/ruha/
+                méteráru méretek összemosódnának, áttekinthetetlen listát adva) */}
+            {selectedCategory && allSizes.length > 0 && (
               <>
                 <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   📏 Méret
                 </h3>
-                <div style={{ marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.25rem' }}>
+                <div style={{
+                  marginBottom: '1.5rem', display: 'flex', flexWrap: 'wrap', gap: '0.35rem',
+                  maxHeight: '190px', overflowY: 'auto', paddingRight: '0.25rem'
+                }}>
                   {allSizes.map(size => (
                     <button key={size}
                       onClick={() => toggleArrayItem(selectedSizes, setSelectedSizes, size)}
                       style={{
-                        padding: '0.25rem 0.5rem',
+                        padding: '0.3rem 0.55rem',
                         backgroundColor: selectedSizes.includes(size) ? '#0F2A1D' : 'white',
                         color: selectedSizes.includes(size) ? 'white' : '#333',
                         border: '1px solid #ddd', borderRadius: '4px',
-                        cursor: 'pointer', fontSize: '0.8rem'
+                        cursor: 'pointer', fontSize: '0.8rem', flexShrink: 0
                       }}>
                       {size}
                     </button>
@@ -1142,6 +1170,54 @@ const WorkwearShop = () => {
         </div>
       </div>
 
+      {/* Hírlevél-banner — teljes szélességű, kiemelt sáv */}
+      <div style={{ backgroundColor: '#0F2A1D', overflow: 'hidden', position: 'relative' }}>
+        <div style={{
+          maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '2rem 1.5rem' : '2.25rem 1.5rem',
+          display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center'
+        }}>
+          <div style={{
+            flexShrink: 0, width: '4rem', height: '4rem', borderRadius: '50%',
+            backgroundColor: 'rgba(201,169,97,0.15)', border: '1px solid rgba(201,169,97,0.4)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center'
+          }}>
+            <Mail size={30} style={{ color: '#C9A961' }} />
+          </div>
+
+          <div style={{ flex: 1, minWidth: '260px', textAlign: isMobile ? 'center' : 'left' }}>
+            <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.3rem', margin: '0 0 0.6rem 0' }}>
+              Iratkozz fel, hogy segíthessünk a tökéletes választásban!
+            </h3>
+            <ul style={{
+              margin: 0, padding: 0, listStyle: 'none', color: '#cfd8d1', fontSize: '0.88rem',
+              display: 'flex', flexDirection: 'column', gap: '0.3rem'
+            }}>
+              <li>✓ Az aktuális Depiend-akciókat elsőként nálunk éred el</li>
+              <li>✓ Szezonális ajánlatok és vásárlási tippek egy helyen</li>
+              <li>✓ Havonta max. 2 email, bármikor leiratkozhatsz</li>
+            </ul>
+          </div>
+
+          <div style={{ flexShrink: 0, minWidth: '260px' }}>
+            {newsletterDone ? (
+              <p style={{ color: '#C9A961', fontWeight: 'bold', margin: 0 }}>✔ Feliratkoztál, köszönjük!</p>
+            ) : (
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <input type="email" placeholder="Email-címed" value={newsletterEmail}
+                  onChange={e => setNewsletterEmail(e.target.value)}
+                  style={{ flex: 1, minWidth: 0, padding: '0.7rem 0.9rem', borderRadius: '999px', border: 'none', fontSize: '0.9rem' }} />
+                <button onClick={() => subscribeNewsletter('banner')} style={{
+                  backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.7rem 1.3rem',
+                  borderRadius: '999px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap'
+                }}>
+                  Feliratkozom
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
       {/* Footer */}
       <footer style={{ backgroundColor: '#0a1f19', color: '#bbb', padding: '3rem 1.5rem 1rem', fontSize: '0.9rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
@@ -1231,6 +1307,168 @@ const WorkwearShop = () => {
 };
 
 // ============================================================
+// HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
+// ============================================================
+const HeroCarousel = ({ t, productCount, isMobile }) => {
+  const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
+
+  const slides = [
+    {
+      bg: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)',
+      title: <>A munkád megvéd minket.<br /><span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span></>,
+      text: `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés — a legtöbbjét máshol nem kapod olcsóbban.`,
+      ctaLabel: `🔥 ${t('hero.ctaDeals')}`, ctaTarget: 'akcios-sav',
+      cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
+    },
+    {
+      bg: 'linear-gradient(135deg, #C9A961 0%, #a9823f 100%)',
+      dark: true,
+      title: <>🎁 Vegyél kettőt,<br />fizess egyet.</>,
+      text: 'Kesztyű, füldugó, védőszemüveg és maszk — néhány kiválasztott terméknél minden 2. darab valóban ingyenes.',
+      ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy'
+    },
+    {
+      bg: 'linear-gradient(135deg, #1a3f33 0%, #0F2A1D 100%)',
+      title: <>Ingyenes szállítás<br />30 000 Ft felett.</>,
+      text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés, 2-3 munkanapos országos kiszállítás.',
+      ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak'
+    }
+  ];
+
+  const [active, setActive] = useState(0);
+  const pausedRef = useRef(false);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (!pausedRef.current) setActive(a => (a + 1) % slides.length);
+    }, 4500);
+    return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const slide = slides[active];
+
+  return (
+    <div
+      onMouseEnter={() => { pausedRef.current = true; }}
+      onMouseLeave={() => { pausedRef.current = false; }}
+      style={{
+        position: 'relative', background: slide.bg, color: 'white', borderRadius: '10px',
+        overflow: 'hidden', minHeight: isMobile ? '320px' : '360px',
+        display: 'flex', alignItems: 'center', padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
+      }}
+    >
+      <div style={{ maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
+        <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
+          {slide.title}
+        </h2>
+        <p style={{ fontSize: '1.05rem', margin: '0 0 1.5rem 0', opacity: 0.92 }}>
+          {slide.text}
+        </p>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: isMobile ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+          <button onClick={() => scrollToId(slide.ctaTarget)} style={{
+            backgroundColor: '#0F2A1D', color: 'white', border: 'none', padding: '0.8rem 1.6rem',
+            borderRadius: '6px', fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer'
+          }}>
+            {slide.ctaLabel}
+          </button>
+          {slide.cta2Label && (
+            <button onClick={() => scrollToId(slide.cta2Target)} style={{
+              backgroundColor: 'transparent', color: 'white', border: '2px solid rgba(255,255,255,0.6)', padding: '0.8rem 1.6rem',
+              borderRadius: '6px', fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer'
+            }}>
+              {slide.cta2Label}
+            </button>
+          )}
+        </div>
+      </div>
+
+      <div style={{
+        position: 'absolute', bottom: '1rem', left: 0, right: 0,
+        display: 'flex', justifyContent: 'center', gap: '0.5rem'
+      }}>
+        {slides.map((_, i) => (
+          <button key={i} onClick={() => setActive(i)} aria-label={`${i + 1}. sáv`} style={{
+            width: i === active ? '22px' : '8px', height: '8px', borderRadius: '4px', border: 'none',
+            backgroundColor: i === active ? '#C9A961' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'all 0.25s'
+          }} />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+// ============================================================
+// KÉTVÉGŰ ÁR-CSÚSZKA (mindkét fogantyú húzható, egér és érintés is)
+// ============================================================
+const DualRangeSlider = ({ min, max, valueMin, valueMax, step = 100, onChange }) => {
+  const trackRef = useRef(null);
+  const draggingRef = useRef(null);
+
+  const clamp = (v) => Math.min(max, Math.max(min, v));
+  const pctFor = (v) => max > min ? ((v - min) / (max - min)) * 100 : 0;
+
+  const valueFromClientX = (clientX) => {
+    const rect = trackRef.current.getBoundingClientRect();
+    const pct = rect.width > 0 ? Math.min(1, Math.max(0, (clientX - rect.left) / rect.width)) : 0;
+    const raw = min + pct * (max - min);
+    return clamp(Math.round(raw / step) * step);
+  };
+
+  useEffect(() => {
+    const handleMove = (e) => {
+      if (!draggingRef.current) return;
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const v = valueFromClientX(clientX);
+      if (draggingRef.current === 'min') onChange(Math.min(v, valueMax - step), valueMax);
+      else onChange(valueMin, Math.max(v, valueMin + step));
+    };
+    const handleUp = () => { draggingRef.current = null; };
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchmove', handleMove, { passive: true });
+    window.addEventListener('touchend', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleUp);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [valueMin, valueMax, min, max, step]);
+
+  const thumbStyle = (pct) => ({
+    position: 'absolute', top: '50%', left: `${pct}%`, transform: 'translate(-50%, -50%)',
+    width: '18px', height: '18px', borderRadius: '50%', backgroundColor: '#0F2A1D',
+    border: '3px solid white', boxShadow: '0 1px 5px rgba(0,0,0,0.35)', cursor: 'grab',
+    touchAction: 'none', zIndex: 2
+  });
+
+  return (
+    <div ref={trackRef} style={{ position: 'relative', height: '6px', backgroundColor: '#e8e8e3', borderRadius: '3px', margin: '0.9rem 0.1rem' }}>
+      <div style={{
+        position: 'absolute', height: '100%', backgroundColor: '#C9A961', borderRadius: '3px',
+        left: `${pctFor(valueMin)}%`, right: `${100 - pctFor(valueMax)}%`
+      }} />
+      <div
+        role="slider" aria-label="Minimum ár" tabIndex={0}
+        aria-valuemin={min} aria-valuemax={valueMax} aria-valuenow={valueMin}
+        onMouseDown={() => { draggingRef.current = 'min'; }}
+        onTouchStart={() => { draggingRef.current = 'min'; }}
+        style={thumbStyle(pctFor(valueMin))}
+      />
+      <div
+        role="slider" aria-label="Maximum ár" tabIndex={0}
+        aria-valuemin={valueMin} aria-valuemax={max} aria-valuenow={valueMax}
+        onMouseDown={() => { draggingRef.current = 'max'; }}
+        onTouchStart={() => { draggingRef.current = 'max'; }}
+        style={thumbStyle(pctFor(valueMax))}
+      />
+    </div>
+  );
+};
+
+// ============================================================
 // PRODUCT CARD
 // ============================================================
 const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
@@ -1279,6 +1517,15 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
             padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
           }}>
             {product.sale.label || 'AKCIÓ'}
+          </span>
+        )}
+        {isBundleProduct(product.id) && (
+          <span style={{
+            position: 'absolute', bottom: '0.5rem', left: '0.5rem',
+            backgroundColor: '#C9A961', color: '#0F2A1D',
+            padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
+          }}>
+            🎁 1+1
           </span>
         )}
       </div>
