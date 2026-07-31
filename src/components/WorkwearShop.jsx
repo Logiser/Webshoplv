@@ -281,7 +281,15 @@ const WorkwearShop = () => {
     if (sortBy === 'price-desc') return getEffectivePrice(b) - getEffectivePrice(a);
     if (sortBy === 'name') return a.name.localeCompare(b.name);
     if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
-    return 0;
+    // Alapértelmezett rendezés: a "Nincs raktáron" termékek mindig leghátul;
+    // a raktáron lévők közül előre a népszerű (jobban értékelt), több szín-
+    // és mérerválasztékkal rendelkező termékek kerülnek.
+    const outOfStockDiff = (a.stock > 0 ? 0 : 1) - (b.stock > 0 ? 0 : 1);
+    if (outOfStockDiff !== 0) return outOfStockDiff;
+    const richness = (p) => ((p.variants || []).length > 1 ? 1 : 0) + ((p.sizes || []).length > 1 ? 1 : 0);
+    const richnessDiff = richness(b) - richness(a);
+    if (richnessDiff !== 0) return richnessDiff;
+    return (b.rating || 0) - (a.rating || 0);
   });
 
   const addToCart = (product) => {
@@ -786,6 +794,8 @@ const WorkwearShop = () => {
               t={t} productCount={products.length} isMobile={isMobile}
               bundleImage={(products.find(p => p.id === BUNDLE_1PLUS1_IDS[0]) || {}).image}
               categoryImage={(products.find(p => p.categoryId === 'bakancs' && p.image) || {}).image}
+              bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
+                .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
             />
           </div>
         </div>
@@ -1442,7 +1452,7 @@ const WorkwearShop = () => {
 // ============================================================
 // HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
 // ============================================================
-const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage }) => {
+const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, bestSaleProduct }) => {
   const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
 
   const slides = [
@@ -1453,6 +1463,13 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage })
       ctaLabel: t('hero.ctaDeals'), ctaTarget: 'akcios-sav',
       cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
+    ...(bestSaleProduct ? [{
+      bg: 'linear-gradient(135deg, #7a1f1f 0%, #4a1010 100%)',
+      title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
+      text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft. A beszállítói akciókat azonnal továbbadjuk, amíg a készlet tart.`,
+      ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav',
+      image: bestSaleProduct.image
+    }] : []),
     {
       bg: 'linear-gradient(135deg, #C9A961 0%, #a9823f 100%)',
       dark: true,
@@ -1891,8 +1908,9 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
   const activeVariant = variants.find(v => v.code === selectedColor) || (variants.length === 1 ? variants[0] : null);
   const displayStock = activeVariant ? activeVariant.stock : product.stock;
 
-  // Galéria: szín választásakor csak az adott szín nézetei
-  const galleryColor = selectedColor || (variants.length === 1 ? variants[0].code : null);
+  // Galéria: mindig csak az aktuálisan megjelenített (kiválasztott, vagy annak
+  // hiányában az első) szín képsorozata jelenjen meg — sosem az összes szín kevert kollázsa.
+  const galleryColor = selectedColor || (variants.length > 0 ? variants[0].code : null);
   const images = getProductImages(product, galleryColor);
   const [imgIdx, setImgIdx] = useState(0);
   useEffect(() => { setImgIdx(0); }, [galleryColor, product.id]);
@@ -2072,8 +2090,10 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
           </div>
 
           <Link to={`/termek/${product.slug}`} style={{
-            display: 'block', padding: '0.5rem', textAlign: 'center',
-            color: '#0F2A1D', textDecoration: 'underline', fontSize: '0.85rem'
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.4rem',
+            padding: '0.8rem', textAlign: 'center', textDecoration: 'none',
+            color: '#0F2A1D', backgroundColor: '#f5f7f5', border: '2px solid #0F2A1D',
+            borderRadius: '4px', fontWeight: 'bold', fontSize: '0.95rem'
           }}>
             📄 Részletes termékoldal megnyitása →
           </Link>

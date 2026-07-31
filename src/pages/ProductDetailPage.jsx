@@ -32,7 +32,9 @@ const ProductDetailPage = () => {
     }
     setProduct(p);
     setImgIdx(0);
-    setSelectedColor(null);
+    // Alapból az első szín-variánsra állunk, hogy a galéria induláskor is
+    // csak azt a képsorozatot mutassa, ne az összes szín kevert kollázsát.
+    setSelectedColor((p.variants && p.variants.length > 0) ? p.variants[0].code : null);
     setWished(isInWishlist(p.id));
     recordProductView(p.id);
     trackProductOpen(p, 'oldal');   // PPC statisztika
