@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, Palette, Ruler as RulerIcon, PackageCheck } from 'lucide-react';
+import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen } from '../data/storage';
+import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen, getBlogPosts } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from './SizeChartModal';
@@ -28,6 +28,71 @@ const headerBadge = {
   width: '18px', height: '18px',
   display: 'flex', alignItems: 'center', justifyContent: 'center',
   fontSize: '0.65rem', fontWeight: 'bold'
+};
+
+// Magyar színnevek -> hex, a termékkártyák szín-svatch pontjaihoz. Kulcsszó-alapú
+// egyezés, hogy a kétszínű nevek ("Fekete/kék", "Kék / navy") is feloldódjanak.
+const COLOR_KEYWORDS = [
+  ['fekete', '#1a1a1a'], ['fehér', '#f5f5f5'], ['tengerészkék', '#0f2a4a'], ['navy', '#0f2a4a'],
+  ['királykék', '#1c4fd6'], ['royal', '#1c4fd6'], ['kék', '#2166d1'], ['piros', '#c62828'],
+  ['bordó', '#7a1f2b'], ['mélypiros', '#8e1a24'], ['sárga', '#f4c400'], ['mélysárga', '#e0a800'],
+  ['narancssárga', '#e6620a'], ['narancs', '#e6720a'], ['zöld', '#2e7d45'], ['olívazöld', '#5c6b2f'],
+  ['oliva', '#5c6b2f'], ['khaki', '#8a7b4f'], ['keki', '#8a7b4f'], ['szürke', '#8a8a8a'],
+  ['grafitszürke', '#3a3d40'], ['szénszürke', '#3a3d40'], ['metál szürke', '#7d8286'],
+  ['metal szürke', '#7d8286'], ['palaszürke', '#5c6670'], ['zoom szürke', '#8a8a8a'],
+  ['barna', '#6b4a30'], ['kávébarna', '#4a3323'], ['cser', '#8a5a2b'], ['bézs', '#d8c6a0'],
+  ['homok szín', '#d8c6a0'], ['méz', '#c98a2b'], ['búza', '#d9b76a'], ['lila', '#6a3d9a'],
+  ['rózsaszín', '#e895b3'], ['ezüst', '#c0c0c0'], ['króm', '#c8c8c8'], ['türkíz', '#1fb7b3'],
+  ['türkiz', '#1fb7b3'], ['égszínkék', '#7ec8e3'], ['halványkék', '#a9d4ee'], ['vízkék', '#8fd0e0'],
+  ['kékeszöld', '#2f9e8f'], ['erdőzöld', '#1f5c34'], ['éjszakai erdőzöld', '#173d24'],
+  ['üvegzöld', '#3d9970'], ['mohazöld', '#5a6b3a'], ['világos zöld', '#7fc17f'], ['rozsda', '#a04a2a'],
+  ['indigó', '#3a4a9e'], ['füst', '#9aa0a6'], ['víztiszta', '#e8f4f8'], ['polarizált', '#333'],
+  ['tükrös', '#a8c8d8'], ['tükröződő', '#a8c8d8']
+];
+
+const resolveColorHexes = (colorName) => {
+  const norm = (colorName || '').toLowerCase();
+  const parts = norm.split(/\s*\/\s*/).filter(Boolean);
+  const hexes = [];
+  parts.forEach(part => {
+    const hit = COLOR_KEYWORDS.find(([kw]) => part.includes(kw));
+    if (hit && !hexes.includes(hit[1])) hexes.push(hit[1]);
+  });
+  if (hexes.length === 0) {
+    const hit = COLOR_KEYWORDS.find(([kw]) => norm.includes(kw));
+    if (hit) hexes.push(hit[1]);
+  }
+  return hexes.slice(0, 2);
+};
+
+// Iparági szűrő: a már meglévő, pontosan címkézett alkategóriákból építve
+// (nem találgatás — ezek a termékadatban tényleges subcategoryId-k).
+const INDUSTRY_BY_SUBCATEGORY = {
+  'elelmiszeripari': 'Élelmiszeripar',
+  'esd-ruhazat': 'ESD & elektronika',
+  'hutohazi': 'Hűtőházi & hidegtárolás',
+  'ipari-vedoruha': 'Ipari védelem',
+  'langallo': 'Hegesztés & tűzvédelem',
+  'sef-ruhazat': 'Vendéglátás & séf',
+  'magasban-munka': 'Magasban végzett munka',
+  'zuhanasgatlo-kieg': 'Magasban végzett munka',
+  'lathatosagi': 'Építőipar & közúti munka'
+};
+const getIndustry = (product) => INDUSTRY_BY_SUBCATEGORY[product.subcategoryId] || null;
+
+// EN-szabványkódok kiolvasása a termékleírásból (pl. "EN ISO 20471", "EN388:2016" -> "EN 388").
+// Nem minden terméknél szerepel — csak ott jelenik meg szűrhető szabványként, ahol tényleg van.
+const STANDARD_RE = /EN\s?(ISO\s?)?\d{2,6}(-\d+)?/g;
+const extractStandards = (product) => {
+  const text = product.description || '';
+  const found = new Set();
+  let m;
+  STANDARD_RE.lastIndex = 0;
+  while ((m = STANDARD_RE.exec(text))) {
+    const norm = m[0].replace(/\s+/g, ' ').replace(/^EN\s?(ISO)?/i, (full, iso) => iso ? 'EN ISO ' : 'EN ').trim();
+    found.add(norm);
+  }
+  return [...found];
 };
 
 // Valódi "1+1" akció: kis értékű, fogyóeszköz-jellegű termékek (egy méret/szín), ahol
@@ -84,6 +149,8 @@ const WorkwearShop = () => {
   const [priceMax, setPriceMax] = useState(50000);
   const [selectedBrands, setSelectedBrands] = useState([]);
   const [selectedSizes, setSelectedSizes] = useState([]);
+  const [selectedStandards, setSelectedStandards] = useState([]);
+  const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [minRating, setMinRating] = useState(0);
   // Lapozás: ~2000 termékkártya egyszerre berenderelése lassú lenne
   const [visibleCount, setVisibleCount] = useState(60);
@@ -174,16 +241,24 @@ const WorkwearShop = () => {
   const allSizes = Array.from(new Set(sizeSourceProducts.flatMap(p => p.sizes || [])))
     .sort((a, b) => sizeOrder(a) - sizeOrder(b) || String(a).localeCompare(String(b)));
 
-  // Kategóriaváltáskor a már nem elérhető kijelölt méretek törlése
+  // Szabvány-szűrő: csak az aktuális kategória/alkategória termékeiben előforduló EN-kódok
+  const allStandards = Array.from(new Set(sizeSourceProducts.flatMap(p => extractStandards(p)))).sort();
+
+  // Iparági szűrő: csak az aktuális kategória/alkategória termékeiben előforduló iparágak
+  const allIndustries = Array.from(new Set(sizeSourceProducts.map(getIndustry).filter(Boolean))).sort();
+
+  // Kategóriaváltáskor a már nem elérhető kijelölt méretek/szabványok/iparágak törlése
   useEffect(() => {
     setSelectedSizes(prev => prev.filter(s => allSizes.includes(s)));
+    setSelectedStandards(prev => prev.filter(s => allStandards.includes(s)));
+    setSelectedIndustries(prev => prev.filter(s => allIndustries.includes(s)));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory, selectedSubcategory]);
 
   // Szűrő- vagy rendezés-váltáskor a lapozás visszaáll az elejére
   useEffect(() => {
     setVisibleCount(60);
-  }, [searchTerm, selectedCategory, selectedSubcategory, priceMin, priceMax, selectedBrands, selectedSizes, minRating, sortBy]);
+  }, [searchTerm, selectedCategory, selectedSubcategory, priceMin, priceMax, selectedBrands, selectedSizes, selectedStandards, selectedIndustries, minRating, sortBy]);
 
   // Szűrt termékek
   const filteredProducts = products.filter(p => {
@@ -195,8 +270,10 @@ const WorkwearShop = () => {
     const matchesPrice = price >= priceMin && price <= priceMax;
     const matchesBrand = selectedBrands.length === 0 || selectedBrands.includes(p.brand);
     const matchesSize = selectedSizes.length === 0 || (p.sizes || []).some(s => selectedSizes.includes(s));
+    const matchesStandard = selectedStandards.length === 0 || extractStandards(p).some(s => selectedStandards.includes(s));
+    const matchesIndustry = selectedIndustries.length === 0 || selectedIndustries.includes(getIndustry(p));
     const matchesRating = (p.rating || 0) >= minRating;
-    return matchesSearch && matchesCategory && matchesSubcategory && matchesPrice && matchesBrand && matchesSize && matchesRating;
+    return matchesSearch && matchesCategory && matchesSubcategory && matchesPrice && matchesBrand && matchesSize && matchesStandard && matchesIndustry && matchesRating;
   });
 
   const sortedProducts = [...filteredProducts].sort((a, b) => {
@@ -327,6 +404,8 @@ const WorkwearShop = () => {
     setPriceMax(Math.ceil(maxP / 1000) * 1000);
     setSelectedBrands([]);
     setSelectedSizes([]);
+    setSelectedStandards([]);
+    setSelectedIndustries([]);
     setMinRating(0);
   };
 
@@ -337,6 +416,8 @@ const WorkwearShop = () => {
     ...((priceMin > 0 || priceMax < defaultMaxPrice) ? [{ key: 'price', label: `${priceMin.toLocaleString('hu-HU')}–${priceMax.toLocaleString('hu-HU')} Ft`, onRemove: () => { setPriceMin(0); setPriceMax(defaultMaxPrice); } }] : []),
     ...selectedBrands.map(b => ({ key: `brand-${b}`, label: b, onRemove: () => toggleArrayItem(selectedBrands, setSelectedBrands, b) })),
     ...selectedSizes.map(s => ({ key: `size-${s}`, label: `Méret: ${s}`, onRemove: () => toggleArrayItem(selectedSizes, setSelectedSizes, s) })),
+    ...selectedStandards.map(s => ({ key: `std-${s}`, label: s, onRemove: () => toggleArrayItem(selectedStandards, setSelectedStandards, s) })),
+    ...selectedIndustries.map(i => ({ key: `ind-${i}`, label: i, onRemove: () => toggleArrayItem(selectedIndustries, setSelectedIndustries, i) })),
     ...(minRating > 0 ? [{ key: 'rating', label: `${minRating}+ ⭐`, onRemove: () => setMinRating(0) }] : [])
   ];
 
@@ -955,6 +1036,24 @@ const WorkwearShop = () => {
               </>
             )}
 
+            {/* Iparági szűrő — meglévő, pontosan címkézett alkategóriákból */}
+            {allIndustries.length > 0 && (
+              <>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  🏭 Iparág
+                </h3>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  {allIndustries.map(ind => (
+                    <label key={ind} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0', cursor: 'pointer', fontSize: '0.9rem' }}>
+                      <input type="checkbox" checked={selectedIndustries.includes(ind)}
+                        onChange={() => toggleArrayItem(selectedIndustries, setSelectedIndustries, ind)} />
+                      {ind}
+                    </label>
+                  ))}
+                </div>
+              </>
+            )}
+
             {/* Méret szűrő — csak kategórián belül (kategória nélkül a cipő/ruha/
                 méteráru méretek összemosódnának, áttekinthetetlen listát adva) */}
             {selectedCategory && allSizes.length > 0 && (
@@ -978,6 +1077,24 @@ const WorkwearShop = () => {
                       }}>
                       {size}
                     </button>
+                  ))}
+                </div>
+              </>
+            )}
+
+            {/* Szabvány szűrő — csak ott jelenik meg kód, ahol a leírás ténylegesen tartalmazza */}
+            {allStandards.length > 0 && (
+              <>
+                <h3 style={{ color: '#0F2A1D', marginBottom: '0.75rem', fontSize: '1rem', borderBottom: '1px solid #eee', paddingBottom: '0.6rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  📋 Szabvány
+                </h3>
+                <div style={{ marginBottom: '1.5rem', maxHeight: '160px', overflowY: 'auto' }}>
+                  {allStandards.map(std => (
+                    <label key={std} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', padding: '0.25rem 0', cursor: 'pointer', fontSize: '0.9rem' }}>
+                      <input type="checkbox" checked={selectedStandards.includes(std)}
+                        onChange={() => toggleArrayItem(selectedStandards, setSelectedStandards, std)} />
+                      {std}
+                    </label>
                   ))}
                 </div>
               </>
@@ -1139,6 +1256,42 @@ const WorkwearShop = () => {
           </div>
         </div>
       </div>
+
+      {/* Hasznos bejegyzések — blog-teaser a főoldalon */}
+      {!selectedCategory && !searchTerm && (() => {
+        const latestPosts = getBlogPosts().slice(0, 4);
+        if (latestPosts.length === 0) return null;
+        return (
+          <div style={{ backgroundColor: '#fafaf8', padding: '3rem 1.5rem' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+              <h3 style={{
+                color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.8rem', textAlign: 'center',
+                textTransform: 'uppercase', margin: '0 0 2rem 0'
+              }}>
+                Hasznos bejegyzések
+              </h3>
+              <div style={{
+                display: 'grid', gap: '1.5rem',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)'
+              }}>
+                {latestPosts.map(post => (
+                  <Link key={post.slug} to={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <img src={post.image} alt={post.title} loading="lazy" style={{
+                      width: '100%', height: '160px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem'
+                    }} />
+                    <h4 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.05rem', margin: '0 0 0.5rem 0', lineHeight: 1.3 }}>
+                      {post.title}
+                    </h4>
+                    <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
+                      {post.excerpt}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Hírlevél-banner — teljes szélességű, kiemelt sáv */}
       <div style={{ backgroundColor: '#0F2A1D', overflow: 'hidden', position: 'relative' }}>
@@ -1327,11 +1480,24 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage })
       style={{
         position: 'relative', background: slide.bg, color: 'white', borderRadius: '10px',
         overflow: 'hidden', minHeight: isMobile ? '320px' : '360px',
-        display: 'flex', alignItems: 'center', gap: '1.5rem',
+        display: 'flex', alignItems: 'center',
         padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
       }}
     >
-      <div style={{ flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
+      {!isMobile && slide.image && (
+        <>
+          <img src={slide.image} alt="" loading="lazy" style={{
+            position: 'absolute', inset: 0, width: '100%', height: '100%',
+            objectFit: 'cover', objectPosition: 'center'
+          }} />
+          <div style={{
+            position: 'absolute', inset: 0,
+            background: `linear-gradient(90deg, ${slide.dark ? 'rgba(201,169,97,0.97)' : 'rgba(15,42,29,0.95)'} 0%, ${slide.dark ? 'rgba(201,169,97,0.9)' : 'rgba(15,42,29,0.82)'} 40%, transparent 85%)`
+          }} />
+        </>
+      )}
+
+      <div style={{ position: 'relative', flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
         <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
           {slide.title}
         </h2>
@@ -1355,17 +1521,6 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage })
           )}
         </div>
       </div>
-
-      {!isMobile && slide.image && (
-        <div style={{
-          flexShrink: 0, width: '220px', height: '220px', backgroundColor: 'rgba(255,255,255,0.94)',
-          borderRadius: '12px', position: 'relative', overflow: 'hidden'
-        }}>
-          <img src={slide.image} alt="" loading="lazy" style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '1rem'
-          }} />
-        </div>
-      )}
 
       <div style={{
         position: 'absolute', bottom: '1rem', left: 0, right: 0,
@@ -1587,14 +1742,53 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
         </Link>
 
         {(() => {
-          const colorCount = (product.variants || []).length;
-          const sizeCount = (product.sizes || []).length;
-          if (colorCount <= 1 && sizeCount <= 1) return null;
+          const inStockVariants = (product.variants || []).filter(v => v.stock > 0);
+          if (inStockVariants.length < 2) return null;
           return (
-            <p style={{ color: '#777', fontSize: '0.78rem', margin: '0 0 0.4rem 0', display: 'flex', gap: '0.6rem' }}>
-              {colorCount > 1 && <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}><Palette size={12} /> {colorCount} szín</span>}
-              {sizeCount > 1 && <span style={{ display: 'flex', alignItems: 'center', gap: '0.2rem' }}><RulerIcon size={12} /> {sizeCount} méret</span>}
-            </p>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', margin: '0 0 0.5rem 0' }}>
+              {inStockVariants.map(v => {
+                const hexes = resolveColorHexes(v.color);
+                const bg = hexes.length === 2
+                  ? `linear-gradient(90deg, ${hexes[0]} 50%, ${hexes[1]} 50%)`
+                  : (hexes[0] || '#ccc');
+                return (
+                  <span key={v.code} title={v.color} style={{
+                    width: '18px', height: '18px', borderRadius: '4px', background: bg,
+                    border: '1px solid rgba(0,0,0,0.15)', display: 'inline-block'
+                  }} />
+                );
+              })}
+            </div>
+          );
+        })()}
+
+        {(() => {
+          const colorCount = (product.variants || []).length;
+          const hasBigSizes = (product.sizes || []).some(s => /^(2|3|4|5|6|7|8)XL/i.test(s));
+          const text = `${product.name} ${product.description || ''}`.toLowerCase();
+          let season = null;
+          if (/téli|bélelt|polár|thermo|hőszigetelt/.test(text)) season = { label: 'Téli', bg: '#e3edff', fg: '#1a56c4' };
+          else if (/nyári|hűsítő|szellőz/.test(text)) season = { label: 'Nyári', bg: '#fff2d9', fg: '#a15c00' };
+          else if (/őszi|átmeneti/.test(text)) season = { label: 'Őszi', bg: '#f0e4d3', fg: '#8a5a2b' };
+          if (colorCount <= 1 && !hasBigSizes && !season) return null;
+          return (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', margin: '0 0 0.5rem 0' }}>
+              {colorCount > 1 && (
+                <span style={{ backgroundColor: '#e3edff', color: '#1a56c4', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
+                  Több színben
+                </span>
+              )}
+              {hasBigSizes && (
+                <span style={{ backgroundColor: '#d9f2e6', color: '#1a7a4c', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
+                  Nagy méretekben is!
+                </span>
+              )}
+              {season && (
+                <span style={{ backgroundColor: season.bg, color: season.fg, fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
+                  {season.label}
+                </span>
+              )}
+            </div>
           );
         })()}
 
