@@ -152,10 +152,12 @@ exports.handler = async (event) => {
       if (ci >= 0) coupons[ci].usedCount = (coupons[ci].usedCount || 0) + 1;
     }
 
-    // NAV-os számla a Számlázz.hu Agent API-val — csak akkor fut, ha a
-    // SZAMLAZZ_AGENT_KEY env be van állítva (addig a belső bizonylat él).
+    // NAV-os számla a Számlázz.hu Agent API-val — FELFÜGGESZTVE (2026-08-01):
+    // véletlenül éles számlát állított ki. Csak akkor fut újra, ha a SZAMLAZZ_ENABLED
+    // env explicit "true"-ra van állítva a SZAMLAZZ_AGENT_KEY mellett — a puszta
+    // SZAMLAZZ_AGENT_KEY megléte önmagában többé NEM elég az újraindításhoz.
     // Nem blokkoló: a rendelés számla-hiba esetén is rögzül.
-    if (process.env.SZAMLAZZ_AGENT_KEY) {
+    if (process.env.SZAMLAZZ_AGENT_KEY && process.env.SZAMLAZZ_ENABLED === 'true') {
       try {
         const c = order.customer || {};
         const esc = (s) => String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
