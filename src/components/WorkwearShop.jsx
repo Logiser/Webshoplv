@@ -809,7 +809,7 @@ const WorkwearShop = () => {
 
       {/* Kategória-ikonok — Uniqlo "Search by category" mintája: kerek termékfotók, felirat alatta */}
       {!selectedCategory && !searchTerm && (
-        <div style={{ backgroundColor: 'white', padding: '2rem 1.5rem', borderBottom: '1px solid #f0f0f0' }}>
+        <div id="kategoriak" style={{ backgroundColor: 'white', padding: '2rem 1.5rem', borderBottom: '1px solid #f0f0f0' }}>
           <div style={{
             maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: isMobile ? '1.25rem' : '2.5rem',
             justifyContent: 'center', flexWrap: 'wrap', overflowX: 'auto'
@@ -866,55 +866,6 @@ const WorkwearShop = () => {
         if (bundleProduct) items.splice(2, 0, { ...bundleProduct, isBundleSlot: true });
         return <SaleCarouselRow items={items} />;
       })()}
-
-      {/* Kategória-csempék — banner-stílusú "bento" elrendezés (tudatosan más mint a listák) */}
-      {!selectedCategory && !searchTerm && (
-        <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 1.25rem 0' }}>
-              {t('section.categories')}
-            </h3>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
-              gridAutoRows: isMobile ? '155px' : '190px',
-              gap: '0.85rem'
-            }}>
-              {orderedCategories.map((cat, idx) => {
-                const rep = products.find(p => p.categoryId === cat.id && p.image);
-                const count = products.filter(p => p.categoryId === cat.id).length;
-                const featured = idx === 0;
-                return (
-                  <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
-                    border: 'none', borderRadius: '12px', padding: '0.75rem',
-                    cursor: 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column',
-                    backgroundColor: '#0F2A1D',
-                    gridColumn: featured && !isMobile ? 'span 2' : 'span 1',
-                    gridRow: featured && !isMobile ? 'span 2' : 'span 1'
-                  }}>
-                    {rep && (
-                      <div style={{ flex: 1, minHeight: 0, position: 'relative', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
-                        <img src={rep.image} alt={cat.name} loading="lazy" style={{
-                          position: 'absolute', inset: 0, width: '100%', height: '100%',
-                          objectFit: 'contain', objectPosition: 'center', padding: '0.6rem'
-                        }} />
-                      </div>
-                    )}
-                    <div style={{ paddingTop: '0.65rem', flexShrink: 0 }}>
-                      <div style={{ color: 'white', fontWeight: 'bold', fontSize: featured && !isMobile ? '1.3rem' : '0.95rem', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
-                        {cat.name}
-                      </div>
-                      <div style={{ color: '#C9A961', fontSize: '0.8rem', marginTop: '3px', fontWeight: 600 }}>
-                        {count} {t('section.products')} →
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Breadcrumb */}
       {(selectedCategory || searchTerm) && (
@@ -1249,8 +1200,11 @@ const WorkwearShop = () => {
         return (
           <div id="egy-plusz-egy" style={{ backgroundColor: '#0F2A1D', padding: '2.5rem 1.5rem' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-                🎁 1+1 Ajánlataink
+              <h3 style={{
+                color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.6rem', fontWeight: 700,
+                textTransform: 'uppercase', letterSpacing: '0.01em', margin: '0 0 0.25rem 0'
+              }}>
+                1+1 Ajánlataink
               </h3>
               <p style={{ color: '#cfd8d1', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
                 Vegyél kettőt, fizess egyet — a kedvezmény a kosárban és a számlán is valós.
@@ -1261,7 +1215,7 @@ const WorkwearShop = () => {
               }}>
                 {bundles.map(p => (
                   <div key={p.id} style={{
-                    backgroundColor: 'white', borderRadius: '10px', overflow: 'hidden',
+                    backgroundColor: 'white', borderRadius: 0, overflow: 'hidden',
                     display: 'flex', flexDirection: 'column'
                   }}>
                     <Link to={`/termek/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
@@ -1272,7 +1226,7 @@ const WorkwearShop = () => {
                         <span style={{
                           position: 'absolute', top: '0.5rem', left: '0.5rem',
                           backgroundColor: '#C9A961', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.7rem',
-                          padding: '0.2rem 0.5rem', borderRadius: '4px'
+                          padding: '0.2rem 0.5rem', borderRadius: 0
                         }}>1+1</span>
                       </div>
                       <div style={{ padding: '0.65rem 0.75rem 0' }}>
@@ -1291,7 +1245,8 @@ const WorkwearShop = () => {
                     </Link>
                     <button onClick={() => addBundleToCart(p)} style={{
                       margin: '0 0.75rem 0.75rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
-                      borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold'
+                      borderRadius: 0, padding: '0.5rem', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold',
+                      textTransform: 'uppercase', letterSpacing: '0.02em'
                     }}>
                       2 db kosárba
                     </button>
@@ -1351,7 +1306,7 @@ const WorkwearShop = () => {
                 {latestPosts.map(post => (
                   <Link key={post.slug} to={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                     <img src={post.image} alt={post.title} loading="lazy" style={{
-                      width: '100%', height: '160px', objectFit: 'cover', borderRadius: '8px', marginBottom: '1rem'
+                      width: '100%', height: '160px', objectFit: 'cover', borderRadius: 0, marginBottom: '1rem'
                     }} />
                     <h4 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.05rem', margin: '0 0 0.5rem 0', lineHeight: 1.3 }}>
                       {post.title}
@@ -1407,10 +1362,11 @@ const WorkwearShop = () => {
               <div style={{ display: 'flex', gap: '0.5rem' }}>
                 <input type="email" placeholder="Email-címed" value={newsletterEmail}
                   onChange={e => setNewsletterEmail(e.target.value)}
-                  style={{ flex: 1, minWidth: 0, padding: '0.7rem 0.9rem', borderRadius: '999px', border: 'none', fontSize: '0.9rem' }} />
+                  style={{ flex: 1, minWidth: 0, padding: '0.7rem 0.9rem', borderRadius: 0, border: 'none', fontSize: '0.9rem' }} />
                 <button onClick={() => subscribeNewsletter('banner')} style={{
                   backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.7rem 1.3rem',
-                  borderRadius: '999px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap'
+                  borderRadius: 0, cursor: 'pointer', fontWeight: 'bold', fontSize: '0.9rem', whiteSpace: 'nowrap',
+                  textTransform: 'uppercase', letterSpacing: '0.02em'
                 }}>
                   Feliratkozom
                 </button>
@@ -1645,8 +1601,11 @@ const SaleCarouselRow = ({ items }) => {
   return (
     <div id="akcios-sav" style={{ backgroundColor: '#f5f5f5', padding: '2rem 1.5rem' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-          🔥 Akciós ajánlatok
+        <h3 style={{
+          color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', fontWeight: 700,
+          textTransform: 'uppercase', letterSpacing: '0.01em', margin: '0 0 0.25rem 0'
+        }}>
+          Akciós ajánlatok
         </h3>
         <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
           Válogatott kedvezmények, amíg a készlet tart.
@@ -1658,12 +1617,12 @@ const SaleCarouselRow = ({ items }) => {
           <div ref={scrollRef} style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.5rem', scrollBehavior: 'smooth' }}>
             {items.map(p => (
               <Link key={p.id} to={`/termek/${p.slug}`} style={{ textDecoration: 'none', flexShrink: 0, width: '190px' }}>
-                <div style={{ backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #eee' }}>
+                <div style={{ backgroundColor: 'white', borderRadius: 0, overflow: 'hidden', boxShadow: '0 2px 8px rgba(0,0,0,0.08)', border: '1px solid #eee' }}>
                   <div style={{ position: 'relative' }}>
                     <img src={p.image} alt={p.name} loading="lazy" style={{ width: '100%', height: '150px', objectFit: 'contain', backgroundColor: '#fafafa' }} />
                     <span style={{
                       position: 'absolute', top: '8px', left: '8px', color: 'white', padding: '2px 8px',
-                      borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold',
+                      borderRadius: 0, fontSize: '0.75rem', fontWeight: 'bold',
                       backgroundColor: p.isBundleSlot ? '#C9A961' : '#D32F2F'
                     }}>
                       {p.isBundleSlot ? '1+1' : `−${Math.round((1 - p.sale.price / p.price) * 100)}%`}
