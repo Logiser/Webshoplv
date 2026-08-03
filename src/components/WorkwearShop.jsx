@@ -178,7 +178,7 @@ const WorkwearShop = () => {
   const [selectedIndustries, setSelectedIndustries] = useState([]);
   const [minRating, setMinRating] = useState(0);
   // Lapozás: ~2000 termékkártya egyszerre berenderelése lassú lenne
-  const [visibleCount, setVisibleCount] = useState(60);
+  const [visibleCount, setVisibleCount] = useState(24);
 
   useEffect(() => {
     const allProducts = getVisibleProducts();
@@ -1244,7 +1244,7 @@ const WorkwearShop = () => {
             )}
             {sortedProducts.length > visibleCount && (
               <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-                <button onClick={() => setVisibleCount(c => c + 60)} style={{
+                <button onClick={() => setVisibleCount(c => c + 24)} style={{
                   padding: '0.9rem 2.5rem', backgroundColor: '#0F2A1D', color: 'white',
                   border: 'none', borderRadius: '4px', fontSize: '1rem', cursor: 'pointer', fontWeight: 'bold'
                 }}>
