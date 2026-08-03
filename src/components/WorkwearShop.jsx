@@ -807,11 +807,13 @@ const WorkwearShop = () => {
         </div>
       )}
 
-      {/* Kategória-ikonok — Uniqlo "Search by category" mintája: kerek termékfotók, felirat alatta */}
+      {/* Kategória-ikonok — Uniqlo "Search by category" mintája, Liquid Death-es kontraszttal:
+          arany gyűrűs kör-ikonok, nagybetűs, kövér feliratok — fehér alapon (a sötétzöld
+          sávok a hero és a misszió-sáv körül maradnak, hogy megmaradjon a ritmus) */}
       {!selectedCategory && !searchTerm && (
-        <div id="kategoriak" style={{ backgroundColor: 'white', padding: '2rem 1.5rem', borderBottom: '1px solid #f0f0f0' }}>
+        <div id="kategoriak" style={{ backgroundColor: 'white', padding: isMobile ? '2rem 1.5rem' : '3rem 1.5rem' }}>
           <div style={{
-            maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: isMobile ? '1.25rem' : '2.5rem',
+            maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: isMobile ? '1.5rem' : '3rem',
             justifyContent: 'center', flexWrap: 'wrap', overflowX: 'auto'
           }}>
             {orderedCategories.map(cat => {
@@ -819,19 +821,22 @@ const WorkwearShop = () => {
               return (
                 <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
                   background: 'none', border: 'none', cursor: 'pointer', display: 'flex',
-                  flexDirection: 'column', alignItems: 'center', gap: '0.6rem', flexShrink: 0, width: '92px'
+                  flexDirection: 'column', alignItems: 'center', gap: '0.85rem', flexShrink: 0, width: '108px'
                 }}>
                   <div style={{
-                    width: '76px', height: '76px', borderRadius: '50%', backgroundColor: '#f5f5f5',
-                    border: '1px solid #eee', position: 'relative', overflow: 'hidden'
+                    width: '96px', height: '96px', borderRadius: '50%', backgroundColor: '#f9f9f9',
+                    border: '3px solid #C9A961', position: 'relative', overflow: 'hidden'
                   }}>
                     {rep && (
                       <img src={rep.image} alt="" loading="lazy" style={{
-                        position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.7rem'
+                        position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.85rem'
                       }} />
                     )}
                   </div>
-                  <span style={{ fontSize: '0.8rem', color: '#0F2A1D', fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
+                  <span style={{
+                    fontSize: '0.8rem', color: '#0F2A1D', fontWeight: 700, textAlign: 'center', lineHeight: 1.25,
+                    textTransform: 'uppercase', letterSpacing: '0.02em'
+                  }}>
                     {cat.name}
                   </span>
                 </button>
@@ -841,14 +846,26 @@ const WorkwearShop = () => {
         </div>
       )}
 
-      {/* Bátor állítás-sáv (Liquid Death "misszió" minta): egy nagy, kövér claim + rövid alátámasztás */}
+      {/* Bátor állítás-sáv (Liquid Death "misszió" minta): nagy, kövér claim + ferde
+          vágású arany csík — ugyanaz a diagonál-motívum, mint a heróban */}
       {!selectedCategory && !searchTerm && (
-        <div style={{ backgroundColor: '#0F2A1D', padding: '3rem 1.5rem', textAlign: 'center' }}>
-          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-            <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', color: 'white', margin: '0 0 0.6rem 0', fontWeight: 700, lineHeight: 1.2 }}>
+        <div style={{ position: 'relative', backgroundColor: '#0F2A1D', padding: isMobile ? '3.5rem 1.5rem' : '5rem 1.5rem', textAlign: 'center', overflow: 'hidden' }}>
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: '14px',
+            backgroundColor: '#C9A961', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 40%)'
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '14px',
+            backgroundColor: '#C9A961', clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)'
+          }} />
+          <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative' }}>
+            <h3 style={{
+              fontFamily: 'Georgia, serif', fontSize: 'clamp(2.2rem, 6vw, 3.6rem)', color: 'white',
+              margin: '0 0 1rem 0', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.01em'
+            }}>
               A HAMISÍTVÁNY NEM VÉD.
             </h3>
-            <p style={{ color: '#C9A961', fontSize: '1.05rem', fontWeight: 700, margin: 0, letterSpacing: '0.02em' }}>
+            <p style={{ color: '#C9A961', fontSize: '1.15rem', fontWeight: 700, margin: 0, letterSpacing: '0.03em' }}>
               100% EREDETI PORTWEST — CE-TANÚSÍTVÁNNYAL, NEM UTÁNZAT.
             </p>
           </div>
@@ -1198,14 +1215,22 @@ const WorkwearShop = () => {
         const bundles = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).filter(Boolean);
         if (bundles.length === 0) return null;
         return (
-          <div id="egy-plusz-egy" style={{ backgroundColor: '#0F2A1D', padding: '2.5rem 1.5rem' }}>
+          <div id="egy-plusz-egy" style={{ backgroundColor: '#0F2A1D', padding: '3rem 1.5rem' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              <h3 style={{
-                color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.6rem', fontWeight: 700,
-                textTransform: 'uppercase', letterSpacing: '0.01em', margin: '0 0 0.25rem 0'
-              }}>
-                1+1 Ajánlataink
-              </h3>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+                <span style={{
+                  backgroundColor: 'white', color: '#0F2A1D', fontWeight: 700, fontSize: '0.75rem',
+                  padding: '0.35rem 0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em'
+                }}>
+                  Kettő az ár fele
+                </span>
+                <h3 style={{
+                  color: 'white', fontFamily: 'Georgia, serif', fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 700,
+                  textTransform: 'uppercase', letterSpacing: '0.01em', margin: 0
+                }}>
+                  1+1 Ajánlataink
+                </h3>
+              </div>
               <p style={{ color: '#cfd8d1', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
                 Vegyél kettőt, fizess egyet — a kedvezmény a kosárban és a számlán is valós.
               </p>
@@ -1258,30 +1283,29 @@ const WorkwearShop = () => {
         );
       })()}
 
-      {/* Trust Section */}
-      <div style={{ backgroundColor: 'white', padding: '3rem 1.5rem', marginTop: '3rem' }}>
+      {/* Trust Section — kövér, négyzetes ikon-blokkok a kerek/lágy forma helyett */}
+      <div style={{ backgroundColor: 'white', padding: '3.5rem 1.5rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem', textAlign: 'center' }}>
-            <div>
-              <Truck size={48} style={{ color: '#C9A961', marginBottom: '1rem' }} />
-              <h3 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0' }}>Gyors Kiszállítás</h3>
-              <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>2-3 munkanapon belül országosan</p>
-            </div>
-            <div>
-              <Shield size={48} style={{ color: '#C9A961', marginBottom: '1rem' }} />
-              <h3 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0' }}>Minőségi Garancia</h3>
-              <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>EU tanúsított termékek</p>
-            </div>
-            <div>
-              <Award size={48} style={{ color: '#C9A961', marginBottom: '1rem' }} />
-              <h3 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0' }}>Szakértő Tanácsadás</h3>
-              <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>Szakértő segítség a választáshoz</p>
-            </div>
-            <div>
-              <Phone size={48} style={{ color: '#C9A961', marginBottom: '1rem' }} />
-              <h3 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0' }}>Ügyfélszolgálat</h3>
-              <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>{homepageContent.topBarPhone || '+36 30 272 2571'}</p>
-            </div>
+            {[
+              { Icon: Truck, title: 'Gyors Kiszállítás', text: '2-3 munkanapon belül országosan' },
+              { Icon: Shield, title: 'Minőségi Garancia', text: 'EU tanúsított termékek' },
+              { Icon: Award, title: 'Szakértő Tanácsadás', text: 'Szakértő segítség a választáshoz' },
+              { Icon: Phone, title: 'Ügyfélszolgálat', text: homepageContent.topBarPhone || '+36 30 272 2571' }
+            ].map((item, i) => (
+              <div key={i}>
+                <div style={{
+                  width: '64px', height: '64px', backgroundColor: '#0F2A1D', margin: '0 auto 1.1rem',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                }}>
+                  <item.Icon size={30} style={{ color: '#C9A961' }} />
+                </div>
+                <h3 style={{ color: '#0F2A1D', margin: '0 0 0.4rem 0', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.95rem', letterSpacing: '0.02em' }}>
+                  {item.title}
+                </h3>
+                <p style={{ color: '#666', margin: 0, fontSize: '0.9rem' }}>{item.text}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -1322,22 +1346,28 @@ const WorkwearShop = () => {
         );
       })()}
 
-      {/* Hírlevél-banner — teljes szélességű, kiemelt sáv */}
+      {/* Hírlevél-banner — teljes szélességű, kiemelt sáv, diagonál arany csíkkal fent */}
       <div style={{ backgroundColor: '#0F2A1D', overflow: 'hidden', position: 'relative' }}>
         <div style={{
-          maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '2rem 1.5rem' : '2.25rem 1.5rem',
+          position: 'absolute', top: 0, left: 0, right: 0, height: '10px',
+          backgroundColor: '#C9A961', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 30%)'
+        }} />
+        <div style={{
+          maxWidth: '1200px', margin: '0 auto', padding: isMobile ? '2.5rem 1.5rem' : '3rem 1.5rem',
           display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap', justifyContent: 'center'
         }}>
           <div style={{
-            flexShrink: 0, width: '4rem', height: '4rem', borderRadius: '50%',
-            backgroundColor: 'rgba(201,169,97,0.15)', border: '1px solid rgba(201,169,97,0.4)',
+            flexShrink: 0, width: '4.5rem', height: '4.5rem', backgroundColor: '#C9A961',
             display: 'flex', alignItems: 'center', justifyContent: 'center'
           }}>
-            <Mail size={30} style={{ color: '#C9A961' }} />
+            <Mail size={30} style={{ color: '#0F2A1D' }} />
           </div>
 
           <div style={{ flex: 1, minWidth: '260px', textAlign: isMobile ? 'center' : 'left' }}>
-            <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.3rem', margin: '0 0 0.6rem 0' }}>
+            <h3 style={{
+              color: 'white', fontFamily: 'Georgia, serif', fontSize: 'clamp(1.3rem, 2.5vw, 1.7rem)',
+              fontWeight: 700, margin: '0 0 0.6rem 0'
+            }}>
               {homepageContent.newsletterHeading || 'Iratkozz fel, hogy segíthessünk a tökéletes választásban!'}
             </h3>
             <ul style={{
@@ -1616,15 +1646,23 @@ const SaleCarouselRow = ({ items }) => {
   const scrollBy = (dx) => { if (scrollRef.current) scrollRef.current.scrollBy({ left: dx, behavior: 'smooth' }); };
 
   return (
-    <div id="akcios-sav" style={{ backgroundColor: '#f5f5f5', padding: '2rem 1.5rem' }}>
+    <div id="akcios-sav" style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
       <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-        <h3 style={{
-          color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', fontWeight: 700,
-          textTransform: 'uppercase', letterSpacing: '0.01em', margin: '0 0 0.25rem 0'
-        }}>
-          Akciós ajánlatok
-        </h3>
-        <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '0.5rem', flexWrap: 'wrap' }}>
+          <span style={{
+            backgroundColor: '#C9A961', color: '#0F2A1D', fontWeight: 700, fontSize: '0.75rem',
+            padding: '0.35rem 0.8rem', textTransform: 'uppercase', letterSpacing: '0.1em'
+          }}>
+            Most
+          </span>
+          <h3 style={{
+            color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: 'clamp(1.8rem, 3.5vw, 2.6rem)', fontWeight: 700,
+            textTransform: 'uppercase', letterSpacing: '0.01em', margin: 0
+          }}>
+            Akciós ajánlatok
+          </h3>
+        </div>
+        <p style={{ color: '#666', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
           Válogatott kedvezmények, amíg a készlet tart.
         </p>
         <div style={{ position: 'relative' }}>
