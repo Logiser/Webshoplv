@@ -1490,47 +1490,51 @@ const WorkwearShop = () => {
 const HeroVisual = ({ products, badgeText, badgeColor, badgeFg, dark }) => {
   if (!products || products.length === 0) return null;
   const [main, second, third] = products;
-  const plate = (size, extra) => ({
-    position: 'absolute', backgroundColor: 'white', borderRadius: '14px',
-    boxShadow: '0 12px 28px rgba(0,0,0,0.22)', overflow: 'hidden', ...size, ...extra
-  });
+  const plateStyle = {
+    position: 'relative', flexShrink: 0, backgroundColor: 'white', borderRadius: '12px',
+    boxShadow: '0 10px 22px rgba(0,0,0,0.22)', overflow: 'hidden'
+  };
+  const plateImg = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' };
+
   return (
-    <div style={{ position: 'absolute', inset: 0, right: '4%' }}>
-      <div style={{
-        position: 'absolute', top: '50%', right: '8%', transform: 'translateY(-50%)',
-        width: '280px', height: '280px', borderRadius: '50%',
-        backgroundColor: 'rgba(255,255,255,0.08)'
-      }} />
-
-      {third && (
-        <div style={plate({ width: '30%', aspectRatio: '1' }, { right: '2%', bottom: '12%', transform: 'rotate(6deg)' })}>
-          <img src={third.image} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.6rem' }} />
-        </div>
-      )}
-      {second && (
-        <div style={plate({ width: '32%', aspectRatio: '1' }, { right: '32%', top: '6%', transform: 'rotate(-5deg)' })}>
-          <img src={second.image} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.6rem' }} />
-        </div>
-      )}
-      <div style={plate({ width: '42%', aspectRatio: '1' }, { right: '10%', top: '50%', transform: 'translateY(-50%)' })}>
-        <img src={main.image} alt="" loading="lazy" style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '1rem' }} />
-      </div>
-
+    // Vízszintes flex-oszlopok: minden elem saját sávjában van, sosem fedi egymást
+    // (nem abszolút százalékos pozícionálás, ami korábban átfedést okozott).
+    <div style={{
+      position: 'absolute', right: 0, top: 0, bottom: 0, width: '56%',
+      display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
+      alignItems: 'center', padding: '1.25rem 2rem 1.25rem 0.5rem'
+    }}>
       {badgeText && (
         <span style={{
-          position: 'absolute', left: '4%', top: '8%',
-          backgroundColor: badgeColor, color: badgeFg || 'white', fontWeight: 'bold', fontSize: '0.95rem',
-          padding: '0.4rem 0.9rem', borderRadius: '999px', boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
+          alignSelf: 'flex-start', backgroundColor: badgeColor, color: badgeFg || 'white',
+          fontWeight: 'bold', fontSize: '0.95rem', padding: '0.4rem 0.9rem', borderRadius: '999px',
+          boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
         }}>
           {badgeText}
         </span>
       )}
 
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+        {second && (
+          <div style={{ ...plateStyle, width: '85px', height: '85px' }}>
+            <img src={second.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.5rem' }} />
+          </div>
+        )}
+        <div style={{ ...plateStyle, width: '160px', height: '160px' }}>
+          <img src={main.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.9rem' }} />
+        </div>
+        {third && (
+          <div style={{ ...plateStyle, width: '85px', height: '85px' }}>
+            <img src={third.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.5rem' }} />
+          </div>
+        )}
+      </div>
+
       <div style={{
-        position: 'absolute', left: '2%', bottom: '10%', backgroundColor: 'white', borderRadius: '10px',
-        padding: '0.75rem 1rem', boxShadow: '0 12px 28px rgba(0,0,0,0.25)', maxWidth: '210px'
+        alignSelf: 'flex-start', backgroundColor: 'white', borderRadius: '10px',
+        padding: '0.7rem 0.9rem', boxShadow: '0 10px 22px rgba(0,0,0,0.25)', maxWidth: '230px'
       }}>
-        <div style={{ color: '#333', fontSize: '0.8rem', fontWeight: 'bold', lineHeight: 1.25, marginBottom: '0.3rem' }}>
+        <div style={{ color: '#333', fontSize: '0.78rem', fontWeight: 'bold', lineHeight: 1.25, marginBottom: '0.3rem' }}>
           {main.name}
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem', marginBottom: '0.3rem' }}>
@@ -1564,7 +1568,7 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], category
       visual: categoryProducts.length > 0 ? { products: categoryProducts, badgeText: null } : null
     },
     ...(bestSaleProduct ? [{
-      bg: '#6a1a1a',
+      bg: '#0F2A1D',
       title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
       text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft, amíg a készlet tart.`,
       ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav',
@@ -1610,7 +1614,7 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], category
       onMouseLeave={() => { pausedRef.current = false; }}
       style={{
         position: 'relative', background: slide.bg, color: 'white', borderRadius: '10px',
-        overflow: 'hidden', minHeight: isMobile ? '320px' : '360px',
+        overflow: 'hidden', minHeight: isMobile ? '320px' : (slide.visual ? '400px' : '360px'),
         display: 'flex', alignItems: 'center',
         padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
       }}
@@ -1619,7 +1623,10 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], category
         <HeroVisual {...slide.visual} dark={slide.dark} />
       )}
 
-      <div style={{ position: 'relative', flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
+      <div style={{
+        position: 'relative', flex: 1, maxWidth: (!isMobile && slide.visual) ? '42%' : '560px',
+        textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0
+      }}>
         <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
           {slide.title}
         </h2>
