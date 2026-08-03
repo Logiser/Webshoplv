@@ -1364,7 +1364,7 @@ const WorkwearShop = () => {
               {((homepageContent.newsletterBullets && homepageContent.newsletterBullets.length > 0)
                 ? homepageContent.newsletterBullets
                 : [
-                    'Az aktuális beszállítói akciókat elsőként nálunk éred el',
+                    'Az aktuális akciókat elsőként nálunk éred el',
                     'Szezonális ajánlatok és vásárlási tippek egy helyen',
                     'Havonta max. 2 email, bármikor leiratkozhatsz'
                   ]
@@ -1503,7 +1503,7 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
     ...(bestSaleProduct ? [{
       bg: '#6a1a1a',
       title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
-      text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft. A beszállítói akciókat azonnal továbbadjuk, amíg a készlet tart.`,
+      text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft, amíg a készlet tart.`,
       ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav',
       image: bestSaleProduct.image
     }] : []),
@@ -1550,14 +1550,20 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
     >
       {!isMobile && slide.image && (
         <>
-          <img src={slide.image} alt="" loading="lazy" style={{
-            position: 'absolute', inset: 0, width: '100%', height: '100%',
-            objectFit: 'cover', objectPosition: 'center'
-          }} />
           <div style={{
-            position: 'absolute', inset: 0, right: '40%',
+            position: 'absolute', inset: 0,
             backgroundColor: slide.dark ? '#C9A961' : '#0F2A1D'
           }} />
+          <div style={{
+            position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)',
+            width: '38%', aspectRatio: '1', backgroundColor: 'white', borderRadius: '12px',
+            overflow: 'hidden'
+          }}>
+            <img src={slide.image} alt="" loading="lazy" style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'contain', objectPosition: 'center', padding: '1.25rem'
+            }} />
+          </div>
         </>
       )}
 
@@ -1622,7 +1628,7 @@ const SaleCarouselRow = ({ items }) => {
           🔥 Akciós ajánlatok
         </h3>
         <p style={{ color: '#666', margin: '0 0 1.25rem 0', fontSize: '0.95rem' }}>
-          A beszállítói akciókat azonnal továbbadjuk — amíg a készlet tart.
+          Válogatott kedvezmények, amíg a készlet tart.
         </p>
         <div style={{ position: 'relative' }}>
           <button onClick={() => scrollBy(-420)} aria-label="Előző" style={arrowBtnStyle('left')}>
