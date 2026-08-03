@@ -1520,47 +1520,64 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
 
   const slide = slides[active];
 
+  // Diagonál két-szín vágás: minden dián a masik brand-szín ferde blokkja
+  // jelenik meg a jobb oldalon (dark:true -> zöld diagonál arany alapon,
+  // egyébként arany diagonál zöld alapon) — sokkal erősebb kontraszt, mint
+  // egy sima egyszínű sáv.
+  const accentColor = slide.dark ? '#0F2A1D' : '#C9A961';
+  const textColor = slide.dark ? '#0F2A1D' : 'white';
+
   return (
     <div
       onMouseEnter={() => { pausedRef.current = true; }}
       onMouseLeave={() => { pausedRef.current = false; }}
       style={{
-        position: 'relative', background: slide.bg, color: 'white', borderRadius: 0,
-        overflow: 'hidden', minHeight: isMobile ? '320px' : '380px',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        padding: isMobile ? '2.5rem 1.5rem' : '3rem'
+        position: 'relative', backgroundColor: slide.bg, color: textColor, borderRadius: 0,
+        overflow: 'hidden', minHeight: isMobile ? '440px' : '560px',
+        display: 'flex', alignItems: 'center'
       }}
     >
-      <div style={{ position: 'relative', maxWidth: '700px', textAlign: 'center' }}>
+      {!isMobile && (
+        <div style={{
+          position: 'absolute', top: 0, right: 0, bottom: 0, width: '55%',
+          backgroundColor: accentColor,
+          clipPath: 'polygon(38% 0, 100% 0, 100% 100%, 8% 100%)'
+        }} />
+      )}
+
+      <div style={{
+        position: 'relative', maxWidth: '620px', padding: isMobile ? '3rem 1.5rem' : '4rem 4rem 4rem 4rem',
+        textAlign: 'left'
+      }}>
         <span style={{
-          display: 'inline-block', fontFamily: 'Arial, sans-serif', fontSize: '0.8rem', fontWeight: 700,
-          letterSpacing: '0.2em', color: slide.dark ? '#0F2A1D' : '#C9A961', marginBottom: '1rem',
-          borderTop: `2px solid ${slide.dark ? '#0F2A1D' : '#C9A961'}`, borderBottom: `2px solid ${slide.dark ? '#0F2A1D' : '#C9A961'}`,
-          padding: '0.3rem 0'
+          display: 'inline-block', fontFamily: 'Arial, sans-serif', fontSize: '0.85rem', fontWeight: 700,
+          letterSpacing: '0.25em', color: slide.dark ? '#0F2A1D' : '#C9A961', marginBottom: '1.5rem',
+          borderTop: `3px solid ${slide.dark ? '#0F2A1D' : '#C9A961'}`, borderBottom: `3px solid ${slide.dark ? '#0F2A1D' : '#C9A961'}`,
+          padding: '0.35rem 0'
         }}>
           {slide.kicker}
         </span>
         <h2 style={{
-          fontSize: isMobile ? '2rem' : '3.4rem', margin: '0 0 1.1rem 0', fontFamily: 'Georgia, serif',
-          fontWeight: 700, lineHeight: 1.08, letterSpacing: '-0.01em'
+          fontSize: isMobile ? '2.4rem' : 'clamp(2.8rem, 5.5vw, 4.6rem)', margin: '0 0 1.25rem 0', fontFamily: 'Georgia, serif',
+          fontWeight: 700, lineHeight: 1.02, letterSpacing: '-0.02em'
         }}>
           {slide.title}
         </h2>
-        <p style={{ fontSize: '1.1rem', margin: '0 0 2rem 0', opacity: 0.9 }}>
+        <p style={{ fontSize: '1.15rem', margin: '0 0 2.25rem 0', opacity: 0.92, maxWidth: '460px' }}>
           {slide.text}
         </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
           <button onClick={() => scrollToId(slide.ctaTarget)} style={{
-            backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '1rem 2.2rem',
-            borderRadius: 0, fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.04em',
+            backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '1.1rem 2.4rem',
+            borderRadius: 0, fontSize: '1rem', fontWeight: 700, letterSpacing: '0.04em',
             textTransform: 'uppercase', cursor: 'pointer'
           }}>
             {slide.ctaLabel}
           </button>
           {slide.cta2Label && (
             <button onClick={() => scrollToId(slide.cta2Target)} style={{
-              backgroundColor: 'transparent', color: 'white', border: '2px solid white', padding: '1rem 2.2rem',
-              borderRadius: 0, fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.04em',
+              backgroundColor: 'transparent', color: textColor, border: `2px solid ${textColor}`, padding: '1.1rem 2.4rem',
+              borderRadius: 0, fontSize: '1rem', fontWeight: 700, letterSpacing: '0.04em',
               textTransform: 'uppercase', cursor: 'pointer'
             }}>
               {slide.cta2Label}
@@ -1570,12 +1587,12 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
       </div>
 
       <div style={{
-        position: 'absolute', bottom: '1.25rem', left: 0, right: 0,
-        display: 'flex', justifyContent: 'center', gap: '0.5rem'
+        position: 'absolute', bottom: '1.5rem', left: 0, right: 0,
+        display: 'flex', justifyContent: isMobile ? 'center' : 'flex-start', paddingLeft: isMobile ? 0 : '4rem', gap: '0.6rem'
       }}>
         {slides.map((_, i) => (
           <button key={i} onClick={() => setActive(i)} aria-label={`${i + 1}. sáv`} style={{
-            width: i === active ? '22px' : '8px', height: '4px', borderRadius: 0, border: 'none',
+            width: i === active ? '30px' : '10px', height: '5px', borderRadius: 0, border: 'none',
             backgroundColor: i === active ? '#C9A961' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'all 0.25s'
           }} />
         ))}
