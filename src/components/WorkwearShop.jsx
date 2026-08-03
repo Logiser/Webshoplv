@@ -1497,43 +1497,46 @@ const HeroVisual = ({ products, badgeText, badgeColor, badgeFg, dark }) => {
   const plateImg = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' };
 
   return (
-    // Vízszintes flex-oszlopok: minden elem saját sávjában van, sosem fedi egymást
-    // (nem abszolút százalékos pozícionálás, ami korábban átfedést okozott).
+    // A kép-klaszter a domináns elem (nagy termékfotók); a jelvény és a lebegő
+    // kártya a klaszter SAROKAIRA illesztett kis kiegészítő, nem foglal külön
+    // sávot — így a képek nagyok maradhatnak, mégsem fed át semmi a szöveggel.
     <div style={{
-      position: 'absolute', right: 0, top: 0, bottom: 0, width: '56%',
-      display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly',
-      alignItems: 'center', padding: '1.25rem 2rem 1.25rem 0.5rem'
+      position: 'absolute', right: 0, top: 0, bottom: 0, width: '58%',
+      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 2.5rem 1rem 0.5rem'
     }}>
-      {badgeText && (
-        <span style={{
-          alignSelf: 'flex-start', backgroundColor: badgeColor, color: badgeFg || 'white',
-          fontWeight: 'bold', fontSize: '0.95rem', padding: '0.4rem 0.9rem', borderRadius: '999px',
-          boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-        }}>
-          {badgeText}
-        </span>
-      )}
-
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
-        {second && (
-          <div style={{ ...plateStyle, width: '85px', height: '85px' }}>
-            <img src={second.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.5rem' }} />
-          </div>
+      <div style={{ position: 'relative' }}>
+        {badgeText && (
+          <span style={{
+            position: 'absolute', top: '-16px', left: '-14px', zIndex: 2,
+            backgroundColor: badgeColor, color: badgeFg || 'white',
+            fontWeight: 'bold', fontSize: '0.95rem', padding: '0.4rem 0.9rem', borderRadius: '999px',
+            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
+          }}>
+            {badgeText}
+          </span>
         )}
-        <div style={{ ...plateStyle, width: '160px', height: '160px' }}>
-          <img src={main.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.9rem' }} />
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+          {second && (
+            <div style={{ ...plateStyle, width: '130px', height: '130px' }}>
+              <img src={second.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.8rem' }} />
+            </div>
+          )}
+          <div style={{ ...plateStyle, width: '220px', height: '220px' }}>
+            <img src={main.image} alt="" loading="lazy" style={{ ...plateImg, padding: '1.2rem' }} />
+          </div>
+          {third && (
+            <div style={{ ...plateStyle, width: '130px', height: '130px' }}>
+              <img src={third.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.8rem' }} />
+            </div>
+          )}
         </div>
-        {third && (
-          <div style={{ ...plateStyle, width: '85px', height: '85px' }}>
-            <img src={third.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.5rem' }} />
-          </div>
-        )}
-      </div>
 
-      <div style={{
-        alignSelf: 'flex-start', backgroundColor: 'white', borderRadius: '10px',
-        padding: '0.7rem 0.9rem', boxShadow: '0 10px 22px rgba(0,0,0,0.25)', maxWidth: '230px'
-      }}>
+        <div style={{
+          position: 'absolute', left: '10px', bottom: '-28px', zIndex: 2,
+          backgroundColor: 'white', borderRadius: '10px',
+          padding: '0.7rem 0.9rem', boxShadow: '0 10px 22px rgba(0,0,0,0.28)', maxWidth: '230px'
+        }}>
         <div style={{ color: '#333', fontSize: '0.78rem', fontWeight: 'bold', lineHeight: 1.25, marginBottom: '0.3rem' }}>
           {main.name}
         </div>
@@ -1545,6 +1548,7 @@ const HeroVisual = ({ products, badgeText, badgeColor, badgeFg, dark }) => {
         </div>
         <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1rem' }}>
           {(main.sale && main.sale.active ? main.sale.price : main.price).toLocaleString('hu-HU')} Ft
+        </div>
         </div>
       </div>
     </div>
