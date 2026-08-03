@@ -839,67 +839,6 @@ const WorkwearShop = () => {
         return <SaleCarouselRow items={items} />;
       })()}
 
-      {/* 1+1 ajánlatok — valódi kedvezmény: minden 2. darab ingyenes, a kosár és a számla is ekként számol */}
-      {!selectedCategory && !searchTerm && (() => {
-        const bundles = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).filter(Boolean);
-        if (bundles.length === 0) return null;
-        return (
-          <div id="egy-plusz-egy" style={{ backgroundColor: '#0F2A1D', padding: '2.5rem 1.5rem' }}>
-            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
-                🎁 1+1 Ajánlataink
-              </h3>
-              <p style={{ color: '#cfd8d1', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
-                Vegyél kettőt, fizess egyet — a kedvezmény a kosárban és a számlán is valós.
-              </p>
-              <div style={{
-                display: 'grid', gap: '1rem',
-                gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)'
-              }}>
-                {bundles.map(p => (
-                  <div key={p.id} style={{
-                    backgroundColor: 'white', borderRadius: '10px', overflow: 'hidden',
-                    display: 'flex', flexDirection: 'column'
-                  }}>
-                    <Link to={`/termek/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div style={{ position: 'relative', backgroundColor: '#fafafa', paddingTop: '90%' }}>
-                        <img src={p.image} alt={p.name} loading="lazy" style={{
-                          position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.75rem'
-                        }} />
-                        <span style={{
-                          position: 'absolute', top: '0.5rem', left: '0.5rem',
-                          backgroundColor: '#C9A961', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.7rem',
-                          padding: '0.2rem 0.5rem', borderRadius: '4px'
-                        }}>1+1</span>
-                      </div>
-                      <div style={{ padding: '0.65rem 0.75rem 0' }}>
-                        <div style={{
-                          color: '#333', fontSize: '0.8rem', lineHeight: 1.3, height: '2.1rem', overflow: 'hidden'
-                        }}>{p.name}</div>
-                        <div style={{ margin: '0.35rem 0' }}>
-                          <div style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.72rem' }}>
-                            {(p.sale && p.sale.active ? p.sale.price : p.price).toLocaleString('hu-HU')} Ft/db normál áron
-                          </div>
-                          <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1rem' }}>
-                            {Math.round((p.sale && p.sale.active ? p.sale.price : p.price) / 2).toLocaleString('hu-HU')} Ft <span style={{ color: '#2e7d32', fontWeight: 'bold', fontSize: '0.72rem' }}>/db 1+1-gyel</span>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                    <button onClick={() => addBundleToCart(p)} style={{
-                      margin: '0 0.75rem 0.75rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
-                      borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold'
-                    }}>
-                      2 db kosárba
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        );
-      })()}
-
       {/* Kategória-csempék — banner-stílusú "bento" elrendezés (tudatosan más mint a listák) */}
       {!selectedCategory && !searchTerm && (
         <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
@@ -1272,6 +1211,69 @@ const WorkwearShop = () => {
           onWishlist={(e) => handleWishlist(e, selectedProduct.id)}
         />
       )}
+
+      {/* 1+1 ajánlatok — valódi kedvezmény: minden 2. darab ingyenes, a kosár és a számla is ekként számol.
+          Minden nézeten megjelenik (főoldal, kategória-lista, keresés is), közvetlenül a
+          termékrács/lapozás alatt, a bizalmi ikonsor előtt. */}
+      {(() => {
+        const bundles = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).filter(Boolean);
+        if (bundles.length === 0) return null;
+        return (
+          <div id="egy-plusz-egy" style={{ backgroundColor: '#0F2A1D', padding: '2.5rem 1.5rem' }}>
+            <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+              <h3 style={{ color: 'white', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 0.25rem 0' }}>
+                🎁 1+1 Ajánlataink
+              </h3>
+              <p style={{ color: '#cfd8d1', margin: '0 0 1.5rem 0', fontSize: '0.95rem' }}>
+                Vegyél kettőt, fizess egyet — a kedvezmény a kosárban és a számlán is valós.
+              </p>
+              <div style={{
+                display: 'grid', gap: '1rem',
+                gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(6, 1fr)'
+              }}>
+                {bundles.map(p => (
+                  <div key={p.id} style={{
+                    backgroundColor: 'white', borderRadius: '10px', overflow: 'hidden',
+                    display: 'flex', flexDirection: 'column'
+                  }}>
+                    <Link to={`/termek/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                      <div style={{ position: 'relative', backgroundColor: '#fafafa', paddingTop: '90%' }}>
+                        <img src={p.image} alt={p.name} loading="lazy" style={{
+                          position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.75rem'
+                        }} />
+                        <span style={{
+                          position: 'absolute', top: '0.5rem', left: '0.5rem',
+                          backgroundColor: '#C9A961', color: '#0F2A1D', fontWeight: 'bold', fontSize: '0.7rem',
+                          padding: '0.2rem 0.5rem', borderRadius: '4px'
+                        }}>1+1</span>
+                      </div>
+                      <div style={{ padding: '0.65rem 0.75rem 0' }}>
+                        <div style={{
+                          color: '#333', fontSize: '0.8rem', lineHeight: 1.3, height: '2.1rem', overflow: 'hidden'
+                        }}>{p.name}</div>
+                        <div style={{ margin: '0.35rem 0' }}>
+                          <div style={{ color: '#999', textDecoration: 'line-through', fontSize: '0.72rem' }}>
+                            {(p.sale && p.sale.active ? p.sale.price : p.price).toLocaleString('hu-HU')} Ft/db normál áron
+                          </div>
+                          <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1rem' }}>
+                            {Math.round((p.sale && p.sale.active ? p.sale.price : p.price) / 2).toLocaleString('hu-HU')} Ft <span style={{ color: '#2e7d32', fontWeight: 'bold', fontSize: '0.72rem' }}>/db 1+1-gyel</span>
+                          </div>
+                        </div>
+                      </div>
+                    </Link>
+                    <button onClick={() => addBundleToCart(p)} style={{
+                      margin: '0 0.75rem 0.75rem', backgroundColor: '#0F2A1D', color: 'white', border: 'none',
+                      borderRadius: '6px', padding: '0.5rem', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 'bold'
+                    }}>
+                      2 db kosárba
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        );
+      })()}
 
       {/* Trust Section */}
       <div style={{ backgroundColor: 'white', padding: '3rem 1.5rem', marginTop: '3rem' }}>
