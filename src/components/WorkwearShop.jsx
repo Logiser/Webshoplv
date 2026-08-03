@@ -282,7 +282,7 @@ const WorkwearShop = () => {
 
   // Szűrő- vagy rendezés-váltáskor a lapozás visszaáll az elejére
   useEffect(() => {
-    setVisibleCount(60);
+    setVisibleCount(24);
   }, [searchTerm, selectedCategory, selectedSubcategory, priceMin, priceMax, selectedBrands, selectedSizes, selectedStandards, selectedIndustries, minRating, sortBy]);
 
   // Szűrt termékek
