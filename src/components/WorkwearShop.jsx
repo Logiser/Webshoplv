@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck } from 'lucide-react';
+import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck, Percent, Gift } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen, getBlogPosts, getHomepageContent } from '../data/storage';
@@ -817,8 +817,6 @@ const WorkwearShop = () => {
             )}
             <HeroCarousel
               t={t} productCount={products.length} isMobile={isMobile}
-              bundleImage={(products.find(p => p.id === BUNDLE_1PLUS1_IDS[0]) || {}).image}
-              categoryImage={(products.find(p => p.categoryId === 'bakancs' && p.image) || {}).image}
               bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
                 .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
               content={homepageContent}
@@ -1485,12 +1483,15 @@ const WorkwearShop = () => {
 // ============================================================
 // HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
 // ============================================================
-const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, bestSaleProduct, content = {} }) => {
+const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {} }) => {
   const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
 
+  // Nincs fotó/kollázs a diákon: minden dia egyszerű, tipográfia-vezérelt sáv egy
+  // nagy, halványított dekor-ikonnal — ez elkerüli a termékfotók (fehér stúdió-
+  // háttér) korábbi vágási/átfedési problémáit, és vizuálisan egységes marad.
   const slides = [
     {
-      bg: '#0F2A1D',
+      bg: '#0F2A1D', icon: Shield,
       title: (content.heroTitle1 || content.heroTitle2) ? (
         <>{content.heroTitle1 || 'A munkád megvéd minket.'}<br /><span style={{ color: '#C9A961' }}>{content.heroTitle2 || 'Mi megvédünk téged.'}</span></>
       ) : (
@@ -1501,26 +1502,22 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
       cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
     ...(bestSaleProduct ? [{
-      bg: '#0F2A1D',
+      bg: '#0F2A1D', icon: Percent,
       title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
       text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft, amíg a készlet tart.`,
-      ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav',
-      image: bestSaleProduct.image
+      ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav'
     }] : []),
     {
-      bg: '#C9A961',
-      dark: true,
+      bg: '#C9A961', dark: true, icon: Gift,
       title: <>Vegyél kettőt,<br />fizess egyet.</>,
       text: 'Kesztyű, füldugó, védőszemüveg és maszk — néhány kiválasztott terméknél minden 2. darab valóban ingyenes.',
-      ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy',
-      image: bundleImage
+      ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy'
     },
     {
-      bg: '#0F2A1D',
+      bg: '#0F2A1D', icon: Truck,
       title: <>Ingyenes szállítás<br />30 000 Ft felett.</>,
       text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés, 2-3 munkanapos országos kiszállítás.',
-      ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak',
-      image: categoryImage
+      ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak'
     }
   ];
 
@@ -1548,23 +1545,14 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
         padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
       }}
     >
-      {!isMobile && slide.image && (
-        <>
-          <div style={{
-            position: 'absolute', inset: 0,
-            backgroundColor: slide.dark ? '#C9A961' : '#0F2A1D'
-          }} />
-          <div style={{
-            position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)',
-            width: '38%', aspectRatio: '1', backgroundColor: 'white', borderRadius: '12px',
-            overflow: 'hidden'
-          }}>
-            <img src={slide.image} alt="" loading="lazy" style={{
-              position: 'absolute', inset: 0, width: '100%', height: '100%',
-              objectFit: 'contain', objectPosition: 'center', padding: '1.25rem'
-            }} />
-          </div>
-        </>
+      {!isMobile && slide.icon && (
+        <slide.icon
+          size={280} strokeWidth={1}
+          style={{
+            position: 'absolute', right: '3%', top: '50%', transform: 'translateY(-50%)',
+            color: slide.dark ? '#0F2A1D' : '#C9A961', opacity: slide.dark ? 0.18 : 0.14
+          }}
+        />
       )}
 
       <div style={{ position: 'relative', flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
