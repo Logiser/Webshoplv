@@ -839,6 +839,55 @@ const WorkwearShop = () => {
         return <SaleCarouselRow items={items} />;
       })()}
 
+      {/* Kategória-csempék — banner-stílusú "bento" elrendezés (tudatosan más mint a listák) */}
+      {!selectedCategory && !searchTerm && (
+        <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
+          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
+            <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 1.25rem 0' }}>
+              {t('section.categories')}
+            </h3>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(2, 1fr)',
+              gridAutoRows: isMobile ? '155px' : '190px',
+              gap: '0.85rem'
+            }}>
+              {orderedCategories.map((cat, idx) => {
+                const rep = products.find(p => p.categoryId === cat.id && p.image);
+                const count = products.filter(p => p.categoryId === cat.id).length;
+                const featured = idx === 0;
+                return (
+                  <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
+                    border: 'none', borderRadius: '12px', padding: '0.75rem',
+                    cursor: 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column',
+                    backgroundColor: '#0F2A1D',
+                    gridColumn: featured && !isMobile ? 'span 2' : 'span 1',
+                    gridRow: featured && !isMobile ? 'span 2' : 'span 1'
+                  }}>
+                    {rep && (
+                      <div style={{ flex: 1, minHeight: 0, position: 'relative', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
+                        <img src={rep.image} alt={cat.name} loading="lazy" style={{
+                          position: 'absolute', inset: 0, width: '100%', height: '100%',
+                          objectFit: 'contain', objectPosition: 'center', padding: '0.6rem'
+                        }} />
+                      </div>
+                    )}
+                    <div style={{ paddingTop: '0.65rem', flexShrink: 0 }}>
+                      <div style={{ color: 'white', fontWeight: 'bold', fontSize: featured && !isMobile ? '1.3rem' : '0.95rem', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
+                        {cat.name}
+                      </div>
+                      <div style={{ color: '#C9A961', fontSize: '0.8rem', marginTop: '3px', fontWeight: 600 }}>
+                        {count} {t('section.products')} →
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* 1+1 ajánlatok — valódi kedvezmény: minden 2. darab ingyenes, a kosár és a számla is ekként számol */}
       {!selectedCategory && !searchTerm && (() => {
         const bundles = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).filter(Boolean);
@@ -899,55 +948,6 @@ const WorkwearShop = () => {
           </div>
         );
       })()}
-
-      {/* Kategória-csempék — banner-stílusú "bento" elrendezés (tudatosan más mint a listák) */}
-      {!selectedCategory && !searchTerm && (
-        <div id="kategoriak" style={{ backgroundColor: '#f5f5f5', padding: '2.5rem 1.5rem' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            <h3 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.6rem', margin: '0 0 1.25rem 0' }}>
-              {t('section.categories')}
-            </h3>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)',
-              gridAutoRows: isMobile ? '155px' : '190px',
-              gap: '0.85rem'
-            }}>
-              {orderedCategories.map((cat, idx) => {
-                const rep = products.find(p => p.categoryId === cat.id && p.image);
-                const count = products.filter(p => p.categoryId === cat.id).length;
-                const featured = idx === 0;
-                return (
-                  <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
-                    border: 'none', borderRadius: '12px', padding: '0.75rem',
-                    cursor: 'pointer', textAlign: 'left', display: 'flex', flexDirection: 'column',
-                    backgroundColor: '#0F2A1D',
-                    gridColumn: featured && !isMobile ? 'span 2' : 'span 1',
-                    gridRow: featured && !isMobile ? 'span 2' : 'span 1'
-                  }}>
-                    {rep && (
-                      <div style={{ flex: 1, minHeight: 0, position: 'relative', backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden' }}>
-                        <img src={rep.image} alt={cat.name} loading="lazy" style={{
-                          position: 'absolute', inset: 0, width: '100%', height: '100%',
-                          objectFit: 'contain', objectPosition: 'center', padding: '0.6rem'
-                        }} />
-                      </div>
-                    )}
-                    <div style={{ paddingTop: '0.65rem', flexShrink: 0 }}>
-                      <div style={{ color: 'white', fontWeight: 'bold', fontSize: featured && !isMobile ? '1.3rem' : '0.95rem', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
-                        {cat.name}
-                      </div>
-                      <div style={{ color: '#C9A961', fontSize: '0.8rem', marginTop: '3px', fontWeight: 600 }}>
-                        {count} {t('section.products')} →
-                      </div>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Breadcrumb */}
       {(selectedCategory || searchTerm) && (
