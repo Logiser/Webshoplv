@@ -1488,7 +1488,7 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
 
   const slides = [
     {
-      bg: 'linear-gradient(135deg, #0F2A1D 0%, #1a3f33 100%)',
+      bg: '#0F2A1D',
       title: (content.heroTitle1 || content.heroTitle2) ? (
         <>{content.heroTitle1 || 'A munkád megvéd minket.'}<br /><span style={{ color: '#C9A961' }}>{content.heroTitle2 || 'Mi megvédünk téged.'}</span></>
       ) : (
@@ -1499,14 +1499,14 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
       cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
     ...(bestSaleProduct ? [{
-      bg: 'linear-gradient(135deg, #7a1f1f 0%, #4a1010 100%)',
+      bg: '#6a1a1a',
       title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
       text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft. A beszállítói akciókat azonnal továbbadjuk, amíg a készlet tart.`,
       ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav',
       image: bestSaleProduct.image
     }] : []),
     {
-      bg: 'linear-gradient(135deg, #C9A961 0%, #a9823f 100%)',
+      bg: '#C9A961',
       dark: true,
       title: <>Vegyél kettőt,<br />fizess egyet.</>,
       text: 'Kesztyű, füldugó, védőszemüveg és maszk — néhány kiválasztott terméknél minden 2. darab valóban ingyenes.',
@@ -1514,7 +1514,7 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
       image: bundleImage
     },
     {
-      bg: 'linear-gradient(135deg, #1a3f33 0%, #0F2A1D 100%)',
+      bg: '#0F2A1D',
       title: <>Ingyenes szállítás<br />30 000 Ft felett.</>,
       text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés, 2-3 munkanapos országos kiszállítás.',
       ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak',
