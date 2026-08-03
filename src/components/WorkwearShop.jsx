@@ -817,8 +817,8 @@ const WorkwearShop = () => {
             )}
             <HeroCarousel
               t={t} productCount={products.length} isMobile={isMobile}
-              bundleProducts={BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).filter(Boolean).slice(0, 3)}
-              categoryProducts={products.filter(p => p.categoryId === 'bakancs' && p.image).slice(0, 3)}
+              bundleImage={(products.find(p => p.id === BUNDLE_1PLUS1_IDS[0]) || {}).image}
+              categoryImage={(products.find(p => p.categoryId === 'bakancs' && p.image) || {}).image}
               bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
                 .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
               content={homepageContent}
@@ -1485,77 +1485,7 @@ const WorkwearShop = () => {
 // ============================================================
 // HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
 // ============================================================
-// Összetettebb hero-vizuál (eMAG-stílusú): termék-kollázs + lebegő ár/értékelés-kártya + jelvény,
-// nem csak egy darab termékfotó egy fehér dobozban.
-const HeroVisual = ({ products, badgeText, badgeColor, badgeFg, dark }) => {
-  if (!products || products.length === 0) return null;
-  const [main, second, third] = products;
-  const plateStyle = {
-    position: 'relative', flexShrink: 0, backgroundColor: 'white', borderRadius: '12px',
-    boxShadow: '0 10px 22px rgba(0,0,0,0.22)', overflow: 'hidden'
-  };
-  const plateImg = { position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain' };
-
-  return (
-    // A kép-klaszter a domináns elem (nagy termékfotók); a jelvény és a lebegő
-    // kártya a klaszter SAROKAIRA illesztett kis kiegészítő, nem foglal külön
-    // sávot — így a képek nagyok maradhatnak, mégsem fed át semmi a szöveggel.
-    <div style={{
-      position: 'absolute', right: 0, top: 0, bottom: 0, width: '58%',
-      display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 2.5rem 1rem 0.5rem'
-    }}>
-      <div style={{ position: 'relative' }}>
-        {badgeText && (
-          <span style={{
-            position: 'absolute', top: '-16px', left: '-14px', zIndex: 2,
-            backgroundColor: badgeColor, color: badgeFg || 'white',
-            fontWeight: 'bold', fontSize: '0.95rem', padding: '0.4rem 0.9rem', borderRadius: '999px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.25)'
-          }}>
-            {badgeText}
-          </span>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
-          {second && (
-            <div style={{ ...plateStyle, width: '130px', height: '130px' }}>
-              <img src={second.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.8rem' }} />
-            </div>
-          )}
-          <div style={{ ...plateStyle, width: '220px', height: '220px' }}>
-            <img src={main.image} alt="" loading="lazy" style={{ ...plateImg, padding: '1.2rem' }} />
-          </div>
-          {third && (
-            <div style={{ ...plateStyle, width: '130px', height: '130px' }}>
-              <img src={third.image} alt="" loading="lazy" style={{ ...plateImg, padding: '0.8rem' }} />
-            </div>
-          )}
-        </div>
-
-        <div style={{
-          position: 'absolute', left: '10px', bottom: '-28px', zIndex: 2,
-          backgroundColor: 'white', borderRadius: '10px',
-          padding: '0.7rem 0.9rem', boxShadow: '0 10px 22px rgba(0,0,0,0.28)', maxWidth: '230px'
-        }}>
-        <div style={{ color: '#333', fontSize: '0.78rem', fontWeight: 'bold', lineHeight: 1.25, marginBottom: '0.3rem' }}>
-          {main.name}
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.15rem', marginBottom: '0.3rem' }}>
-          {[1, 2, 3, 4, 5].map(i => (
-            <Star key={i} size={12} fill={i <= Math.round(main.rating || 4.5) ? '#FFB800' : 'none'} color="#FFB800" />
-          ))}
-          <span style={{ color: '#999', fontSize: '0.72rem', marginLeft: '0.2rem' }}>({(main.rating || 4.5).toFixed(1)})</span>
-        </div>
-        <div style={{ color: '#0F2A1D', fontWeight: 'bold', fontSize: '1rem' }}>
-          {(main.sale && main.sale.active ? main.sale.price : main.price).toLocaleString('hu-HU')} Ft
-        </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], categoryProducts = [], bestSaleProduct, content = {} }) => {
+const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, bestSaleProduct, content = {} }) => {
   const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
 
   const slides = [
@@ -1568,19 +1498,14 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], category
       ),
       text: content.heroText || `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés — a legtöbbjét máshol nem kapod olcsóbban.`,
       ctaLabel: content.heroCtaLabel || t('hero.ctaDeals'), ctaTarget: 'akcios-sav',
-      cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak',
-      visual: categoryProducts.length > 0 ? { products: categoryProducts, badgeText: null } : null
+      cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
     ...(bestSaleProduct ? [{
       bg: '#0F2A1D',
       title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
       text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft, amíg a készlet tart.`,
       ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav',
-      visual: {
-        products: [bestSaleProduct, ...categoryProducts].slice(0, 3),
-        badgeText: `−${Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%`,
-        badgeColor: '#C9A961', badgeFg: '#0F2A1D'
-      }
+      image: bestSaleProduct.image
     }] : []),
     {
       bg: '#C9A961',
@@ -1588,14 +1513,14 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], category
       title: <>Vegyél kettőt,<br />fizess egyet.</>,
       text: 'Kesztyű, füldugó, védőszemüveg és maszk — néhány kiválasztott terméknél minden 2. darab valóban ingyenes.',
       ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy',
-      visual: bundleProducts.length > 0 ? { products: bundleProducts, badgeText: '1+1', badgeColor: '#0F2A1D', badgeFg: '#C9A961' } : null
+      image: bundleImage
     },
     {
       bg: '#0F2A1D',
       title: <>Ingyenes szállítás<br />30 000 Ft felett.</>,
       text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés, 2-3 munkanapos országos kiszállítás.',
       ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak',
-      visual: categoryProducts.length > 0 ? { products: categoryProducts, badgeText: 'Raktáron', badgeColor: '#2e7d32', badgeFg: 'white' } : null
+      image: categoryImage
     }
   ];
 
@@ -1618,19 +1543,31 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleProducts = [], category
       onMouseLeave={() => { pausedRef.current = false; }}
       style={{
         position: 'relative', background: slide.bg, color: 'white', borderRadius: '10px',
-        overflow: 'hidden', minHeight: isMobile ? '320px' : (slide.visual ? '400px' : '360px'),
+        overflow: 'hidden', minHeight: isMobile ? '320px' : '360px',
         display: 'flex', alignItems: 'center',
         padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
       }}
     >
-      {!isMobile && slide.visual && (
-        <HeroVisual {...slide.visual} dark={slide.dark} />
+      {!isMobile && slide.image && (
+        <>
+          <div style={{
+            position: 'absolute', inset: 0,
+            backgroundColor: slide.dark ? '#C9A961' : '#0F2A1D'
+          }} />
+          <div style={{
+            position: 'absolute', right: '6%', top: '50%', transform: 'translateY(-50%)',
+            width: '38%', aspectRatio: '1', backgroundColor: 'white', borderRadius: '12px',
+            overflow: 'hidden'
+          }}>
+            <img src={slide.image} alt="" loading="lazy" style={{
+              position: 'absolute', inset: 0, width: '100%', height: '100%',
+              objectFit: 'contain', objectPosition: 'center', padding: '1.25rem'
+            }} />
+          </div>
+        </>
       )}
 
-      <div style={{
-        position: 'relative', flex: 1, maxWidth: (!isMobile && slide.visual) ? '42%' : '560px',
-        textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0
-      }}>
+      <div style={{ position: 'relative', flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
         <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
           {slide.title}
         </h2>
