@@ -1229,7 +1229,7 @@ const WorkwearShop = () => {
             ) : (
               <div style={{
                 display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '1.5rem'
+                gridTemplateColumns: isMobile ? '1fr 1fr' : 'repeat(4, 1fr)', gap: '1.5rem'
               }}>
                 {sortedProducts.slice(0, visibleCount).map(product => (
                   <ProductCard
@@ -1553,8 +1553,8 @@ const HeroCarousel = ({ t, productCount, isMobile, bundleImage, categoryImage, b
             objectFit: 'cover', objectPosition: 'center'
           }} />
           <div style={{
-            position: 'absolute', inset: 0,
-            background: `linear-gradient(90deg, ${slide.dark ? 'rgba(201,169,97,0.97)' : 'rgba(15,42,29,0.95)'} 0%, ${slide.dark ? 'rgba(201,169,97,0.9)' : 'rgba(15,42,29,0.82)'} 40%, transparent 85%)`
+            position: 'absolute', inset: 0, right: '40%',
+            backgroundColor: slide.dark ? '#C9A961' : '#0F2A1D'
           }} />
         </>
       )}
