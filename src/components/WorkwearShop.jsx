@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck, Percent, Gift } from 'lucide-react';
+import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen, getBlogPosts, getHomepageContent } from '../data/storage';
@@ -791,36 +791,66 @@ const WorkwearShop = () => {
         </>
       )}
 
-      {/* Hero: bal oldali állandó kategória-sáv + jobb oldali forgó promó-karusszel (eMAG-struktúra) */}
+      {/* Hero — teljes szélességű, bátor tipográfiai sáv (Liquid Death), utána egy sor
+          kerek kategória-ikon (Uniqlo "Search by category" mintája) — nincs többé
+          állandó bal oldali kategória-sáv. */}
       {!selectedCategory && !searchTerm && (
         <div style={{ backgroundColor: '#f5f5f5', padding: isMobile ? '1.25rem 1.5rem' : '1.5rem' }}>
-          <div style={{
-            maxWidth: '1400px', margin: '0 auto', display: 'grid',
-            gridTemplateColumns: isMobile ? '1fr' : '260px 1fr', gap: '1rem', alignItems: 'stretch'
-          }}>
-            {!isMobile && (
-              <div style={{ backgroundColor: 'white', borderRadius: '10px', border: '1px solid #eee', overflow: 'hidden' }}>
-                {orderedCategories.map(cat => (
-                  <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
-                    width: '100%', display: 'flex', alignItems: 'center', gap: '0.65rem',
-                    padding: '0.8rem 1rem', border: 'none', borderBottom: '1px solid #f2f2f2',
-                    backgroundColor: 'white', color: '#333', cursor: 'pointer', textAlign: 'left', fontSize: '0.9rem'
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.backgroundColor = '#f5f7f5'}
-                    onMouseLeave={e => e.currentTarget.style.backgroundColor = 'white'}
-                  >
-                    <span style={{ flex: 1 }}>{cat.name}</span>
-                    <ChevronRight size={14} style={{ color: '#999' }} />
-                  </button>
-                ))}
-              </div>
-            )}
+          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
             <HeroCarousel
               t={t} productCount={products.length} isMobile={isMobile}
               bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
                 .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
               content={homepageContent}
             />
+          </div>
+        </div>
+      )}
+
+      {/* Kategória-ikonok — Uniqlo "Search by category" mintája: kerek termékfotók, felirat alatta */}
+      {!selectedCategory && !searchTerm && (
+        <div style={{ backgroundColor: 'white', padding: '2rem 1.5rem', borderBottom: '1px solid #f0f0f0' }}>
+          <div style={{
+            maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: isMobile ? '1.25rem' : '2.5rem',
+            justifyContent: 'center', flexWrap: 'wrap', overflowX: 'auto'
+          }}>
+            {orderedCategories.map(cat => {
+              const rep = products.find(p => p.categoryId === cat.id && p.image);
+              return (
+                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
+                  background: 'none', border: 'none', cursor: 'pointer', display: 'flex',
+                  flexDirection: 'column', alignItems: 'center', gap: '0.6rem', flexShrink: 0, width: '92px'
+                }}>
+                  <div style={{
+                    width: '76px', height: '76px', borderRadius: '50%', backgroundColor: '#f5f5f5',
+                    border: '1px solid #eee', position: 'relative', overflow: 'hidden'
+                  }}>
+                    {rep && (
+                      <img src={rep.image} alt="" loading="lazy" style={{
+                        position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.7rem'
+                      }} />
+                    )}
+                  </div>
+                  <span style={{ fontSize: '0.8rem', color: '#0F2A1D', fontWeight: 600, textAlign: 'center', lineHeight: 1.2 }}>
+                    {cat.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Bátor állítás-sáv (Liquid Death "misszió" minta): egy nagy, kövér claim + rövid alátámasztás */}
+      {!selectedCategory && !searchTerm && (
+        <div style={{ backgroundColor: '#0F2A1D', padding: '3rem 1.5rem', textAlign: 'center' }}>
+          <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+            <h3 style={{ fontFamily: 'Georgia, serif', fontSize: 'clamp(1.6rem, 4vw, 2.4rem)', color: 'white', margin: '0 0 0.6rem 0', fontWeight: 700, lineHeight: 1.2 }}>
+              A HAMISÍTVÁNY NEM VÉD.
+            </h3>
+            <p style={{ color: '#C9A961', fontSize: '1.05rem', fontWeight: 700, margin: 0, letterSpacing: '0.02em' }}>
+              100% EREDETI PORTWEST — CE-TANÚSÍTVÁNNYAL, NEM UTÁNZAT.
+            </p>
           </div>
         </div>
       )}
@@ -1483,40 +1513,40 @@ const WorkwearShop = () => {
 // ============================================================
 // HERO-KARUSSZEL — automatikusan váltakozó promó-sávok, pötty-navigációval, hover-re megáll
 // ============================================================
+// Hero — Liquid Death-ihletésű bátor, tipográfia-vezérelt rotáló sáv (nagy, kövér
+// cím, rövid kikker-címke, éles sarkú, nagy CTA-gomb) + Uniqlo-ihletésű visszafogott
+// szerkezet (egy üzenet / dia, sok fehértér, nincs zsúfolt díszítés/termékfotó-kollázs).
 const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {} }) => {
   const scrollToId = (id) => { const el = document.getElementById(id); if (el) el.scrollIntoView({ behavior: 'smooth' }); };
 
-  // Nincs fotó/kollázs a diákon: minden dia egyszerű, tipográfia-vezérelt sáv egy
-  // nagy, halványított dekor-ikonnal — ez elkerüli a termékfotók (fehér stúdió-
-  // háttér) korábbi vágási/átfedési problémáit, és vizuálisan egységes marad.
   const slides = [
     {
-      bg: '#0F2A1D', icon: Shield,
+      bg: '#0F2A1D', kicker: 'TRIDENTSHOP',
       title: (content.heroTitle1 || content.heroTitle2) ? (
-        <>{content.heroTitle1 || 'A munkád megvéd minket.'}<br /><span style={{ color: '#C9A961' }}>{content.heroTitle2 || 'Mi megvédünk téged.'}</span></>
+        <>{content.heroTitle1 || 'A MUNKÁD MEGVÉD MINKET.'}<br /><span style={{ color: '#C9A961' }}>{content.heroTitle2 || 'MI MEGVÉDÜNK TÉGED.'}</span></>
       ) : (
-        <>A munkád megvéd minket.<br /><span style={{ color: '#C9A961' }}>Mi megvédünk téged.</span></>
+        <>A MUNKÁD MEGVÉD MINKET.<br /><span style={{ color: '#C9A961' }}>MI MEGVÉDÜNK TÉGED.</span></>
       ),
-      text: content.heroText || `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés — a legtöbbjét máshol nem kapod olcsóbban.`,
+      text: content.heroText || `${productCount.toLocaleString('hu-HU')}+ eredeti Portwest munkaruha, védőcipő és felszerelés.`,
       ctaLabel: content.heroCtaLabel || t('hero.ctaDeals'), ctaTarget: 'akcios-sav',
       cta2Label: t('hero.ctaCategories'), cta2Target: 'kategoriak'
     },
     ...(bestSaleProduct ? [{
-      bg: '#0F2A1D', icon: Percent,
-      title: <>Akár −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />akciós ajánlatok.</>,
+      bg: '#0F2A1D', kicker: 'AKCIÓ',
+      title: <>AKÁR −{Math.round((1 - bestSaleProduct.sale.price / bestSaleProduct.price) * 100)}%<br />KEDVEZMÉNY.</>,
       text: `${bestSaleProduct.name} — most ${bestSaleProduct.sale.price.toLocaleString('hu-HU')} Ft, amíg a készlet tart.`,
-      ctaLabel: '🔥 Akciós ajánlatok megnézése', ctaTarget: 'akcios-sav'
+      ctaLabel: 'Akciók megnézése', ctaTarget: 'akcios-sav'
     }] : []),
     {
-      bg: '#C9A961', dark: true, icon: Gift,
-      title: <>Vegyél kettőt,<br />fizess egyet.</>,
-      text: 'Kesztyű, füldugó, védőszemüveg és maszk — néhány kiválasztott terméknél minden 2. darab valóban ingyenes.',
-      ctaLabel: '1+1 ajánlatok megnézése', ctaTarget: 'egy-plusz-egy'
+      bg: '#C9A961', dark: true, kicker: '1+1',
+      title: <>VEGYÉL KETTŐT,<br />FIZESS EGYET.</>,
+      text: 'Kesztyű, füldugó, védőszemüveg és maszk — minden 2. darab valóban ingyenes.',
+      ctaLabel: '1+1 ajánlatok', ctaTarget: 'egy-plusz-egy'
     },
     {
-      bg: '#0F2A1D', icon: Truck,
-      title: <>Ingyenes szállítás<br />30 000 Ft felett.</>,
-      text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés, 2-3 munkanapos országos kiszállítás.',
+      bg: '#0F2A1D', kicker: 'SZÁLLÍTÁS',
+      title: <>INGYENES SZÁLLÍTÁS<br />30 000 FT FELETT.</>,
+      text: '100% eredeti Portwest termékek CE-tanúsítvánnyal, 14 napos csere és visszaküldés.',
       ctaLabel: t('hero.ctaCategories'), ctaTarget: 'kategoriak'
     }
   ];
@@ -1539,40 +1569,43 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
       onMouseEnter={() => { pausedRef.current = true; }}
       onMouseLeave={() => { pausedRef.current = false; }}
       style={{
-        position: 'relative', background: slide.bg, color: 'white', borderRadius: '10px',
-        overflow: 'hidden', minHeight: isMobile ? '320px' : '360px',
-        display: 'flex', alignItems: 'center',
-        padding: isMobile ? '2rem 1.5rem' : '2.5rem 3rem'
+        position: 'relative', background: slide.bg, color: 'white', borderRadius: 0,
+        overflow: 'hidden', minHeight: isMobile ? '320px' : '380px',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: isMobile ? '2.5rem 1.5rem' : '3rem'
       }}
     >
-      {!isMobile && slide.icon && (
-        <slide.icon
-          size={280} strokeWidth={1}
-          style={{
-            position: 'absolute', right: '3%', top: '50%', transform: 'translateY(-50%)',
-            color: slide.dark ? '#0F2A1D' : '#C9A961', opacity: slide.dark ? 0.18 : 0.14
-          }}
-        />
-      )}
-
-      <div style={{ position: 'relative', flex: 1, maxWidth: '560px', textAlign: isMobile ? 'center' : 'left', margin: isMobile ? '0 auto' : 0 }}>
-        <h2 style={{ fontSize: isMobile ? '1.6rem' : '2.2rem', margin: '0 0 1rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.2 }}>
+      <div style={{ position: 'relative', maxWidth: '700px', textAlign: 'center' }}>
+        <span style={{
+          display: 'inline-block', fontFamily: 'Arial, sans-serif', fontSize: '0.8rem', fontWeight: 700,
+          letterSpacing: '0.2em', color: slide.dark ? '#0F2A1D' : '#C9A961', marginBottom: '1rem',
+          borderTop: `2px solid ${slide.dark ? '#0F2A1D' : '#C9A961'}`, borderBottom: `2px solid ${slide.dark ? '#0F2A1D' : '#C9A961'}`,
+          padding: '0.3rem 0'
+        }}>
+          {slide.kicker}
+        </span>
+        <h2 style={{
+          fontSize: isMobile ? '2rem' : '3.4rem', margin: '0 0 1.1rem 0', fontFamily: 'Georgia, serif',
+          fontWeight: 700, lineHeight: 1.08, letterSpacing: '-0.01em'
+        }}>
           {slide.title}
         </h2>
-        <p style={{ fontSize: '1.05rem', margin: '0 0 1.5rem 0', opacity: 0.92 }}>
+        <p style={{ fontSize: '1.1rem', margin: '0 0 2rem 0', opacity: 0.9 }}>
           {slide.text}
         </p>
-        <div style={{ display: 'flex', gap: '1rem', justifyContent: isMobile ? 'center' : 'flex-start', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
           <button onClick={() => scrollToId(slide.ctaTarget)} style={{
-            backgroundColor: '#0F2A1D', color: 'white', border: 'none', padding: '0.8rem 1.6rem',
-            borderRadius: '6px', fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer'
+            backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '1rem 2.2rem',
+            borderRadius: 0, fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.04em',
+            textTransform: 'uppercase', cursor: 'pointer'
           }}>
             {slide.ctaLabel}
           </button>
           {slide.cta2Label && (
             <button onClick={() => scrollToId(slide.cta2Target)} style={{
-              backgroundColor: 'transparent', color: 'white', border: '2px solid rgba(255,255,255,0.6)', padding: '0.8rem 1.6rem',
-              borderRadius: '6px', fontSize: '0.95rem', fontWeight: 'bold', cursor: 'pointer'
+              backgroundColor: 'transparent', color: 'white', border: '2px solid white', padding: '1rem 2.2rem',
+              borderRadius: 0, fontSize: '0.95rem', fontWeight: 700, letterSpacing: '0.04em',
+              textTransform: 'uppercase', cursor: 'pointer'
             }}>
               {slide.cta2Label}
             </button>
@@ -1581,12 +1614,12 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
       </div>
 
       <div style={{
-        position: 'absolute', bottom: '1rem', left: 0, right: 0,
+        position: 'absolute', bottom: '1.25rem', left: 0, right: 0,
         display: 'flex', justifyContent: 'center', gap: '0.5rem'
       }}>
         {slides.map((_, i) => (
           <button key={i} onClick={() => setActive(i)} aria-label={`${i + 1}. sáv`} style={{
-            width: i === active ? '22px' : '8px', height: '8px', borderRadius: '4px', border: 'none',
+            width: i === active ? '22px' : '8px', height: '4px', borderRadius: 0, border: 'none',
             backgroundColor: i === active ? '#C9A961' : 'rgba(255,255,255,0.4)', cursor: 'pointer', transition: 'all 0.25s'
           }} />
         ))}
@@ -1750,7 +1783,7 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 
   return (
     <div onClick={onSelect} style={{
-      backgroundColor: 'white', borderRadius: '10px', overflow: 'hidden',
+      backgroundColor: 'white', borderRadius: 0, overflow: 'hidden',
       boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #f0f0f0', transition: 'all 0.2s', cursor: 'pointer',
       display: 'flex', flexDirection: 'column', position: 'relative'
     }}
@@ -1918,8 +1951,9 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 
           <button onClick={(e) => { e.stopPropagation(); onSelect(); }} disabled={product.stock === 0} style={{
             width: '100%', backgroundColor: product.stock === 0 ? '#ccc' : '#0F2A1D', color: 'white',
-            padding: '0.6rem', borderRadius: '6px', border: 'none',
+            padding: '0.6rem', borderRadius: 0, border: 'none',
             cursor: product.stock === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.9rem',
+            textTransform: 'uppercase', letterSpacing: '0.03em',
             display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
           }}>
             <ShoppingCart size={16} /> {product.stock === 0 ? 'Elfogyott' : 'Kosárba'}
