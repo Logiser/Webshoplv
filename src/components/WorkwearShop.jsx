@@ -131,16 +131,6 @@ const WorkwearShop = () => {
     applyHomepageContentOverrides(c);
     return c;
   });
-  // A "Kategória-csempék" és a hero bal oldali sáv sorrendje admin által állítható;
-  // ismeretlen/hiányzó id-k figyelmen kívül maradnak, új kategória a végére kerül.
-  const orderedCategories = (() => {
-    const order = homepageContent.featuredCategoryOrder;
-    if (!order || order.length === 0) return productCategories;
-    const byId = Object.fromEntries(productCategories.map(c => [c.id, c]));
-    const ordered = order.map(id => byId[id]).filter(Boolean);
-    productCategories.forEach(c => { if (!order.includes(c.id)) ordered.push(c); });
-    return ordered;
-  })();
   const [cartOpen, setCartOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [searchFocus, setSearchFocus] = useState(false);
@@ -888,10 +878,23 @@ const WorkwearShop = () => {
             maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: isMobile ? '1.5rem' : '3rem',
             justifyContent: 'center', flexWrap: 'wrap', overflowX: 'auto'
           }}>
-            {orderedCategories.map(cat => {
-              const rep = products.find(p => p.categoryId === cat.id && p.image);
+            {[
+              { key: 'kabatok', label: 'Kabátok', cat: 'munkaruha', sub: 'kabatok' },
+              { key: 'polok', label: 'Pólók', cat: 'munkaruha', sub: 'felsok' },
+              { key: 'nadragok', label: 'Nadrágok', cat: 'munkaruha', sub: 'nadragok' },
+              { key: 'cipok', label: 'Munkavédelmi Cipők', cat: 'munkacipo', sub: null },
+              { key: 'bakancsok', label: 'Munkavédelmi Bakancsok', cat: 'bakancs', sub: null },
+              { key: 'kesztyuk', label: 'Munkavédelmi Kesztyűk', cat: 'kesztyu', sub: null },
+              { key: 'vedoeszkozok', label: 'Védőeszközök', cat: 'kiegeszitok', sub: null },
+              { key: 'egyebek', label: 'Egyebek', cat: 'munkaruha', sub: null }
+            ].map(entry => {
+              const rep = products.find(p => p.image && (entry.sub
+                ? p.subcategoryId === entry.sub
+                : (entry.key === 'egyebek'
+                    ? (p.categoryId === 'munkaruha' && !['kabatok', 'felsok', 'nadragok'].includes(p.subcategoryId))
+                    : p.categoryId === entry.cat)));
               return (
-                <button key={cat.id} onClick={() => { setSelectedCategory(cat.id); setSelectedSubcategory(null); window.scrollTo({ top: 0 }); }} style={{
+                <button key={entry.key} onClick={() => { setSelectedCategory(entry.cat); setSelectedSubcategory(entry.sub); window.scrollTo({ top: 0 }); }} style={{
                   background: 'none', border: 'none', cursor: 'pointer', display: 'flex',
                   flexDirection: 'column', alignItems: 'center', gap: '0.85rem', flexShrink: 0, width: '108px'
                 }}>
@@ -909,7 +912,7 @@ const WorkwearShop = () => {
                     fontSize: '0.8rem', color: '#0F2A1D', fontWeight: 700, textAlign: 'center', lineHeight: 1.25,
                     textTransform: 'uppercase', letterSpacing: '0.02em'
                   }}>
-                    {cat.name}
+                    {entry.label}
                   </span>
                 </button>
               );
@@ -1542,6 +1545,9 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
   const slides = [
     {
       bg: '#0F2A1D', kicker: 'TRIDENTSHOP',
+      // Hosszú, kétsoros cím — kisebb betűméretet kap (titleSize), hogy a dia
+      // magassága a többivel azonos maradjon, ne törjön 4-5 sorra
+      titleSize: 'clamp(1.7rem, 2.6vw, 2.6rem)',
       title: (content.heroTitle1 || content.heroTitle2) ? (
         <>{content.heroTitle1 || 'A MUNKÁD MEGVÉD MINKET.'}<br /><span style={{ color: '#C9A961' }}>{content.heroTitle2 || 'MI MEGVÉDÜNK TÉGED.'}</span></>
       ) : (
@@ -1622,7 +1628,10 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
           {slide.kicker}
         </span>
         <h2 style={{
-          fontSize: isMobile ? '2.4rem' : 'clamp(2.8rem, 5.5vw, 4.6rem)', margin: '0 0 1.25rem 0', fontFamily: 'Georgia, serif',
+          // A szövegoszlop ~560px széles — az alap címméret úgy van belőve, hogy a
+          // címek 2 sorban maradjanak (a leghosszabb címû első dia még kisebbet kap)
+          fontSize: isMobile ? '1.8rem' : (slide.titleSize || 'clamp(1.9rem, 3vw, 3rem)'),
+          margin: '0 0 1.25rem 0', fontFamily: 'Georgia, serif',
           fontWeight: 700, lineHeight: 1.02, letterSpacing: '-0.02em'
         }}>
           {slide.title}
