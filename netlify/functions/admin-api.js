@@ -27,8 +27,12 @@ const WRITABLE_KEYS = [
   'ms_homepage_content'
 ];
 
-// Ezekhez a kulcsokhoz az 'office' szerepkör egyáltalán nem írhat (globális árrés/árazás).
-const ADMIN_ONLY_KEYS = ['ms_pricing', 'ms_custom_products'];
+// Ezekhez a kulcsokhoz az 'office' szerepkör egyáltalán nem írhat: globális árrés/
+// árazás (ms_pricing), új termék felvétele (ms_custom_products), kuponok (árazási/
+// kedvezmény-döntés), valamint a webshop SZERKEZETÉT érintő tartalom (főoldal
+// szövegek/banner-sorrend, blogcikkek) — ezek a felhasználói felületen sincsenek
+// office-nak elérhető fülön, ez a szerver-oldali lezárás direkt API-hívás ellen véd.
+const ADMIN_ONLY_KEYS = ['ms_pricing', 'ms_custom_products', 'ms_coupons', 'ms_homepage_content', 'ms_blog_posts'];
 
 // ms_product_overrides-nál csak az ár-jellegű mezők védettek office szerepkörnél —
 // készlet, láthatóság stb. továbbra is szabadon szerkeszthető.

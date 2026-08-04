@@ -53,6 +53,10 @@ const AdminPanel = () => {
     navigate('/');
   };
 
+  // Iroda-szerepkör: kizárólag a napi webshop-üzemeltetéshez szükséges fülek
+  // (termékek aktiválása/inaktiválása, készlet, rendelések, értékelések,
+  // beszállító-értesítések). Minden, ami a webshop SZERKEZETÉT/kinézetét,
+  // marketingjét vagy árazási/bevétel-stratégiáját érinti, adminOnly.
   const allTabs = [
     { id: 'dashboard', name: 'Áttekintés', icon: Home },
     { id: 'products', name: 'Termékek', icon: Package },
@@ -61,15 +65,15 @@ const AdminPanel = () => {
     { id: 'add', name: 'Új Termék', icon: Plus, adminOnly: true },
     { id: 'import', name: 'CSV/XML Import', icon: Upload, adminOnly: true },
     { id: 'orders', name: 'Rendelések', icon: ShoppingBag },
-    { id: 'coupons', name: 'Kuponok', icon: Tag },
+    { id: 'coupons', name: 'Kuponok', icon: Tag, adminOnly: true },
     { id: 'reviews', name: 'Értékelések', icon: Star },
-    { id: 'content', name: 'Főoldal tartalom', icon: Layout },
-    { id: 'marketing', name: 'Hírlevél & Kosarak', icon: Mail },
-    { id: 'ppc', name: 'PPC Statisztika', icon: TrendingUp },
+    { id: 'content', name: 'Főoldal tartalom', icon: Layout, adminOnly: true },
+    { id: 'marketing', name: 'Hírlevél & Kosarak', icon: Mail, adminOnly: true },
+    { id: 'ppc', name: 'PPC Statisztika', icon: TrendingUp, adminOnly: true },
     { id: 'reports', name: 'Riportok', icon: BarChart3, adminOnly: true },
     { id: 'supplier', name: 'Beszállító ⓘ', icon: Bell },
-    { id: 'blog', name: 'Blog', icon: BookOpen },
-    { id: 'seo', name: 'SEO Eszközök', icon: FileText }
+    { id: 'blog', name: 'Blog', icon: BookOpen, adminOnly: true },
+    { id: 'seo', name: 'SEO Eszközök', icon: FileText, adminOnly: true }
   ];
   const tabs = isOffice ? allTabs.filter(t => !t.adminOnly) : allTabs;
 
@@ -188,20 +192,20 @@ const AdminPanel = () => {
       <main style={{ flex: 1, padding: '2rem', overflow: 'auto' }}>
         {activeTab === 'dashboard' && <Dashboard key={refreshKey} onChange={triggerRefresh} role={role} />}
         {activeTab === 'products' && <ProductsManager key={refreshKey} onChange={triggerRefresh} role={role} />}
-        {activeTab === 'stock' && <StockManager key={refreshKey} onChange={triggerRefresh} />}
+        {activeTab === 'stock' && <StockManager key={refreshKey} onChange={triggerRefresh} role={role} />}
         {!isOffice && activeTab === 'sales' && <SalesManager key={refreshKey} onChange={triggerRefresh} />}
         {!isOffice && activeTab === 'add' && <AddProduct onChange={triggerRefresh} setTab={setActiveTab} />}
         {!isOffice && activeTab === 'import' && <ImportProducts onChange={triggerRefresh} setTab={setActiveTab} />}
         {activeTab === 'orders' && <OrdersList key={refreshKey} onChange={triggerRefresh} />}
-        {activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
+        {!isOffice && activeTab === 'coupons' && <CouponsManager key={refreshKey} onChange={triggerRefresh} />}
         {activeTab === 'reviews' && <ReviewsManager key={refreshKey} />}
-        {activeTab === 'content' && <ContentManager />}
-        {activeTab === 'marketing' && <MarketingManager key={refreshKey} />}
-        {activeTab === 'ppc' && <PpcStats key={refreshKey} />}
+        {!isOffice && activeTab === 'content' && <ContentManager />}
+        {!isOffice && activeTab === 'marketing' && <MarketingManager key={refreshKey} />}
+        {!isOffice && activeTab === 'ppc' && <PpcStats key={refreshKey} />}
         {!isOffice && activeTab === 'reports' && <ReportsTab key={refreshKey} />}
         {activeTab === 'supplier' && <SupplierTab key={refreshKey} onChange={triggerRefresh} role={role} />}
-        {activeTab === 'blog' && <BlogManager key={refreshKey} onChange={triggerRefresh} />}
-        {activeTab === 'seo' && <SeoTools key={refreshKey} />}
+        {!isOffice && activeTab === 'blog' && <BlogManager key={refreshKey} onChange={triggerRefresh} />}
+        {!isOffice && activeTab === 'seo' && <SeoTools key={refreshKey} />}
       </main>
     </div>
   );
@@ -596,7 +600,7 @@ const ProductsManager = ({ onChange, role }) => {
             {!isOffice && <button onClick={handleBulkRemoveSale} style={bulkBtnStyle('#FF9800')}>🚫 Akció törlés</button>}
             <button onClick={handleBulkHide} style={bulkBtnStyle('#666')}>👁️‍🗨️ Elrejtés</button>
             <button onClick={handleBulkShow} style={bulkBtnStyle('#4CAF50')}>👁️ Megjelenítés</button>
-            <button onClick={handleBulkChangeCategory} style={bulkBtnStyle('#9C27B0')}>📂 Kategória</button>
+            {!isOffice && <button onClick={handleBulkChangeCategory} style={bulkBtnStyle('#9C27B0')}>📂 Kategória</button>}
             <button onClick={() => setSelected([])} style={bulkBtnStyle('#999')}>✕ Mégse</button>
           </div>
         </div>
@@ -667,9 +671,14 @@ const ProductsManager = ({ onChange, role }) => {
                     {!p.hidden && !p.sale && <span style={{ padding: '0.2rem 0.5rem', backgroundColor: '#4CAF50', color: 'white', borderRadius: '4px', fontSize: '0.75rem' }}>AKTÍV</span>}
                   </td>
                   <td style={{ padding: '0.75rem', textAlign: 'right' }}>
-                    <button onClick={() => setEditingProduct(p)} title="Szerkesztés" style={iconBtnStyle('#2196F3')}>
-                      <Edit2 size={14} />
-                    </button>
+                    {/* Iroda szerepkör csak lathatja/inaktivalhatja a termeket - a szerkesztes
+                        (nev, leiras, kategoria, kepek, variansok) szerkezeti valtoztatas,
+                        ezert csak teljes adminnak elerheto */}
+                    {!isOffice && (
+                      <button onClick={() => setEditingProduct(p)} title="Szerkesztés" style={iconBtnStyle('#2196F3')}>
+                        <Edit2 size={14} />
+                      </button>
+                    )}
                     <button onClick={() => handleToggleHidden(p)} title={p.hidden ? 'Megjelenítés' : 'Elrejtés'} style={iconBtnStyle('#FF9800')}>
                       {p.hidden ? <Eye size={14} /> : <EyeOff size={14} />}
                     </button>
@@ -678,7 +687,7 @@ const ProductsManager = ({ onChange, role }) => {
                         <RefreshCw size={14} />
                       </button>
                     )}
-                    {p.isCustom && (
+                    {p.isCustom && !isOffice && (
                       <button onClick={() => handleDelete(p)} title="Törlés" style={iconBtnStyle('#d32f2f')}>
                         <Trash2 size={14} />
                       </button>
@@ -991,7 +1000,8 @@ const inputStyle = {
 // ============================================================
 // STOCK MANAGER (FIFO)
 // ============================================================
-const StockManager = ({ onChange }) => {
+const StockManager = ({ onChange, role }) => {
+  const isOffice = role === 'office';
   const [selectedProductId, setSelectedProductId] = useState('');
   const [stockForm, setStockForm] = useState({ quantity: '', unitCost: '', batchNumber: '' });
   const [filterProduct, setFilterProduct] = useState('');
@@ -1041,9 +1051,12 @@ const StockManager = ({ onChange }) => {
             <input type="number" min="1" value={stockForm.quantity} onChange={e => setStockForm({...stockForm, quantity: e.target.value})} style={inputStyle} />
           </FormField>
 
-          <FormField label="Beszerzési egységár (Ft) - opcionális">
-            <input type="number" min="0" step="0.01" value={stockForm.unitCost} onChange={e => setStockForm({...stockForm, unitCost: e.target.value})} style={inputStyle} placeholder="pl. 8500" />
-          </FormField>
+          {/* A beszerzési egységár a profit-szamitas alapja - iroda szerepkorrel nem lathato/adhato meg */}
+          {!isOffice && (
+            <FormField label="Beszerzési egységár (Ft) - opcionális">
+              <input type="number" min="0" step="0.01" value={stockForm.unitCost} onChange={e => setStockForm({...stockForm, unitCost: e.target.value})} style={inputStyle} placeholder="pl. 8500" />
+            </FormField>
+          )}
 
           <FormField label="Tétel azonosító (opcionális)">
             <input type="text" value={stockForm.batchNumber} onChange={e => setStockForm({...stockForm, batchNumber: e.target.value})} style={inputStyle} placeholder="pl. INV-2024-001" />
@@ -1076,7 +1089,7 @@ const StockManager = ({ onChange }) => {
                       <th style={{ textAlign: 'left', padding: '0.5rem 0' }}>Dátum</th>
                       <th style={{ textAlign: 'left', padding: '0.5rem 0' }}>Tétel</th>
                       <th style={{ textAlign: 'right', padding: '0.5rem 0' }}>Maradék</th>
-                      <th style={{ textAlign: 'right', padding: '0.5rem 0' }}>Egységár</th>
+                      {!isOffice && <th style={{ textAlign: 'right', padding: '0.5rem 0' }}>Egységár</th>}
                     </tr>
                   </thead>
                   <tbody>
@@ -1088,7 +1101,7 @@ const StockManager = ({ onChange }) => {
                         </td>
                         <td style={{ padding: '0.5rem 0' }}>{b.batchNumber}</td>
                         <td style={{ textAlign: 'right', padding: '0.5rem 0', fontWeight: 'bold' }}>{b.remaining} / {b.quantity}</td>
-                        <td style={{ textAlign: 'right', padding: '0.5rem 0' }}>{b.unitCost ? b.unitCost.toLocaleString('hu-HU') + ' Ft' : '-'}</td>
+                        {!isOffice && <td style={{ textAlign: 'right', padding: '0.5rem 0' }}>{b.unitCost ? b.unitCost.toLocaleString('hu-HU') + ' Ft' : '-'}</td>}
                       </tr>
                     ))}
                   </tbody>
