@@ -293,7 +293,10 @@ const ProductDetailPage = () => {
             <p style={{ color: '#999', fontSize: '0.85rem', margin: 0, textTransform: 'uppercase' }}>
               {cat?.name} → {subcat?.name}
             </p>
-            <h1 style={{ color: '#0F2A1D', margin: '0.5rem 0', fontSize: '1.75rem' }}>
+            <h1 style={{
+              color: '#0F2A1D', margin: '0.5rem 0', fontSize: 'clamp(1.6rem, 3vw, 2.2rem)',
+              fontFamily: 'Georgia, serif', fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.1
+            }}>
               {product.name}
             </h1>
             {product.brand && product.brand !== 'Generic' && (
@@ -301,8 +304,6 @@ const ProductDetailPage = () => {
                 Márka: <strong>{product.brand}</strong>
               </p>
             )}
-
-            <p style={{ color: '#444', marginBottom: '1.5rem', lineHeight: 1.6 }}>{product.description}</p>
 
             {/* Valódi értékelés-összesítő (csak ha van jóváhagyott vélemény) */}
             {reviews.length > 0 && (
@@ -432,15 +433,15 @@ const ProductDetailPage = () => {
               </div>
             </div>
 
-            {/* Gombok */}
+            {/* Gombok — Uniqlo-minta: teljes szélességű, nagybetűs elsődleges CTA */}
             <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
               <button onClick={handleAddToCart} disabled={product.stock === 0}
                 style={{
-                  flex: 1, padding: '1rem',
+                  flex: 1, padding: '1.05rem',
                   backgroundColor: product.stock === 0 ? '#ccc' : '#C9A961',
-                  color: '#0F2A1D', border: 'none', borderRadius: '4px',
+                  color: '#0F2A1D', border: 'none', borderRadius: 0,
                   cursor: product.stock === 0 ? 'not-allowed' : 'pointer',
-                  fontWeight: 'bold', fontSize: '1.05rem',
+                  fontWeight: 'bold', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.04em',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
                 }}>
                 <ShoppingCart size={20} />
@@ -450,18 +451,41 @@ const ProductDetailPage = () => {
               <button onClick={handleWishlist}
                 title={wished ? 'Eltávolítás kedvencekből' : 'Kedvencekhez adás'}
                 style={{
-                  padding: '1rem',
+                  padding: '1.05rem',
                   backgroundColor: wished ? '#d32f2f' : 'white',
                   color: wished ? 'white' : '#d32f2f',
-                  border: `2px solid #d32f2f`, borderRadius: '4px', cursor: 'pointer',
+                  border: `2px solid #d32f2f`, borderRadius: 0, cursor: 'pointer',
                   display: 'flex', alignItems: 'center', justifyContent: 'center'
                 }}>
                 <Heart size={20} fill={wished ? 'white' : 'none'} />
               </button>
             </div>
 
+            {/* Leírás + szállítás — Uniqlo-stílusú lenyíló (accordion) szekciók */}
+            <details open style={{ borderTop: '1px solid #e5e5e5' }}>
+              <summary style={{
+                cursor: 'pointer', padding: '0.9rem 0', fontWeight: 700, color: '#0F2A1D',
+                textTransform: 'uppercase', fontSize: '0.88rem', letterSpacing: '0.04em', listStyle: 'none'
+              }}>
+                Leírás
+              </summary>
+              <p style={{ color: '#444', margin: '0 0 1rem 0', lineHeight: 1.65, fontSize: '0.95rem' }}>{product.description}</p>
+            </details>
+            <details style={{ borderTop: '1px solid #e5e5e5' }}>
+              <summary style={{
+                cursor: 'pointer', padding: '0.9rem 0', fontWeight: 700, color: '#0F2A1D',
+                textTransform: 'uppercase', fontSize: '0.88rem', letterSpacing: '0.04em', listStyle: 'none'
+              }}>
+                Szállítás, csere és visszaküldés
+              </summary>
+              <div style={{ color: '#444', margin: '0 0 1rem 0', lineHeight: 1.65, fontSize: '0.95rem' }}>
+                <p style={{ margin: '0 0 0.5rem 0' }}>Kiszállítás 2-3 munkanapon belül országosan, 30 000 Ft felett ingyenesen.</p>
+                <p style={{ margin: 0 }}>14 napon belül indoklás nélkül cserélheted vagy visszaküldheted a terméket.</p>
+              </div>
+            </details>
+
             {/* Garanciák */}
-            <div style={{ paddingTop: '1rem', borderTop: '1px solid #eee', fontSize: '0.85rem', color: '#666' }}>
+            <div style={{ paddingTop: '1rem', borderTop: '1px solid #e5e5e5', fontSize: '0.85rem', color: '#666' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <Truck size={16} color="#0F2A1D" /> Gyors kiszállítás 2-3 munkanap
               </div>
@@ -477,7 +501,7 @@ const ProductDetailPage = () => {
 
         {/* Vásárlói értékelések */}
         <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '1.5rem', marginTop: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-          <h2 style={{ color: '#0F2A1D', marginTop: 0 }}>⭐ Vásárlói értékelések</h2>
+          <h2 style={{ color: '#0F2A1D', marginTop: 0, fontFamily: 'Georgia, serif', fontWeight: 700, textTransform: 'uppercase', fontSize: '1.3rem' }}>Vásárlói értékelések</h2>
           {reviews.length === 0 && (
             <p style={{ color: '#888' }}>Erről a termékről még nincs értékelés — legyél te az első!</p>
           )}

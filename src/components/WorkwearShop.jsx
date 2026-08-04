@@ -456,7 +456,9 @@ const WorkwearShop = () => {
 
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
-      
+      {/* Egyetlen globális keyframe a futó ticker-szalaghoz (inline style-lal nem megy) */}
+      <style>{'@keyframes tsTicker { from { transform: translateX(0); } to { transform: translateX(-50%); } }'}</style>
+
       {/* Top Info Bar */}
       <div style={{
         backgroundColor: '#0a1f19', color: 'white', padding: '0.9rem 1.5rem', fontSize: '0.9rem',
@@ -586,6 +588,26 @@ const WorkwearShop = () => {
         </div>
       </header>
 
+      {/* Futó ticker-szalag (Liquid Death minta) — arany sáv, végtelenített nagybetűs üzenetekkel */}
+      {!selectedCategory && !searchTerm && (() => {
+        const tickerItems = [
+          '100% EREDETI PORTWEST', 'INGYENES SZÁLLÍTÁS 30 000 FT FELETT',
+          'CE-TANÚSÍTOTT TERMÉKEK', '2-3 MUNKANAPOS KISZÁLLÍTÁS',
+          '1+1 AJÁNLATOK', '14 NAPOS CSERE ÉS VISSZAKÜLDÉS'
+        ];
+        const half = tickerItems.map((x, i) => <span key={i} style={{ margin: '0 1.75rem' }}>{x} ◆</span>);
+        return (
+          <div style={{ backgroundColor: '#C9A961', overflow: 'hidden', whiteSpace: 'nowrap', padding: '0.5rem 0' }}>
+            <div style={{
+              display: 'inline-block', animation: 'tsTicker 30s linear infinite',
+              color: '#0F2A1D', fontWeight: 700, fontSize: '0.82rem', letterSpacing: '0.08em'
+            }}>
+              {half}{tickerItems.map((x, i) => <span key={`b${i}`} style={{ margin: '0 1.75rem' }}>{x} ◆</span>)}
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Category Navigation (mega-menü) — asztali nézet; a főoldalon a bal oldali kategória-sáv veszi át a szerepét */}
       {!isMobile && (selectedCategory || searchTerm) && (
         <nav style={{
@@ -701,14 +723,24 @@ const WorkwearShop = () => {
             position: 'fixed', right: 0, top: 0, width: '100%', maxWidth: '450px',
             height: '100vh', backgroundColor: 'white',
             boxShadow: '-2px 0 16px rgba(0,0,0,0.2)', zIndex: 201,
-            overflowY: 'auto', padding: '1.5rem'
+            overflowY: 'auto'
           }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-              <h2 style={{ color: '#0F2A1D', margin: 0 }}>🛒 Kosár</h2>
-              <button onClick={() => setCartOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+            <div style={{
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+              backgroundColor: '#0F2A1D', padding: '1.1rem 1.5rem', marginBottom: '1.5rem',
+              position: 'sticky', top: 0, zIndex: 2
+            }}>
+              <h2 style={{
+                color: 'white', margin: 0, fontFamily: 'Georgia, serif', fontSize: '1.3rem',
+                fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.03em'
+              }}>
+                Kosár
+              </h2>
+              <button onClick={() => setCartOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'white' }}>
                 <X size={24} />
               </button>
             </div>
+            <div style={{ padding: '0 1.5rem 1.5rem' }}>
 
             {cart.length === 0 ? (
               <div style={{ textAlign: 'center', padding: '3rem 1rem', color: '#666' }}>
@@ -787,6 +819,7 @@ const WorkwearShop = () => {
                 </div>
               </>
             )}
+            </div>
           </div>
         </>
       )}
@@ -976,7 +1009,7 @@ const WorkwearShop = () => {
 
             {/* Ár szűrő */}
             <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-              💰 Ár
+              Ár
             </h3>
             <div style={{ marginBottom: '0.85rem' }}>
               <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.5rem' }}>
@@ -1001,7 +1034,7 @@ const WorkwearShop = () => {
             {allBrands.length > 0 && (
               <>
                 <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                  🏷️ Márka
+                  Márka
                 </h3>
                 <div style={{ marginBottom: '0.85rem', maxHeight: '160px', overflowY: 'auto' }}>
                   {allBrands.map(brand => (
@@ -1019,7 +1052,7 @@ const WorkwearShop = () => {
             {allIndustries.length > 0 && (
               <>
                 <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                  🏭 Iparág
+                  Iparág
                 </h3>
                 <div style={{ marginBottom: '0.85rem', maxHeight: '140px', overflowY: 'auto' }}>
                   {allIndustries.map(ind => (
@@ -1038,7 +1071,7 @@ const WorkwearShop = () => {
             {selectedCategory && allSizes.length > 0 && (
               <>
                 <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                  📏 Méret
+                  Méret
                 </h3>
                 <div style={{
                   marginBottom: '0.85rem', display: 'flex', flexWrap: 'wrap', gap: '0.3rem',
@@ -1065,7 +1098,7 @@ const WorkwearShop = () => {
             {allStandards.length > 0 && (
               <>
                 <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-                  📋 Szabvány
+                  Szabvány
                 </h3>
                 <div style={{ marginBottom: '0.85rem', maxHeight: '130px', overflowY: 'auto' }}>
                   {allStandards.map(std => (
@@ -1081,7 +1114,7 @@ const WorkwearShop = () => {
 
             {/* Csillag szűrő */}
             <h3 style={{ color: '#0F2A1D', marginBottom: '0.4rem', fontSize: '0.9rem', borderBottom: '1px solid #eee', paddingBottom: '0.4rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
-              ⭐ Értékelés
+              Értékelés
             </h3>
             <div style={{ marginBottom: '0.85rem' }}>
               {[4, 3, 2, 1, 0].map(r => (
@@ -1419,26 +1452,26 @@ const WorkwearShop = () => {
               </p>
             </div>
             <div>
-              <h4 style={{ color: 'white', marginTop: 0 }}>Kategóriák</h4>
+              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Kategóriák</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
                 {productCategories.map(cat => (
                   <li key={cat.id} style={{ marginBottom: '0.5rem' }}>
                     <button onClick={() => { setSelectedCategory(cat.id); window.scrollTo(0, 0); }}
                       style={{ background: 'none', border: 'none', color: '#bbb', cursor: 'pointer', padding: 0, textAlign: 'left' }}>
-                      {cat.icon} {cat.name}
+                      {cat.name}
                     </button>
                   </li>
                 ))}
               </ul>
             </div>
             <div>
-              <h4 style={{ color: 'white', marginTop: 0 }}>Információ</h4>
+              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Információ</h4>
               <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/blog" style={{ color: '#bbb', textDecoration: 'none' }}>📝 Blog</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/wishlist" style={{ color: '#bbb', textDecoration: 'none' }}>❤️ Kedvenceim</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/gyik" style={{ color: '#bbb', textDecoration: 'none' }}>❓ Gyakori kérdések</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/rendeles-kovetes" style={{ color: '#bbb', textDecoration: 'none' }}>📦 Rendeléskövetés</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/fiok" style={{ color: '#bbb', textDecoration: 'none' }}>👤 Fiókom</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/blog" style={{ color: '#bbb', textDecoration: 'none' }}>Blog</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/wishlist" style={{ color: '#bbb', textDecoration: 'none' }}>Kedvenceim</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/gyik" style={{ color: '#bbb', textDecoration: 'none' }}>Gyakori kérdések</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/rendeles-kovetes" style={{ color: '#bbb', textDecoration: 'none' }}>Rendeléskövetés</Link></li>
+                <li style={{ marginBottom: '0.5rem' }}><Link to="/fiok" style={{ color: '#bbb', textDecoration: 'none' }}>Fiókom</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/about" style={{ color: '#bbb', textDecoration: 'none' }}>Rólunk</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/shipping" style={{ color: '#bbb', textDecoration: 'none' }}>Szállítási feltételek</Link></li>
                 <li style={{ marginBottom: '0.5rem' }}><Link to="/terms" style={{ color: '#bbb', textDecoration: 'none' }}>ÁSZF</Link></li>
@@ -1447,7 +1480,7 @@ const WorkwearShop = () => {
               </ul>
             </div>
             <div>
-              <h4 style={{ color: 'white', marginTop: 0 }}>Kapcsolat</h4>
+              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Kapcsolat</h4>
               <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
                 <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
               </p>
@@ -1459,7 +1492,7 @@ const WorkwearShop = () => {
               </p>
             </div>
             <div>
-              <h4 style={{ color: 'white', marginTop: 0 }}>📬 Hírlevél</h4>
+              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Hírlevél</h4>
               <p style={{ color: '#bbb', fontSize: '0.85rem', marginTop: 0 }}>
                 Akciók, új termékek, kuponok — havonta max. 2 email, spam nélkül.
               </p>
@@ -1796,19 +1829,14 @@ const DualRangeSlider = ({ min, max, valueMin, valueMax, step = 100, onChange })
 const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
 
   return (
+    // Uniqlo-stílusú flat kártya: nincs keret/árnyék, a kép világosszürke mezőn ül,
+    // hover-re csak a kép mező sötétedik kicsit — a tipográfia viszi a hangsúlyt.
     <div onClick={onSelect} style={{
-      backgroundColor: 'white', borderRadius: 0, overflow: 'hidden',
-      boxShadow: '0 1px 4px rgba(0,0,0,0.06)', border: '1px solid #f0f0f0', transition: 'all 0.2s', cursor: 'pointer',
-      display: 'flex', flexDirection: 'column', position: 'relative'
+      backgroundColor: 'transparent', borderRadius: 0, overflow: 'hidden',
+      cursor: 'pointer', display: 'flex', flexDirection: 'column', position: 'relative'
     }}
-      onMouseEnter={(e) => {
-        e.currentTarget.style.transform = 'translateY(-4px)';
-        e.currentTarget.style.boxShadow = '0 8px 24px rgba(0,0,0,0.15)';
-      }}
-      onMouseLeave={(e) => {
-        e.currentTarget.style.transform = 'translateY(0)';
-        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.08)';
-      }}
+      onMouseEnter={(e) => { const im = e.currentTarget.querySelector('[data-imgbox]'); if (im) im.style.backgroundColor = '#ececec'; }}
+      onMouseLeave={(e) => { const im = e.currentTarget.querySelector('[data-imgbox]'); if (im) im.style.backgroundColor = '#f5f5f5'; }}
     >
       {/* Wishlist heart */}
       <button onClick={onWishlist} title={wished ? 'Eltávolítás kedvencekből' : 'Kedvencekhez'} style={{
@@ -1821,13 +1849,13 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
         <Heart size={18} fill={wished ? '#d32f2f' : 'none'} color="#d32f2f" />
       </button>
 
-      <div style={{ position: 'relative', backgroundColor: '#f9f9f9', padding: '1rem' }}>
-        <img src={product.image} alt={product.name} loading="lazy" style={{ width: '100%', height: '180px', objectFit: 'contain' }} />
+      <div data-imgbox style={{ position: 'relative', backgroundColor: '#f5f5f5', padding: '1.25rem', transition: 'background-color 0.2s' }}>
+        <img src={product.image} alt={product.name} loading="lazy" style={{ width: '100%', height: '210px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
         {product.stock < 20 && product.stock > 0 && (
           <span style={{
             position: 'absolute', top: '0.5rem', left: '0.5rem',
             backgroundColor: '#FF9800', color: 'white',
-            padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
+            padding: '0.25rem 0.5rem', borderRadius: 0, fontSize: '0.72rem', fontWeight: 'bold', textTransform: 'uppercase'
           }}>
             Utolsó {product.stock} db!
           </span>
@@ -1836,7 +1864,7 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
           <span style={{
             position: 'absolute', top: product.stock < 20 ? '2.25rem' : '0.5rem', left: '0.5rem',
             backgroundColor: '#d32f2f', color: 'white',
-            padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
+            padding: '0.25rem 0.5rem', borderRadius: 0, fontSize: '0.72rem', fontWeight: 'bold', textTransform: 'uppercase'
           }}>
             {product.sale.label || 'AKCIÓ'}
           </span>
@@ -1845,16 +1873,21 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
           <span style={{
             position: 'absolute', bottom: '0.5rem', left: '0.5rem',
             backgroundColor: '#C9A961', color: '#0F2A1D',
-            padding: '0.25rem 0.5rem', borderRadius: '4px', fontSize: '0.75rem', fontWeight: 'bold'
+            padding: '0.25rem 0.5rem', borderRadius: 0, fontSize: '0.72rem', fontWeight: 'bold'
           }}>
-            🎁 1+1
+            1+1
           </span>
         )}
       </div>
 
-      <div style={{ padding: '1rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
-        <p style={{ color: '#999', fontSize: '0.72rem', margin: '0 0 0.4rem 0', textTransform: 'uppercase', letterSpacing: '0.02em' }}>
+      <div style={{ padding: '0.85rem 0.25rem 1rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+        {/* Uniqlo-minta: kategória + méret-tartomány egy sorban, halvány meta-ként */}
+        <p style={{ color: '#8a8a8a', fontSize: '0.72rem', margin: '0 0 0.4rem 0', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
           {productCategories.find(c => c.id === product.categoryId)?.name}
+          {(() => {
+            const sz = (product.sizes || []).filter(s => s && s !== '-');
+            return sz.length > 1 ? `, ${sz[0]}–${sz[sz.length - 1]}` : '';
+          })()}
         </p>
 
         <Link to={`/termek/${product.slug}`} onClick={e => e.stopPropagation()} style={{ textDecoration: 'none', color: '#0F2A1D' }}>
@@ -1899,17 +1932,17 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
           return (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', margin: '0 0 0.5rem 0' }}>
               {colorCount > 1 && (
-                <span style={{ backgroundColor: '#e3edff', color: '#1a56c4', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
+                <span style={{ backgroundColor: '#eef1ee', color: '#0F2A1D', fontSize: '0.68rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: 0, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   Több színben
                 </span>
               )}
               {hasBigSizes && (
-                <span style={{ backgroundColor: '#d9f2e6', color: '#1a7a4c', fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
-                  Nagy méretekben is!
+                <span style={{ backgroundColor: '#eef1ee', color: '#0F2A1D', fontSize: '0.68rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: 0, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                  Nagy méretekben is
                 </span>
               )}
               {season && (
-                <span style={{ backgroundColor: season.bg, color: season.fg, fontSize: '0.7rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: '999px' }}>
+                <span style={{ backgroundColor: '#eef1ee', color: '#0F2A1D', fontSize: '0.68rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: 0, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   {season.label}
                 </span>
               )}
@@ -2049,7 +2082,10 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             </button>
           </div>
 
-          <h2 style={{ color: '#0F2A1D', margin: '0 0 0.5rem 0', fontSize: '1.5rem' }}>{product.name}</h2>
+          <h2 style={{
+            color: '#0F2A1D', margin: '0 0 0.5rem 0', fontSize: '1.5rem', fontFamily: 'Georgia, serif',
+            fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.15
+          }}>{product.name}</h2>
           {product.brand && product.brand !== 'Generic' && (
             <p style={{ color: '#666', margin: '0 0 1rem 0', fontSize: '0.9rem' }}>
               Márka: <strong>{product.brand}</strong>
