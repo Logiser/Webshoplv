@@ -4,27 +4,54 @@ import { ArrowLeft, Calendar, User, ChevronRight, Clock, ShoppingCart, ChevronDo
 import { getBlogPostBySlug, getBlogPosts, getVisibleProducts } from '../data/storage';
 import { readingTime } from './BlogPage';
 
+// Ékezetek eltávolítása egyeztetés előtt — enélkül pl. "fültok"/"légzésvédő" a
+// kulcsszavas "fultok"/"legzesvedo" bejegyzésekre sosem illeszkedett (ez volt az
+// oka, hogy több új cikknél a webshop teljes kínálatából jött a "véletlenszerű",
+// témához nem illő legjobb-kedvezmény ajánlás).
+const stripAccents = (s) => s.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
 // Cikkhez kapcsolódó termékek: tag- és cím-kulcsszavak alapján pontozunk,
 // a legjobb listaár-kedvezményű találatokat ajánljuk (max 4)
 const KEYWORD_MAP = [
-  { keys: ['munkacipo', 'cipő', 'cipo', 'lábbeli', 'labbeli', 'bakancs'], cats: ['munkacipo', 'bakancs'] },
-  { keys: ['kesztyu', 'kesztyű'], cats: ['kesztyu'] },
-  { keys: ['hi-vis', 'lathatosag', 'láthatóság', 'jól láthatósági'], cats: ['munkaruha'] },
-  { keys: ['sisak', 'szemuveg', 'szemüveg', 'fülvédő', 'fultok', 'légzésvédő', 'legzesvedo'], cats: ['kiegeszitok'] },
-  { keys: ['munkaruha', 'nadrág', 'nadrag', 'kabát', 'kabat', 'overál', 'overal', 'ruha'], cats: ['munkaruha'] }
+  { keys: ['munkacipo', 'cipo', 'labbeli', 'bakancs', ' src', 'src1', 's1p', ' s1 ', ' s2 ', ' s3 '], cats: ['munkacipo', 'bakancs'] },
+  { keys: ['kesztyu'], cats: ['kesztyu'] },
+  { keys: ['hi-vis', 'lathatosag'], cats: ['munkaruha'] },
+  { keys: ['sisak', 'szemuveg', 'fulvedo', 'fultok', 'fuldugo', 'hallasved', 'legzesved', 'maszk', 'ffp'], cats: ['kiegeszitok'] },
+  { keys: ['munkaruha', 'nadrag', 'kabat', 'overal', ' ruha', 'sefkabat', 'kotony'], cats: ['munkaruha'] },
+  // Több-témás cikkek (egyszerre több védőeszköz-fajtát érintenek) — a cím/tag
+  // önmagában nem ad kategória-kulcsszót, ezért explicit kombinált kategóriákat kapnak
+  { keys: ['vendeglatas', 'konyha'], cats: ['munkacipo', 'kesztyu', 'munkaruha'] },
+  { keys: ['epitoipar'], cats: ['kiegeszitok', 'munkacipo', 'munkaruha'] }
 ];
 
 const relatedProducts = (post) => {
-  const haystack = ((post.tags || []).join(' ') + ' ' + post.title).toLowerCase();
+  const haystack = stripAccents(((post.tags || []).join(' ') + ' ' + post.title).toLowerCase());
   const cats = new Set();
-  KEYWORD_MAP.forEach(m => { if (m.keys.some(k => haystack.includes(k))) m.cats.forEach(c => cats.add(c)); });
+  const matchedKeys = new Set();
+  KEYWORD_MAP.forEach(m => {
+    if (m.keys.some(k => haystack.includes(k))) {
+      m.cats.forEach(c => cats.add(c));
+      m.keys.forEach(k => { if (haystack.includes(k)) matchedKeys.add(k.trim()); });
+    }
+  });
   let pool = getVisibleProducts().filter(p => cats.size === 0 || cats.has(p.categoryId));
   const discount = (p) => {
     if (!(p.partnerPrice > 0)) return 0;
     const lp = Math.round(p.partnerPrice / 0.7608 / 10) * 10;
     return lp > p.price ? (1 - p.price / lp) : 0;
   };
-  return pool.sort((a, b) => discount(b) - discount(a)).slice(0, 4);
+  // Kategórián belül a termék neve alapján is pontozunk: ha a termék neve maga
+  // is tartalmazza a cikket beazonosító kulcsszót (pl. "hallásvéd" cikknél a
+  // "fültok"/"füldugó" nevű termékek), az adott konkrét eszközt ajánljuk a
+  // kategória más, kevésbé releváns tagjai (pl. sisak, maszk) helyett.
+  const nameMatch = (p) => {
+    if (matchedKeys.size === 0) return 0;
+    const name = stripAccents((p.name || '').toLowerCase());
+    return [...matchedKeys].some(k => k.length >= 4 && name.includes(k)) ? 1 : 0;
+  };
+  return pool
+    .sort((a, b) => (nameMatch(b) - nameMatch(a)) || (discount(b) - discount(a)))
+    .slice(0, 4);
 };
 
 const BlogPostPage = () => {
