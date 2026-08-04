@@ -80,7 +80,25 @@ const ProductDetailPage = () => {
     setMeta('og:image', absImage, true);
     setMeta('og:type', 'product', true);
 
-    // Schema.org Product + BreadcrumbList markup
+    return () => {
+      const schemaScript = document.querySelector('script[type="application/ld+json"][data-product]');
+      if (schemaScript && schemaScript.parentNode) {
+        schemaScript.parentNode.removeChild(schemaScript);
+      }
+    };
+  }, [slug, navigate]);
+
+  // Schema.org Product + BreadcrumbList markup — külön effect, mert a reviews
+  // aszinkron érkezik: a fenti effect lezárásakor még üres a lista. Ha ide is
+  // beleírnánk a fenti effectbe, az aggregateRating sosem kerülne be, mert a
+  // dependency-lista ([slug, navigate]) nem futtatná újra a reviews megérkezésekor.
+  useEffect(() => {
+    if (!product) return;
+    const p = product;
+    const cat = productCategories.find(c => c.id === p.categoryId);
+    const absImage = (p.image || '').startsWith('http') ? p.image : `${window.location.origin}${p.image}`;
+
+    const approved = reviews.filter(r => r.stars >= 1 && r.stars <= 5);
     const schema = [
       {
         "@context": "https://schema.org",
@@ -97,8 +115,15 @@ const ProductDetailPage = () => {
           "price": (p.sale && p.sale.active) ? p.sale.price : p.price,
           "availability": p.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock"
         },
-        // aggregateRating: csak VALÓDI, jóváhagyott értékelésekből kerülhet ki
-        // (a reviews-api tölti fel; kamu számot nem teszünk a sémába)
+        // aggregateRating: csak VALÓDI, jóváhagyott értékelésekből (reviews-api) —
+        // kamu számot nem teszünk a sémába, ezért csak akkor szerepel, ha van min. 1
+        ...(approved.length > 0 ? {
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": (approved.reduce((s, r) => s + r.stars, 0) / approved.length).toFixed(1),
+            "reviewCount": approved.length
+          }
+        } : {})
       },
       {
         "@context": "https://schema.org",
@@ -119,13 +144,7 @@ const ProductDetailPage = () => {
       document.head.appendChild(schemaScript);
     }
     schemaScript.textContent = JSON.stringify(schema);
-
-    return () => {
-      if (schemaScript && schemaScript.parentNode) {
-        schemaScript.parentNode.removeChild(schemaScript);
-      }
-    };
-  }, [slug, navigate]);
+  }, [product, reviews]);
 
   if (!product) return null;
 

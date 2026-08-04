@@ -35,6 +35,10 @@ const CheckoutPage = () => {
   // Marketing-hozzájárulás (hírlevél + kosár-emlékeztető) — alapból KI (GDPR)
   const [marketingConsent, setMarketingConsent] = useState(false);
 
+  // A pénztár a robots.txt-ben nincs indexelésre engedve, de a böngésző-fül
+  // és a megosztott linkek kedvéért itt is legyen értelmes cím.
+  useEffect(() => { document.title = 'Pénztár | TridentShop'; }, []);
+
   // Elhagyott kosár mentése: csak kifejezett hozzájárulással, az email megadása után
   const saveAbandoned = () => {
     if (!marketingConsent || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(formData.email) || cart.length === 0) return;

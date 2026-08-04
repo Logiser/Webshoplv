@@ -244,10 +244,9 @@ const WorkwearShop = () => {
       tag.content = content;
     };
 
-    setMeta('description', 'Munkavédelmi ruházat, biztonsági cipők, bakancsok, kesztyűk és védőfelszerelés webshopja. 75+ termék, gyors kiszállítás, kedvező árak.');
-    setMeta('keywords', 'munkaruha, munkavédelmi ruházat, munkavédelmi cipő, bakancs, kesztyű, sisak, munkaruházat webshop');
-    setMeta('robots', 'index, follow');
-    setMeta('og:title', 'TridentShop - Munkaruházat Webshop', true);
+    setMeta('description', `1800+ eredeti, CE-tanúsítvánnyal rendelkező Portwest munkaruha, biztonsági cipő, bakancs, kesztyű és védőfelszerelés — gyors kiszállítás, kedvező árak.`);
+    setMeta('keywords', 'munkaruha, munkavédelmi ruházat, munkavédelmi cipő, bakancs, kesztyű, sisak, munkaruházat webshop, TridentShop, Portwest');
+    setMeta('og:title', 'TridentShop - Eredeti Portwest Munkaruházat Webshop', true);
     setMeta('og:type', 'website', true);
     setMeta('og:locale', 'hu_HU', true);
   }, []);

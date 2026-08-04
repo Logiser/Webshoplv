@@ -51,13 +51,18 @@ const staticUrls = [
   { loc: '/privacy', freq: 'yearly', pri: '0.3' },
   { loc: '/impressum', freq: 'yearly', pri: '0.3' }
 ];
-const blogSlugs = [
-  'hogyan-valassz-munkacipot', 'munkavedelmi-kesztyu-kategoriak', 'jol-lathatosagi-ruha-szabvany',
-  'teli-munkavedelmi-bakancs-valasztas', 'latex-nitril-pu-kesztyu-bevonatok', 'vedosisak-szabalyok-en397-kihordas',
-  'munkanadrag-valasztas-zsebek-anyagok', 'teli-munkaruha-retegezes', 'vedoszemuveg-tipusok-bevonatok',
-  'en-iso-20345-2022-valtozasok', 'overal-vagy-ketreszes-munkaruha', 'munkaltatoi-vedoeszkoz-juttatas-kotelezettsegek',
-  'munkavedelmi-labbeli-apolas-elettartam'
-];
+// A blog-slugeket a storage.js-ből olvassuk ki szövegesen (nem importáljuk a
+// modult, mert az böngésző-API-kat — localStorage stb. — használ, ami Node
+// build-scriptben elhasalna). Ez korábban kézzel karbantartott, statikus lista
+// volt: minden új blogcikknél el kellett felejteni frissíteni, és tényleg el is
+// felejtettük — 6 cikk (EN ISO 21420, S1/SRC cipő, vendéglátás, építőipar, FFP
+// maszk, hallásvédelem) így sosem került be a sitemap.xml-be. A regex-alapú
+// kiolvasás strukturálisan kizárja, hogy ez újra megtörténjen.
+const storageSrc = readFileSync(join(_root, 'src', 'data', 'storage.js'), 'utf8');
+const blogBlockMatch = storageSrc.match(/const defaultBlogPosts = \[([\s\S]*?)\n\];/);
+if (!blogBlockMatch) throw new Error('defaultBlogPosts tömb nem található a storage.js-ben — sitemap blog-URL-ek nélkül maradnának');
+const blogSlugs = [...blogBlockMatch[1].matchAll(/slug: '([^']+)'/g)].map(m => m[1]);
+if (blogSlugs.length === 0) throw new Error('Nulla blog-slug lett kiolvasva a storage.js-ből — ellenőrizd a regex mintát');
 const urlXml = (loc, freq, pri, lastmod) =>
   `  <url>\n    <loc>${SITE}${loc}</loc>\n${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}    <changefreq>${freq}</changefreq>\n    <priority>${pri}</priority>\n  </url>`;
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[
@@ -76,7 +81,7 @@ const catNames = {
 };
 const byCat = {};
 snapshot.forEach(p => { (byCat[p.categoryId] = byCat[p.categoryId] || []).push(p); });
-const llmsFull = `# MunkavédelmiShop - Teljes termékkatalógus
+const llmsFull = `# TridentShop - Teljes termékkatalógus
 # Frissítve: ${today} | Árak bruttó Ft-ban | Minden termék eredeti Portwest, CE minősítéssel
 # Üzemeltető: Trident Shield Group Kft., 4030 Debrecen, Keleti Ipartelep utca 4.
 # Rendelés: ${SITE} | +36 30 272 2571 | iroda@tuz-munkavedelmiszaki.hu

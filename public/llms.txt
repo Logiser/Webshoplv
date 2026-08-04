@@ -1,9 +1,10 @@
-# MunkavédelmiShop (tridentshop.hu)
+# TridentShop (tridentshop.hu)
 
 > Magyar munkavédelmi webshop: Portwest munkaruházat, biztonsági cipők és
-> bakancsok (EN ISO 20345), munkavédelmi kesztyűk, védősisakok, védőszemüvegek
-> és jól láthatósági ruházat (EN ISO 20471). Üzemeltető: Trident Shield Group
-> Kft. (márkanév: MunkavédelmiSzaki), 4030 Debrecen, Keleti Ipartelep utca 4.
+> bakancsok (EN ISO 20345), munkavédelmi kesztyűk (EN ISO 21420, EN 388),
+> védősisakok, védőszemüvegek és jól láthatósági ruházat (EN ISO 20471).
+> 1800+ eredeti, CE-tanúsítvánnyal rendelkező termék raktárról.
+> Üzemeltető: Trident Shield Group Kft., 4030 Debrecen, Keleti Ipartelep utca 4.
 > Országos kiszállítás 2-3 munkanapon belül, 30 000 Ft felett ingyenes.
 
 ## Fő oldalak
@@ -11,8 +12,9 @@
 - [Webshop főoldal](https://tridentshop.hu/): teljes terméklista szűrőkkel
 - [Teljes termékkatalógus géppel olvasható formában](https://tridentshop.hu/llms-full.txt)
 - [Gyakori kérdések](https://tridentshop.hu/gyik): szállítás, méretválasztás, cipő-kategóriák, garancia
-- [Blog](https://tridentshop.hu/blog): munkavédelmi útmutatók, szabvány-magyarázatok
+- [Szakértői blog](https://tridentshop.hu/blog): munkavédelmi útmutatók, szabvány-magyarázatok
 - [Szállítási feltételek](https://tridentshop.hu/shipping)
+- [Rólunk](https://tridentshop.hu/about)
 - [Kapcsolat](https://tridentshop.hu/contact): +36 30 272 2571, iroda@tuz-munkavedelmiszaki.hu
 
 ## Termékkategóriák
@@ -21,9 +23,11 @@
 - Munkavédelmi cipők: S1, S1P, S2, S3, S3S és ESD kategóriák
 - Bakancsok: S1P és S3 védőbakancsok, téli bélelt kivitelek
 - Munkavédelmi kesztyűk: latex, PU és nitril bevonatú, téli kivitelek
-- Kiegészítők: védősisakok (EN 397), védőszemüvegek, láthatósági mellények, sapkák
+- Kiegészítők: védősisakok (EN 397), védőszemüvegek, hallásvédők, láthatósági mellények
 
 ## Kapcsolódó szolgáltatások
 
-A Trident Shield Group Kft. munkavédelmi és tűzvédelmi szolgáltatásokat is nyújt:
-kockázatértékelés, oktatás, tűzvédelmi szabályzat készítés magyar KKV-knak.
+A TridentShop-ot üzemeltető Trident Shield Group Kft. munkavédelmi és
+tűzvédelmi szolgáltatásokat is nyújt magyar KKV-knak (kockázatértékelés,
+oktatás, tűzvédelmi szabályzat, egyéni védőeszköz juttatási rend készítése)
+a MunkavédelmiSzaki márkanév alatt, külön weboldalon.

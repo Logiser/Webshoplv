@@ -52,6 +52,13 @@ const FaqPage = () => {
 
   useEffect(() => {
     document.title = 'Gyakori kérdések (GYIK) | TridentShop';
+    let descTag = document.querySelector('meta[name="description"]');
+    if (!descTag) {
+      descTag = document.createElement('meta');
+      descTag.name = 'description';
+      document.head.appendChild(descTag);
+    }
+    descTag.content = 'Szállítás, méretválasztás, munkacipő-kategóriák, számlázás és csere-visszaküldés — a TridentShop leggyakoribb vásárlói kérdései egy helyen.';
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',
