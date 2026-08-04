@@ -81,7 +81,7 @@ exports.handler = async (event) => {
     <ul style="line-height: 1.8; color: #555;">
       <li>A futárszolgálat 1-3 munkanapon belül érkezik</li>
       <li>Tartsd készenlétben a telefonod, mert hívni fognak</li>
-      <li>Ha problémád van a csomaggal, jelezd nekünk: <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.hu</a></li>
+      <li>Ha problémád van a csomaggal, jelezd nekünk: <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.com</a></li>
     </ul>
 
     ${note ? `<div style="margin-top: 20px; padding: 12px; background: #f5f5f5; border-radius: 4px; font-size: 0.9rem;"><strong>Üzenet tőlünk:</strong> ${note}</div>` : ''}
@@ -129,7 +129,7 @@ exports.handler = async (event) => {
     <ul style="line-height: 1.8; color: #555;">
       <li>Próbáld ki a megvásárolt termékeket</li>
       <li>14 napos visszavásárlási garancia van minden termékre</li>
-      <li>Ha bármi probléma van, írj nekünk: <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.hu</a></li>
+      <li>Ha bármi probléma van, írj nekünk: <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.com</a></li>
     </ul>
 
     <div style="text-align: center; margin: 32px 0;">
@@ -235,7 +235,7 @@ exports.handler = async (event) => {
     </div>
 
     <p style="font-size: 0.9rem; color: #666;">
-      Elérhetőségünk: <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.hu</a> | +36 30 272 2571
+      Elérhetőségünk: <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.com</a> | +36 30 272 2571
     </p>
   </div>
 

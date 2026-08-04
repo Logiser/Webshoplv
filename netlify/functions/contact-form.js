@@ -39,8 +39,8 @@ exports.handler = async (event) => {
   }
 
   const { SUPABASE_URL, SUPABASE_SERVICE_KEY, RESEND_API_KEY } = process.env;
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iroda@tuz-munkavedelmiszaki.hu';
-  const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@tuz-munkavedelmiszaki.hu';
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iroda@tuz-munkavedelmiszaki.com';
+  const FROM_EMAIL = process.env.FROM_EMAIL || 'noreply@tuz-munkavedelmiszaki.com';
   const now = new Date().toISOString();
   const result = { ok: false, saved: false, mailed: false };
 

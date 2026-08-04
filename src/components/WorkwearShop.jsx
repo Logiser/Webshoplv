@@ -469,7 +469,7 @@ const WorkwearShop = () => {
             <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
+            <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.com'}
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
@@ -1554,7 +1554,7 @@ const WorkwearShop = () => {
                   <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
                 </p>
                 <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                  <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
+                  <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.com'}
                 </p>
                 <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
                   <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.

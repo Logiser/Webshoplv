@@ -50,7 +50,7 @@ exports.handler = async () => {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${RESEND_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          from: FROM_EMAIL || 'noreply@tuz-munkavedelmiszaki.hu',
+          from: FROM_EMAIL || 'noreply@tuz-munkavedelmiszaki.com',
           to: email,
           subject: 'A kosarad vár rád 🛒 – MunkavédelmiShop',
           html: `

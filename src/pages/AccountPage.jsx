@@ -166,7 +166,7 @@ const AccountPage = () => {
           })}
 
           <p style={{ color: '#888', fontSize: '0.85rem', marginTop: '1.5rem' }}>
-            A számlát minden rendelésről e-mailben küldjük. Ha nem találod, írj az iroda@tuz-munkavedelmiszaki.hu címre.
+            A számlát minden rendelésről e-mailben küldjük. Ha nem találod, írj az iroda@tuz-munkavedelmiszaki.com címre.
           </p>
         </div>
       </div>

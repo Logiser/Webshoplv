@@ -61,8 +61,8 @@ const NotFoundPage = () => {
           <p style={{ margin: 0 }}>
             <strong style={{ color: '#C9A961' }}>+36 30 272 2571</strong>
             {' · '}
-            <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style={{ color: '#0F2A1D' }}>
-              iroda@tuz-munkavedelmiszaki.hu
+            <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style={{ color: '#0F2A1D' }}>
+              iroda@tuz-munkavedelmiszaki.com
             </a>
           </p>
           <p style={{ marginTop: '1rem' }}>

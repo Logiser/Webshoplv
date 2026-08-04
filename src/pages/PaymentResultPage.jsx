@@ -78,7 +78,7 @@ const PaymentResultPage = () => {
           </div>
 
           <p style={{ color: '#888', fontSize: '0.87rem', marginTop: '1.75rem', marginBottom: 0 }}>
-            Kérdés esetén: <strong>+36 30 272 2571</strong> · iroda@tuz-munkavedelmiszaki.hu
+            Kérdés esetén: <strong>+36 30 272 2571</strong> · iroda@tuz-munkavedelmiszaki.com
           </p>
         </div>
       </div>

@@ -89,7 +89,7 @@ const SizeChartModal = ({ chart, onClose }) => {
           )}
 
           <p style={{ color: '#888', fontSize: '0.85rem', marginBottom: 0, marginTop: '1rem' }}>
-            Nem biztos a méret? Írj az <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style={{ color: '#0F2A1D' }}>iroda@tuz-munkavedelmiszaki.hu</a> címre,
+            Nem biztos a méret? Írj az <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style={{ color: '#0F2A1D' }}>iroda@tuz-munkavedelmiszaki.com</a> címre,
             vagy hívj: <strong>+36 30 272 2571</strong>. Ha mégsem jó, 14 napon belül cseréljük.
           </p>
         </div>

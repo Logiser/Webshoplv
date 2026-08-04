@@ -41,7 +41,7 @@ export const TermsPage = () => {
             <strong>Adószám:</strong> 32873537-1-15<br />
             <strong>Székhely:</strong> 4485 Nagyhalász, Jókai utca 18.<br />
             <strong>Telephely (ügyfélkapcsolat):</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
-            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.hu<br />
+            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.com<br />
             <strong>Telefon:</strong> +36 30 272 2571
           </p>
 
@@ -103,7 +103,7 @@ export const TermsPage = () => {
           </p>
 
           <p style={{ marginTop: '2rem', fontStyle: 'italic', color: '#666' }}>
-            Utolsó frissítés: 2024. január
+            Utolsó frissítés: 2026. augusztus
           </p>
         </div>
       </div>
@@ -124,8 +124,8 @@ export const PrivacyPage = () => {
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>1. Az Adatkezelő Adatai</h2>
           <p>
             <strong>Szervezet neve:</strong> Trident Shield Group Kft. (TridentShop)<br />
-            <strong>Felelős adatkezelő:</strong> Demeter Márk<br />
-            <strong>E-mail:</strong> adatvedelem@munkavedelem.shop
+            <strong>Felelős adatkezelő:</strong> Németh János<br />
+            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.com
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>2. Az Adatkezelés Célja</h2>
@@ -194,12 +194,12 @@ export const PrivacyPage = () => {
             Adatkezeléssel kapcsolatos kérdéseidet az alábbi elérhetőségeken tudod feltenni:
           </p>
           <p>
-            <strong>E-mail:</strong> adatvedelem@munkavedelem.shop<br />
+            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.com<br />
             <strong>Telefon:</strong> +36 30 272 2571
           </p>
 
           <p style={{ marginTop: '2rem', fontStyle: 'italic', color: '#666' }}>
-            Utolsó frissítés: 2024. január
+            Utolsó frissítés: 2026. augusztus
           </p>
         </div>
       </div>
@@ -230,7 +230,7 @@ export const ImpressumPage = () => {
           <p>
             <strong>Cím (telephely):</strong> 4030 Debrecen, Keleti Ipartelep utca 4.<br />
             <strong>Telefon:</strong> +36 30 272 2571<br />
-            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.hu<br />
+            <strong>E-mail:</strong> iroda@tuz-munkavedelmiszaki.com<br />
           </p>
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Ügyvezető</h2>
@@ -240,7 +240,7 @@ export const ImpressumPage = () => {
 
           <h2 style={{ color: '#0F2A1D', marginTop: '2rem', marginBottom: '1rem' }}>Weboldal Adatai</h2>
           <p>
-            <strong>Domain:</strong> munkavedelem.shop<br />
+            <strong>Domain:</strong> tridentshop.hu<br />
             <strong>Hosting:</strong> Netlify<br />
             <strong>Szerkesztő:</strong> TridentShop Team
           </p>
@@ -260,7 +260,7 @@ export const ImpressumPage = () => {
           </p>
 
           <p style={{ marginTop: '2rem', fontStyle: 'italic', color: '#666' }}>
-            Utolsó frissítés: 2024. január
+            Utolsó frissítés: 2026. augusztus
           </p>
         </div>
       </div>
@@ -336,7 +336,7 @@ export const ShippingPage = () => {
           </p>
 
           <p style={{ marginTop: '2rem', fontStyle: 'italic', color: '#666' }}>
-            Utolsó frissítés: 2024. január
+            Utolsó frissítés: 2026. augusztus
           </p>
         </div>
       </div>
@@ -400,8 +400,8 @@ export const ContactPage = () => {
           <div style={{ backgroundColor: 'white', padding: '2rem', borderRadius: '8px' }}>
             <h3 style={{ color: '#0F2A1D', marginBottom: '1rem' }}>📧 E-mail</h3>
             <p style={{ fontSize: '1.05rem' }}>
-              <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style={{ color: '#C9A961', textDecoration: 'none' }}>
-                iroda@tuz-munkavedelmiszaki.hu
+              <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style={{ color: '#C9A961', textDecoration: 'none' }}>
+                iroda@tuz-munkavedelmiszaki.com
               </a>
             </p>
             <p style={{ color: '#666', fontSize: '0.9rem' }}>
@@ -552,28 +552,6 @@ export const AboutPage = () => {
             gap: '2rem',
             marginTop: '1.5rem'
           }}>
-            <div style={{ textAlign: 'center' }}>
-              <div style={{
-                width: '120px',
-                height: '120px',
-                borderRadius: '50%',
-                backgroundColor: '#0F2A1D',
-                margin: '0 auto 1rem',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'white',
-                fontSize: '3rem'
-              }}>
-                👨‍💼
-              </div>
-              <h4 style={{ color: '#0F2A1D' }}>Demeter Márk</h4>
-              <p style={{ color: '#C9A961', fontWeight: 'bold' }}>Ügyvezető Igazgató</p>
-              <p style={{ color: '#666', fontSize: '0.9rem' }}>
-                Munkavédelmi és tűzvédelmi technikus, 20+ év tapasztalat
-              </p>
-            </div>
-
             <div style={{ textAlign: 'center' }}>
               <div style={{
                 width: '120px',
