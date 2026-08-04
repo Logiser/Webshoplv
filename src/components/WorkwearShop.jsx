@@ -122,6 +122,19 @@ const expandBundleCart = (cart) => cart.flatMap(item => {
   ];
 });
 
+// A főoldali kategória-korongok ÉS a hero bal oldali kategória-sávja ugyanezt
+// a listát használják, hogy a két hely mindig egyezzen.
+const HOMEPAGE_CATEGORY_ENTRIES = [
+  { key: 'kabatok', label: 'Kabátok', cat: 'munkaruha', sub: 'kabatok' },
+  { key: 'polok', label: 'Pólók', cat: 'munkaruha', sub: 'felsok' },
+  { key: 'nadragok', label: 'Nadrágok', cat: 'munkaruha', sub: 'nadragok' },
+  { key: 'cipok', label: 'Munkavédelmi Cipők', cat: 'munkacipo', sub: null },
+  { key: 'bakancsok', label: 'Munkavédelmi Bakancsok', cat: 'bakancs', sub: null },
+  { key: 'kesztyuk', label: 'Munkavédelmi Kesztyűk', cat: 'kesztyu', sub: null },
+  { key: 'vedoeszkozok', label: 'Védőeszközök', cat: 'kiegeszitok', sub: null },
+  { key: 'egyebek', label: 'Egyebek', cat: 'munkaruha', sub: null }
+];
+
 const WorkwearShop = () => {
   const navigate = useNavigate();
   const { t } = useLang();
@@ -446,9 +459,6 @@ const WorkwearShop = () => {
 
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
-      {/* Egyetlen globális keyframe a futó ticker-szalaghoz (inline style-lal nem megy) */}
-      <style>{'@keyframes tsTicker { from { transform: translateX(0); } to { transform: translateX(-50%); } }'}</style>
-
       {/* Top Info Bar */}
       <div style={{
         backgroundColor: '#0a1f19', color: 'white', padding: '0.9rem 1.5rem', fontSize: '0.9rem',
@@ -463,9 +473,8 @@ const WorkwearShop = () => {
           </span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Truck size={14} /> {t('nav.freeShipping')}
-          </span>
+          {/* Az "Ingyenes szállítás" felirat innen kikerült — a ticker-szalag alább
+              ugyanezt az üzenetet mutatja, felesleges volt duplikálni */}
           <LanguageSwitcher compact />
         </div>
       </div>
@@ -578,25 +587,15 @@ const WorkwearShop = () => {
         </div>
       </header>
 
-      {/* Futó ticker-szalag (Liquid Death minta) — arany sáv, végtelenített nagybetűs üzenetekkel */}
-      {!selectedCategory && !searchTerm && (() => {
-        const tickerItems = [
-          '100% EREDETI PORTWEST', 'INGYENES SZÁLLÍTÁS 30 000 FT FELETT',
-          'CE-TANÚSÍTOTT TERMÉKEK', '2-3 MUNKANAPOS KISZÁLLÍTÁS',
-          '1+1 AJÁNLATOK', '14 NAPOS CSERE ÉS VISSZAKÜLDÉS'
-        ];
-        const half = tickerItems.map((x, i) => <span key={i} style={{ margin: '0 1.75rem' }}>{x} ◆</span>);
-        return (
-          <div style={{ backgroundColor: '#C9A961', overflow: 'hidden', whiteSpace: 'nowrap', padding: '0.5rem 0' }}>
-            <div style={{
-              display: 'inline-block', animation: 'tsTicker 30s linear infinite',
-              color: '#0F2A1D', fontWeight: 700, fontSize: '0.82rem', letterSpacing: '0.08em'
-            }}>
-              {half}{tickerItems.map((x, i) => <span key={`b${i}`} style={{ margin: '0 1.75rem' }}>{x} ◆</span>)}
-            </div>
-          </div>
-        );
-      })()}
+      {/* Egyszerű, statikus szállítási sáv (a korábbi végtelenített ticker helyett) —
+          csak egyetlen üzenet, nincs szükség görgetésre */}
+      {!selectedCategory && !searchTerm && (
+        <div style={{ backgroundColor: '#C9A961', textAlign: 'center', padding: '0.55rem 1rem' }}>
+          <span style={{ color: '#0F2A1D', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.06em' }}>
+            INGYENES SZÁLLÍTÁS 30 000 FT FELETT
+          </span>
+        </div>
+      )}
 
       {/* Category Navigation (mega-menü) — asztali nézet; a főoldalon a bal oldali kategória-sáv veszi át a szerepét */}
       {!isMobile && (selectedCategory || searchTerm) && (
@@ -814,18 +813,50 @@ const WorkwearShop = () => {
         </>
       )}
 
-      {/* Hero — teljes szélességű, bátor tipográfiai sáv (Liquid Death), utána egy sor
-          kerek kategória-ikon (Uniqlo "Search by category" mintája) — nincs többé
-          állandó bal oldali kategória-sáv. */}
+      {/* Hero — eMAG-stílusú elrendezés: állandó bal oldali kategória-sáv (asztali nézeten)
+          + jobbra a bátor tipográfiai karusszel (Liquid Death minta). Mobilon a sáv
+          elrejtve, ott a kategória-ikonsor veszi át a szerepét. */}
       {!selectedCategory && !searchTerm && (
         <div style={{ backgroundColor: '#f5f5f5', padding: isMobile ? '1.25rem 1.5rem' : '1.5rem' }}>
-          <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-            <HeroCarousel
-              t={t} productCount={products.length} isMobile={isMobile}
-              bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
-                .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
-              content={homepageContent}
-            />
+          <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: '1.25rem', alignItems: 'stretch' }}>
+            {!isMobile && (
+              <div style={{
+                width: '250px', flexShrink: 0, backgroundColor: 'white',
+                border: '1px solid #e5e5e5', display: 'flex', flexDirection: 'column'
+              }}>
+                <div style={{
+                  padding: '0.9rem 1.1rem', backgroundColor: '#0F2A1D', color: 'white',
+                  fontFamily: 'Georgia, serif', fontWeight: 700, fontSize: '0.95rem',
+                  textTransform: 'uppercase', letterSpacing: '0.04em'
+                }}>
+                  Kategóriák
+                </div>
+                {HOMEPAGE_CATEGORY_ENTRIES.map(entry => (
+                  <button key={entry.key}
+                    onClick={() => { setSelectedCategory(entry.cat); setSelectedSubcategory(entry.sub); window.scrollTo({ top: 0 }); }}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      width: '100%', background: 'none', border: 'none', borderBottom: '1px solid #f0f0f0',
+                      padding: '0.8rem 1.1rem', cursor: 'pointer', textAlign: 'left',
+                      fontSize: '0.88rem', color: '#0F2A1D', fontWeight: 600
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#faf6ea'; e.currentTarget.style.color = '#a3813f'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.color = '#0F2A1D'; }}
+                  >
+                    {entry.label}
+                    <ChevronRight size={15} />
+                  </button>
+                ))}
+              </div>
+            )}
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <HeroCarousel
+                t={t} productCount={products.length} isMobile={isMobile}
+                bestSaleProduct={products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
+                  .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)[0] || null}
+                content={homepageContent}
+              />
+            </div>
           </div>
         </div>
       )}
@@ -878,16 +909,7 @@ const WorkwearShop = () => {
             maxWidth: '1400px', margin: '0 auto', display: 'flex', gap: isMobile ? '1.5rem' : '3rem',
             justifyContent: 'center', flexWrap: 'wrap', overflowX: 'auto'
           }}>
-            {[
-              { key: 'kabatok', label: 'Kabátok', cat: 'munkaruha', sub: 'kabatok' },
-              { key: 'polok', label: 'Pólók', cat: 'munkaruha', sub: 'felsok' },
-              { key: 'nadragok', label: 'Nadrágok', cat: 'munkaruha', sub: 'nadragok' },
-              { key: 'cipok', label: 'Munkavédelmi Cipők', cat: 'munkacipo', sub: null },
-              { key: 'bakancsok', label: 'Munkavédelmi Bakancsok', cat: 'bakancs', sub: null },
-              { key: 'kesztyuk', label: 'Munkavédelmi Kesztyűk', cat: 'kesztyu', sub: null },
-              { key: 'vedoeszkozok', label: 'Védőeszközök', cat: 'kiegeszitok', sub: null },
-              { key: 'egyebek', label: 'Egyebek', cat: 'munkaruha', sub: null }
-            ].map(entry => {
+            {HOMEPAGE_CATEGORY_ENTRIES.map(entry => {
               const rep = products.find(p => p.image && (entry.sub
                 ? p.subcategoryId === entry.sub
                 : (entry.key === 'egyebek'
