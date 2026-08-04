@@ -195,13 +195,15 @@ const WorkwearShop = () => {
       setPriceMax(Math.ceil(maxP / 1000) * 1000);
     }
 
-    // Temp cart visszatöltése (ProductDetailPage-ről)
+    // Temp cart visszatöltése (ProductDetailPage-ről) — a kosarat is megnyitjuk,
+    // hogy a termékoldal fejlécén a kosár-gombra kattintva lásd is, mi került bele
     const tempCart = sessionStorage.getItem('temp_cart');
     if (tempCart) {
       try {
         const items = JSON.parse(tempCart);
         if (items.length > 0) {
           setCart(prev => [...prev, ...items]);
+          setCartOpen(true);
           sessionStorage.removeItem('temp_cart');
         }
       } catch (e) {}
@@ -209,6 +211,11 @@ const WorkwearShop = () => {
 
     // Kosár visszaállítása az emlékeztető e-mail linkjéből (?kosar=<token>)
     const params = new URLSearchParams(window.location.search);
+
+    // Kereső-kifejezés más oldalról (pl. a termékoldal fejlécéből) érkező linkből
+    const searchParam = params.get('search');
+    if (searchParam) setSearchTerm(searchParam);
+
     const restoreToken = params.get('kosar');
     if (restoreToken) {
       fetch(`/.netlify/functions/restore-cart?t=${encodeURIComponent(restoreToken)}`)

@@ -1,15 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ShoppingCart, ArrowLeft, Heart, Truck, Shield, Award, ChevronRight, ChevronLeft, Ruler } from 'lucide-react';
+import { ShoppingCart, Heart, Truck, Shield, Award, ChevronRight, ChevronLeft, Ruler, Phone, Mail, Search, User } from 'lucide-react';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
-import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, trackProductOpen } from '../data/storage';
+import { getProductBySlug, getVisibleProducts, toggleWishlist, isInWishlist, recordProductView, trackProductOpen, getWishlist, getHomepageContent } from '../data/storage';
 import { trackViewItem, trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from '../components/SizeChartModal';
+import LanguageSwitcher from '../components/LanguageSwitcher';
+import { useLang } from '../i18n/LanguageContext';
+
+const headerIconBtn = {
+  padding: '0.5rem 0.65rem', backgroundColor: 'transparent', border: 'none',
+  borderRadius: '8px', cursor: 'pointer', textDecoration: 'none',
+  display: 'flex', alignItems: 'center', gap: '0.35rem'
+};
+
+const headerBadge = {
+  position: 'absolute', top: '-4px', right: '-4px',
+  backgroundColor: '#d32f2f', color: 'white', borderRadius: '50%',
+  width: '18px', height: '18px',
+  display: 'flex', alignItems: 'center', justifyContent: 'center',
+  fontSize: '0.65rem', fontWeight: 'bold'
+};
 
 const ProductDetailPage = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const { t } = useLang();
+  const homepageContent = getHomepageContent();
+  // Fejléc-állapotok (a főoldal fejlécével egyező kereső/fiók/kedvenc/kosár sáv)
+  const [headerSearch, setHeaderSearch] = useState('');
+  const [wishlist, setWishlist] = useState(() => getWishlist());
+  const [cartCount, setCartCount] = useState(() => {
+    try { return JSON.parse(sessionStorage.getItem('temp_cart') || '[]').length; } catch (e) { return 0; }
+  });
+  const handleHeaderSearch = (e) => {
+    e.preventDefault();
+    if (headerSearch.trim()) navigate(`/?search=${encodeURIComponent(headerSearch.trim())}`);
+  };
   const [product, setProduct] = useState(null);
   const [selectedSize, setSelectedSize] = useState(null);
   const [showSizeChart, setShowSizeChart] = useState(false);
@@ -195,6 +223,7 @@ const ProductDetailPage = () => {
       sizeStockAtAdd: (variant && variant.sizeStock && selectedSize) ? (variant.sizeStock[selectedSize] || 0) : null
     });
     sessionStorage.setItem('temp_cart', JSON.stringify(cartData));
+    setCartCount(cartData.length);   // fejléc kosár-jelvény azonnali frissítése
     trackAddToCart(product, quantity);  // GA4 + FB Pixel
     alert(`✅ ${product.name} kosárba téve!`);
   };
@@ -203,6 +232,7 @@ const ProductDetailPage = () => {
     toggleWishlist(product.id);
     if (!wished) trackAddToWishlist(product);  // GA4 + FB Pixel
     setWished(!wished);
+    setWishlist(getWishlist());   // fejléc kedvenc-jelvény azonnali frissítése
   };
 
   // Utolsó rendelés idő szövegezve - eltávolítva
@@ -210,19 +240,85 @@ const ProductDetailPage = () => {
   return (
     <div style={{ backgroundColor: '#f5f5f5', minHeight: '100vh', fontFamily: 'Arial, sans-serif' }}>
       
-      {/* Header */}
-      <header style={{
-        backgroundColor: 'white', padding: '1rem 1.5rem',
-        boxShadow: '0 2px 8px rgba(0,0,0,0.1)', borderBottom: '3px solid #C9A961',
-        position: 'sticky', top: 0, zIndex: 100
+      {/* Top Info Bar — a főoldallal egyező, hogy a termékoldal ne tűnjön "külön" felületnek */}
+      <div style={{
+        backgroundColor: '#0a1f19', color: 'white', padding: '0.9rem 1.5rem', fontSize: '0.9rem',
+        display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem'
       }}>
-        <div style={{ maxWidth: '1400px', margin: '0 auto', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-          <Link to="/" style={{ textDecoration: 'none', color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.5rem' }}>
-            🛡️ TridentShop
+        <div style={{ display: 'flex', gap: '1.5rem', flexWrap: 'wrap' }}>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
+          </span>
+          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+            <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
+          </span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <LanguageSwitcher compact />
+        </div>
+      </div>
+
+      {/* Header — azonos a főoldal fejlécével (logó, kereső, fiók/kedvenc/kosár) */}
+      <header style={{
+        backgroundColor: 'white', padding: '0.85rem 1.5rem',
+        position: 'sticky', top: 0, zIndex: 100,
+        boxShadow: '0 2px 10px rgba(0,0,0,0.08)', borderBottom: '1px solid #eee'
+      }}>
+        <div style={{
+          maxWidth: '1400px', margin: '0 auto', display: 'flex',
+          justifyContent: 'space-between', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap'
+        }}>
+          <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
+            <h1 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+              <span style={{
+                display: 'inline-flex', width: '2.1rem', height: '2.1rem', borderRadius: '8px',
+                backgroundColor: '#0F2A1D', color: '#C9A961', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem'
+              }}>🛡️</span>
+              <span>TridentShop</span>
+            </h1>
           </Link>
-          <Link to="/" style={{ color: '#0F2A1D', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ArrowLeft size={18} /> Vissza a webshopra
-          </Link>
+
+          <form onSubmit={handleHeaderSearch} style={{
+            flex: 1, minWidth: '180px', maxWidth: '560px',
+            display: 'flex', alignItems: 'center', backgroundColor: '#f5f6f5',
+            borderRadius: '999px', padding: '0.15rem 0.15rem 0.15rem 1rem', border: '1.5px solid #e5e5e0'
+          }}>
+            <input
+              type="text" placeholder={t('nav.search')}
+              value={headerSearch} onChange={(e) => setHeaderSearch(e.target.value)}
+              style={{ flex: 1, border: 'none', backgroundColor: 'transparent', padding: '0.55rem 0', fontSize: '0.95rem', outline: 'none', minWidth: 0 }}
+            />
+            <button type="submit" aria-label="Keresés" style={{
+              backgroundColor: '#0F2A1D', border: 'none', borderRadius: '999px', width: '2.3rem', height: '2.3rem',
+              display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0, color: '#C9A961'
+            }}>
+              <Search size={17} />
+            </button>
+          </form>
+
+          <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
+            <Link to="/fiok" title={t('account.title')} style={headerIconBtn}>
+              <User size={21} color="#0F2A1D" />
+              <span style={{ fontSize: '0.78rem', color: '#0F2A1D', fontWeight: 600 }}>{t('account.title')}</span>
+            </Link>
+
+            <Link to="/wishlist" title={t('nav.favorites')} style={{ ...headerIconBtn, position: 'relative' }}>
+              <Heart size={21} fill={wishlist.length > 0 ? '#d32f2f' : 'none'} color="#d32f2f" />
+              {wishlist.length > 0 && <span style={headerBadge}>{wishlist.length}</span>}
+            </Link>
+
+            <Link to="/" title={t('nav.cart')} style={{
+              backgroundColor: '#0F2A1D', color: 'white', textDecoration: 'none',
+              padding: '0.6rem 1.1rem', borderRadius: '999px',
+              display: 'flex', alignItems: 'center', gap: '0.55rem', position: 'relative'
+            }}>
+              <ShoppingCart size={19} color="#C9A961" />
+              <span style={{ fontSize: '0.92rem', fontWeight: 'bold' }}>{t('nav.cart')}</span>
+              {cartCount > 0 && (
+                <span style={{ ...headerBadge, top: '-8px', right: '-8px', backgroundColor: '#C9A961', color: '#0F2A1D' }}>{cartCount}</span>
+              )}
+            </Link>
+          </div>
         </div>
       </header>
 
