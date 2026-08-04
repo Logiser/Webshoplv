@@ -1918,20 +1918,25 @@ const ProductCard = ({ product, onSelect, onWishlist, wished }) => {
         })()}
 
         {(() => {
-          const colorCount = (product.variants || []).length;
+          // "Több színben" csak akkor, ha legalább 3 szín TÉNYLEGESEN raktáron van
+          const inStockColorCount = (product.variants || []).filter(v => v.stock > 0).length;
           // "Nagy méretekben is!" csak felsőknél/nadrágoknál értelmezhető — cipőméretnél
-          // vagy kesztyűnél a 2XL/3XL... jelölés mást jelentene / félrevezető lenne.
+          // vagy kesztyűnél az XL-jelölés mást jelentene. Csak 3XL FELETT (4XL+) számít nagynak.
           const isTopOrPants = product.subcategoryId === 'felsok' || product.subcategoryId === 'nadragok';
-          const hasBigSizes = isTopOrPants && (product.sizes || []).some(s => /^(2|3|4|5|6|7|8)XL/i.test(s));
+          const hasBigSizes = isTopOrPants && (product.sizes || []).some(s => /^(4|5|6|7|8)XL/i.test(s));
           const text = `${product.name} ${product.description || ''}`.toLowerCase();
           let season = null;
-          if (/téli|bélelt|polár|thermo|hőszigetelt/.test(text)) season = { label: 'Téli', bg: '#e3edff', fg: '#1a56c4' };
-          else if (/nyári|hűsítő|szellőz/.test(text)) season = { label: 'Nyári', bg: '#fff2d9', fg: '#a15c00' };
-          else if (/őszi|átmeneti/.test(text)) season = { label: 'Őszi', bg: '#f0e4d3', fg: '#8a5a2b' };
-          if (colorCount <= 1 && !hasBigSizes && !season) return null;
+          // Sorrend számít: a téli a legerősebb jel; az eső-/átmeneti darabok (esőkabát,
+          // vízálló, softshell) SOSEM kapnak "Nyári" címkét, hanem "Tavaszi–őszi"-t;
+          // a "szellőző" szó önmagában nem nyári jel (esőkabát-leírásokban is szerepel).
+          if (/téli|bélelt|polár|thermo|hőszigetelt/.test(text)) season = { label: 'Téli' };
+          else if (/eső|vízálló|vízhatlan|átmeneti|softshell|széldzseki/.test(text)) season = { label: 'Tavaszi–őszi' };
+          else if (/nyári|hűsítő|cooling/.test(text)) season = { label: 'Nyári' };
+          else if (/őszi/.test(text)) season = { label: 'Tavaszi–őszi' };
+          if (inStockColorCount < 3 && !hasBigSizes && !season) return null;
           return (
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem', margin: '0 0 0.5rem 0' }}>
-              {colorCount > 1 && (
+              {inStockColorCount >= 3 && (
                 <span style={{ backgroundColor: '#eef1ee', color: '#0F2A1D', fontSize: '0.68rem', fontWeight: 'bold', padding: '0.2rem 0.55rem', borderRadius: 0, textTransform: 'uppercase', letterSpacing: '0.03em' }}>
                   Több színben
                 </span>
