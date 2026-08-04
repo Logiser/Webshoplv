@@ -399,23 +399,17 @@ const ProductDetailPage = () => {
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                       {/* LD "SELECT SIZE" minta: nagyobb dobozok, kövér méret-felirat,
                           alatta kis készlet-alcím, ha kevés van */}
-                      {visibleSizes.map(size => {
-                        const qty = sizeStock ? sizeStock[size] : null;
-                        return (
-                          <button key={size} onClick={() => setSelectedSize(size)}
-                            style={{
-                              minWidth: '76px', padding: '0.7rem 0.9rem', borderRadius: 0,
-                              border: selectedSize === size ? '2px solid #0F2A1D' : '1px solid #ddd',
-                              backgroundColor: 'white', color: '#0F2A1D', cursor: 'pointer',
-                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem'
-                            }}>
-                            <span style={{ fontWeight: 700, fontSize: '1.05rem', fontFamily: 'Georgia, serif' }}>{size}</span>
-                            {qty !== null && qty > 0 && qty < 10 && (
-                              <span style={{ fontSize: '0.7rem', color: '#888' }}>{qty} db</span>
-                            )}
-                          </button>
-                        );
-                      })}
+                      {visibleSizes.map(size => (
+                        <button key={size} onClick={() => setSelectedSize(size)}
+                          style={{
+                            minWidth: '64px', padding: '0.7rem 0.9rem', borderRadius: 0,
+                            border: selectedSize === size ? '2px solid #0F2A1D' : '1px solid #ddd',
+                            backgroundColor: 'white', color: '#0F2A1D', cursor: 'pointer',
+                            fontWeight: 700, fontSize: '1.05rem', fontFamily: 'Georgia, serif'
+                          }}>
+                          {size}
+                        </button>
+                      ))}
                     </div>
                   )}
                 </div>
@@ -440,11 +434,22 @@ const ProductDetailPage = () => {
                   </span>
                 )}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '42px', height: '42px', border: '1px solid #ddd', borderRight: 'none', borderRadius: 0, cursor: 'pointer', backgroundColor: 'white', fontSize: '1.1rem' }}>−</button>
-                <input type="number" min="1" value={quantity} onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  style={{ width: '56px', height: '42px', padding: 0, border: '1px solid #ddd', borderRadius: 0, textAlign: 'center', boxSizing: 'border-box' }} />
-                <button onClick={() => setQuantity(quantity + 1)} style={{ width: '42px', height: '42px', border: '1px solid #ddd', borderLeft: 'none', borderRadius: 0, cursor: 'pointer', backgroundColor: 'white', fontSize: '1.1rem' }}>+</button>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.3rem' }}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '42px', height: '42px', border: '1px solid #ddd', borderRight: 'none', borderRadius: 0, cursor: 'pointer', backgroundColor: 'white', fontSize: '1.1rem' }}>−</button>
+                  <input type="number" min="1" value={quantity} onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                    style={{ width: '56px', height: '42px', padding: 0, border: '1px solid #ddd', borderRadius: 0, textAlign: 'center', boxSizing: 'border-box' }} />
+                  <button onClick={() => setQuantity(quantity + 1)} style={{ width: '42px', height: '42px', border: '1px solid #ddd', borderLeft: 'none', borderRadius: 0, cursor: 'pointer', backgroundColor: 'white', fontSize: '1.1rem' }}>+</button>
+                </div>
+                {/* A kiválasztott méret elérhető darabszáma — a méret-gombokon nincs többé kiírva */}
+                {(() => {
+                  const av = (product.variants || []).find(v => v.code === selectedColor)
+                    || ((product.variants || []).length === 1 ? product.variants[0] : null);
+                  const q = av && av.sizeStock && selectedSize ? (av.sizeStock[selectedSize] || 0) : null;
+                  return q !== null && q > 0 ? (
+                    <span style={{ color: '#2e7d32', fontSize: '0.8rem' }}>{q} db raktáron</span>
+                  ) : null;
+                })()}
               </div>
             </div>
 

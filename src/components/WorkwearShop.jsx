@@ -2158,18 +2158,15 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
                   <p style={{ color: '#c62828', fontSize: '0.85rem', margin: 0 }}>Ebből a színből minden méret elfogyott.</p>
                 ) : (
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    {visibleSizes.map(size => {
-                      const qty = sizeStock ? sizeStock[size] : null;
-                      return (
-                        <button key={size} onClick={() => setSelectedSize(size)} style={{
-                          padding: '0.5rem 0.85rem', borderRadius: '4px',
-                          border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
-                          backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
-                          color: selectedSize === size ? 'white' : '#0F2A1D',
-                          cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
-                        }}>{size}{qty !== null && qty > 0 && qty < 10 ? ` (${qty})` : ''}</button>
-                      );
-                    })}
+                    {visibleSizes.map(size => (
+                      <button key={size} onClick={() => setSelectedSize(size)} style={{
+                        padding: '0.5rem 0.85rem', borderRadius: 0,
+                        border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
+                        backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
+                        color: selectedSize === size ? 'white' : '#0F2A1D',
+                        cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem'
+                      }}>{size}</button>
+                    ))}
                   </div>
                 )}
               </div>
@@ -2177,7 +2174,15 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
           })()}
 
           <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Mennyiség:</label>
+            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
+              Mennyiség:
+              {/* A kiválasztott méret készlete ide kerül a méret-gombok zárójelei helyett */}
+              {selectedSize && activeVariant && activeVariant.sizeStock && activeVariant.sizeStock[selectedSize] > 0 && (
+                <span style={{ fontWeight: 'normal', color: '#2e7d32', fontSize: '0.85rem', marginLeft: '0.5rem' }}>
+                  {activeVariant.sizeStock[selectedSize]} db raktáron
+                </span>
+              )}
+            </label>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '40px', height: '40px', border: '1px solid #ddd', backgroundColor: 'white', cursor: 'pointer', borderRadius: '4px' }}>−</button>
               <input type="number" min="1" value={quantity} onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
