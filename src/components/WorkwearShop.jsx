@@ -2109,9 +2109,14 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
         maxWidth: '900px', width: '100%', maxHeight: '90vh', overflowY: 'auto',
         display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))'
       }}>
-        <div style={{ padding: '1.5rem', backgroundColor: '#f9f9f9' }}>
-          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '300px' }}>
-            <img src={images[safeIdx] || product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '360px', objectFit: 'contain' }} />
+        {/* A kép-oszlop a grid alapértelmezett stretch-je miatt mindig a jobb
+            (info) oszloppal egyező magasságú - korábban a kép fix 360px-en
+            állt meg, a maradék teret kitöltetlenül hagyva alul. Most flex
+            oszlopként a kép-terület flex:1-gyel kitölti a teljes rendelkezésre
+            álló magasságot, a kép pedig ehhez igazodva nő meg (maxHeight:100%). */}
+        <div style={{ padding: '1.5rem', backgroundColor: '#f9f9f9', display: 'flex', flexDirection: 'column', height: '100%', boxSizing: 'border-box' }}>
+          <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', flex: 1, minHeight: '300px' }}>
+            <img src={images[safeIdx] || product.image} alt={product.name} style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
             {images.length > 1 && (
               <>
                 <button onClick={prevImg} aria-label="Előző kép" style={{ ...arrowStyle, left: '0.25rem' }}>‹</button>
@@ -2134,8 +2139,11 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
           )}
         </div>
 
-        <div style={{ padding: '2rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.5rem' }}>
+        {/* padding 2rem->1.5rem + a lenti margók szorosabbra vetve: a jobb oszlop
+            tartalma (leiras+szin+7 meret+mennyiseg+2 gomb) hosszu, ez a fesztavolsag-
+            csokkentes segit, hogy kevesebbszer legyen szukseg gorgetesre a modalban */}
+        <div style={{ padding: '1.5rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'start', marginBottom: '0.4rem' }}>
             <p style={{ color: '#999', fontSize: '0.85rem', margin: 0, textTransform: 'uppercase' }}>
               {productCategories.find(c => c.id === product.categoryId)?.name}
             </p>
@@ -2145,18 +2153,18 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
           </div>
 
           <h2 style={{
-            color: '#0F2A1D', margin: '0 0 0.5rem 0', fontSize: '1.5rem', fontFamily: 'Georgia, serif',
+            color: '#0F2A1D', margin: '0 0 0.4rem 0', fontSize: '1.5rem', fontFamily: 'Georgia, serif',
             fontWeight: 700, textTransform: 'uppercase', lineHeight: 1.15
           }}>{product.name}</h2>
           {product.brand && product.brand !== 'Generic' && (
-            <p style={{ color: '#666', margin: '0 0 1rem 0', fontSize: '0.9rem' }}>
+            <p style={{ color: '#666', margin: '0 0 0.75rem 0', fontSize: '0.9rem' }}>
               Márka: <strong>{product.brand}</strong>
             </p>
           )}
 
-          <p style={{ color: '#666', marginBottom: '1rem', lineHeight: 1.6 }}>{product.description}</p>
+          <p style={{ color: '#666', marginBottom: '0.85rem', lineHeight: 1.5, fontSize: '0.92rem' }}>{product.description}</p>
 
-          <div style={{ backgroundColor: '#f9f9f9', padding: '1rem', borderRadius: '4px', marginBottom: '1rem', borderLeft: '4px solid #C9A961' }}>
+          <div style={{ backgroundColor: '#f9f9f9', padding: '0.75rem 1rem', borderRadius: '4px', marginBottom: '0.85rem', borderLeft: '4px solid #C9A961' }}>
             {product.sale && product.sale.active ? (
               <>
                 <p style={{ textDecoration: 'line-through', color: '#999', fontSize: '1.1rem', margin: 0 }}>
@@ -2180,8 +2188,8 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
           </div>
 
           {variants.length > 1 && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>Szín:</label>
+            <div style={{ marginBottom: '0.85rem' }}>
+              <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 'bold', color: '#0F2A1D' }}>Szín:</label>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                 {variants.map(v => (
                   <button key={v.code} onClick={() => setSelectedColor(v.code)} disabled={v.stock === 0} style={{
@@ -2204,8 +2212,8 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             // adat), minden méret látszik; a lista minden render-nél élőben újraszámol.
             const visibleSizes = sizeStock ? product.sizes.filter(size => (sizeStock[size] || 0) > 0) : product.sizes;
             return (
-              <div style={{ marginBottom: '1rem' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div style={{ marginBottom: '0.85rem' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.4rem', flexWrap: 'wrap', gap: '0.5rem' }}>
                   <label style={{ fontWeight: 'bold', color: '#0F2A1D' }}>Méret:</label>
                   {getSizeChart(product) && (
                     <button onClick={() => setModalSizeChart(getSizeChart(product))} style={{
@@ -2235,8 +2243,8 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             );
           })()}
 
-          <div style={{ marginBottom: '1rem' }}>
-            <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
+          <div style={{ marginBottom: '0.85rem' }}>
+            <label style={{ display: 'block', marginBottom: '0.4rem', fontWeight: 'bold', color: '#0F2A1D' }}>
               Mennyiség:
               {/* A kiválasztott méret készlete ide kerül a méret-gombok zárójelei helyett */}
               {selectedSize && activeVariant && activeVariant.sizeStock && activeVariant.sizeStock[selectedSize] > 0 && (
@@ -2257,7 +2265,7 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             <button onClick={onAddToCart} disabled={product.stock === 0} style={{
               flex: 1,
               backgroundColor: product.stock === 0 ? '#ccc' : '#C9A961', color: '#0F2A1D',
-              padding: '1rem', borderRadius: '4px', border: 'none',
+              padding: '0.85rem', borderRadius: '4px', border: 'none',
               cursor: product.stock === 0 ? 'not-allowed' : 'pointer',
               fontWeight: 'bold', fontSize: '1.05rem',
               display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
@@ -2267,7 +2275,7 @@ const ProductModal = ({ product, onClose, selectedSize, setSelectedSize, selecte
             </button>
 
             <button onClick={onWishlist} style={{
-              padding: '1rem', backgroundColor: wished ? '#d32f2f' : 'white',
+              padding: '0.85rem', backgroundColor: wished ? '#d32f2f' : 'white',
               color: wished ? 'white' : '#d32f2f',
               border: '2px solid #d32f2f', borderRadius: '4px', cursor: 'pointer'
             }}>
