@@ -324,15 +324,8 @@ const ProductDetailPage = () => {
               </div>
             )}
 
-            {/* Leírás + tény-pontlista felül (LD-minta), az ár lejjebb, a CTA fölé kerül */}
-            <p style={{ color: '#333', margin: '0 0 1rem 0', lineHeight: 1.65, fontSize: '0.95rem' }}>{product.description}</p>
-            <ul style={{ margin: '0 0 1.75rem 0', padding: '0 0 0 1.2rem', color: '#333', fontSize: '0.92rem', lineHeight: 1.9 }}>
-              {product.articleNo && <li>Cikkszám: <strong>{product.articleNo}</strong></li>}
-              {product.brand && product.brand !== 'Generic' && <li>100% eredeti <strong>{product.brand}</strong> termék</li>}
-              <li>CE-tanúsítvány, EU-szabványok szerint</li>
-              <li>Raktáron: <strong style={{ color: product.stock < 20 ? '#FF9800' : '#2e7d32' }}>{product.stock} db</strong>{product.stock < 20 && product.stock > 0 ? ' (kifutó!)' : ''}</li>
-              <li>Kiszállítás 2-3 munkanapon belül</li>
-            </ul>
+            {/* Leírás felül (LD-minta), az ár lejjebb, a CTA fölé kerül */}
+            <p style={{ color: '#333', margin: '0 0 1.75rem 0', lineHeight: 1.65, fontSize: '0.95rem' }}>{product.description}</p>
 
             {/* Szín választás — LD "SELECT FLAVOR" minta: képes csempék névvel */}
             {product.variants && product.variants.length > 1 && (
