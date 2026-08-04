@@ -1372,34 +1372,69 @@ const WorkwearShop = () => {
         </div>
       </div>
 
-      {/* Hasznos bejegyzések — blog-teaser a főoldalon */}
+      {/* Hasznos bejegyzések — blog-teaser a főoldalon: kártyás elrendezés, a kép
+          teljes egészében látszik (contain a régi cover helyett, ami levágta a
+          fotókat), cimke + dátum meta és "Tovább olvasom" CTA minden kártyán */}
       {!selectedCategory && !searchTerm && (() => {
-        const latestPosts = getBlogPosts().slice(0, 4);
+        const latestPosts = getBlogPosts().slice(0, 3);
         if (latestPosts.length === 0) return null;
         return (
-          <div style={{ backgroundColor: '#fafaf8', padding: '3rem 1.5rem' }}>
+          <div style={{ backgroundColor: '#fafaf8', padding: isMobile ? '2.5rem 1.5rem' : '3.5rem 1.5rem' }}>
             <div style={{ maxWidth: '1400px', margin: '0 auto' }}>
-              <h3 style={{
-                color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.8rem', textAlign: 'center',
-                textTransform: 'uppercase', margin: '0 0 2rem 0'
-              }}>
-                Hasznos bejegyzések
-              </h3>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', flexWrap: 'wrap', gap: '1rem', marginBottom: '2rem' }}>
+                <div>
+                  <span style={{
+                    display: 'inline-block', backgroundColor: '#0F2A1D', color: '#C9A961',
+                    fontSize: '0.72rem', fontWeight: 700, padding: '0.25rem 0.65rem',
+                    textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.6rem'
+                  }}>
+                    Szakértői tartalom
+                  </span>
+                  <h3 style={{
+                    color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.8rem',
+                    textTransform: 'uppercase', margin: 0
+                  }}>
+                    Hasznos bejegyzések
+                  </h3>
+                </div>
+                <Link to="/blog" style={{
+                  color: '#0F2A1D', textDecoration: 'none', fontWeight: 700, fontSize: '0.85rem',
+                  textTransform: 'uppercase', letterSpacing: '0.04em', borderBottom: '2px solid #C9A961', paddingBottom: '0.15rem'
+                }}>
+                  Összes cikk →
+                </Link>
+              </div>
               <div style={{
-                display: 'grid', gap: '1.5rem',
-                gridTemplateColumns: isMobile ? '1fr' : 'repeat(4, 1fr)'
+                display: 'grid', gap: '1.75rem',
+                gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)'
               }}>
                 {latestPosts.map(post => (
-                  <Link key={post.slug} to={`/blog/${post.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <img src={post.image} alt={post.title} loading="lazy" style={{
-                      width: '100%', height: '160px', objectFit: 'cover', borderRadius: 0, marginBottom: '1rem'
-                    }} />
-                    <h4 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.05rem', margin: '0 0 0.5rem 0', lineHeight: 1.3 }}>
-                      {post.title}
-                    </h4>
-                    <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: 1.5, margin: 0 }}>
-                      {post.excerpt}
-                    </p>
+                  <Link key={post.slug} to={`/blog/${post.slug}`} style={{
+                    textDecoration: 'none', color: 'inherit', backgroundColor: 'white',
+                    border: '1px solid #eee', display: 'flex', flexDirection: 'column'
+                  }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = '#C9A961'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#eee'; }}
+                  >
+                    <div style={{ backgroundColor: '#f5f5f5', padding: '1rem', height: '190px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={post.image} alt={post.title} loading="lazy" style={{
+                        maxWidth: '100%', maxHeight: '100%', objectFit: 'contain'
+                      }} />
+                    </div>
+                    <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
+                      <p style={{ color: '#999', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.5rem 0' }}>
+                        {(post.tags && post.tags[0]) || 'Szakmai tudás'} · {new Date(post.date).toLocaleDateString('hu-HU')}
+                      </p>
+                      <h4 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.1rem', margin: '0 0 0.6rem 0', lineHeight: 1.3 }}>
+                        {post.title}
+                      </h4>
+                      <p style={{ color: '#666', fontSize: '0.88rem', lineHeight: 1.55, margin: '0 0 1rem 0', flex: 1 }}>
+                        {post.excerpt}
+                      </p>
+                      <span style={{ color: '#0F2A1D', fontWeight: 700, fontSize: '0.82rem', textTransform: 'uppercase', letterSpacing: '0.03em' }}>
+                        Tovább olvasom →
+                      </span>
+                    </div>
                   </Link>
                 ))}
               </div>
@@ -1471,56 +1506,67 @@ const WorkwearShop = () => {
       {/* Footer */}
       <footer style={{ backgroundColor: '#0a1f19', color: '#bbb', padding: '3rem 1.5rem 1rem', fontSize: '0.9rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '2rem', marginBottom: '2rem' }}>
-            <div>
-              <Link to="/" style={{ textDecoration: 'none' }}>
-                <h4 style={{ color: 'white', marginTop: 0 }}>🛡️ TridentShop</h4>
-              </Link>
-              <p style={{ lineHeight: 1.6 }}>
-                Munkavédelmi ruházat, cipők és felszerelések közvetlenül raktárról.
-              </p>
+          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', marginBottom: '2rem', alignItems: 'flex-start' }}>
+            {/* Bal oldal: link-oszlopok */}
+            <div style={{
+              flex: '3 1 480px', display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem'
+            }}>
+              <div>
+                <Link to="/" style={{ textDecoration: 'none' }}>
+                  <h4 style={{ color: 'white', marginTop: 0 }}>🛡️ TridentShop</h4>
+                </Link>
+                <p style={{ lineHeight: 1.6 }}>
+                  Munkavédelmi ruházat, cipők és felszerelések közvetlenül raktárról.
+                </p>
+              </div>
+              <div>
+                <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Kategóriák</h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {productCategories.map(cat => (
+                    <li key={cat.id} style={{ marginBottom: '0.5rem' }}>
+                      <button onClick={() => { setSelectedCategory(cat.id); window.scrollTo(0, 0); }}
+                        style={{ background: 'none', border: 'none', color: '#bbb', cursor: 'pointer', padding: 0, textAlign: 'left' }}>
+                        {cat.name}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <div>
+                <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Információ</h4>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/blog" style={{ color: '#bbb', textDecoration: 'none' }}>Blog</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/wishlist" style={{ color: '#bbb', textDecoration: 'none' }}>Kedvenceim</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/gyik" style={{ color: '#bbb', textDecoration: 'none' }}>Gyakori kérdések</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/rendeles-kovetes" style={{ color: '#bbb', textDecoration: 'none' }}>Rendeléskövetés</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/fiok" style={{ color: '#bbb', textDecoration: 'none' }}>Fiókom</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/about" style={{ color: '#bbb', textDecoration: 'none' }}>Rólunk</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/shipping" style={{ color: '#bbb', textDecoration: 'none' }}>Szállítási feltételek</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/terms" style={{ color: '#bbb', textDecoration: 'none' }}>ÁSZF</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/privacy" style={{ color: '#bbb', textDecoration: 'none' }}>Adatvédelem</Link></li>
+                  <li style={{ marginBottom: '0.5rem' }}><Link to="/impressum" style={{ color: '#bbb', textDecoration: 'none' }}>Impresszum</Link></li>
+                </ul>
+              </div>
+              <div>
+                <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Kapcsolat</h4>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
+                </p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
+                  <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
+                </p>
+                <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.
+                </p>
+              </div>
             </div>
-            <div>
-              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Kategóriák</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                {productCategories.map(cat => (
-                  <li key={cat.id} style={{ marginBottom: '0.5rem' }}>
-                    <button onClick={() => { setSelectedCategory(cat.id); window.scrollTo(0, 0); }}
-                      style={{ background: 'none', border: 'none', color: '#bbb', cursor: 'pointer', padding: 0, textAlign: 'left' }}>
-                      {cat.name}
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            <div>
-              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Információ</h4>
-              <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/blog" style={{ color: '#bbb', textDecoration: 'none' }}>Blog</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/wishlist" style={{ color: '#bbb', textDecoration: 'none' }}>Kedvenceim</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/gyik" style={{ color: '#bbb', textDecoration: 'none' }}>Gyakori kérdések</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/rendeles-kovetes" style={{ color: '#bbb', textDecoration: 'none' }}>Rendeléskövetés</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/fiok" style={{ color: '#bbb', textDecoration: 'none' }}>Fiókom</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/about" style={{ color: '#bbb', textDecoration: 'none' }}>Rólunk</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/shipping" style={{ color: '#bbb', textDecoration: 'none' }}>Szállítási feltételek</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/terms" style={{ color: '#bbb', textDecoration: 'none' }}>ÁSZF</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/privacy" style={{ color: '#bbb', textDecoration: 'none' }}>Adatvédelem</Link></li>
-                <li style={{ marginBottom: '0.5rem' }}><Link to="/impressum" style={{ color: '#bbb', textDecoration: 'none' }}>Impresszum</Link></li>
-              </ul>
-            </div>
-            <div>
-              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Kapcsolat</h4>
-              <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <Phone size={14} /> {homepageContent.topBarPhone || '+36 30 272 2571'}
-              </p>
-              <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.5rem' }}>
-                <Mail size={14} /> {homepageContent.topBarEmail || 'iroda@tuz-munkavedelmiszaki.hu'}
-              </p>
-              <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.
-              </p>
-            </div>
-            <div>
+
+            {/* Jobb oldal: hírlevél, kiemelt, elkülönített doboz */}
+            <div style={{
+              flex: '1 1 280px', maxWidth: '340px', backgroundColor: '#12362a',
+              border: '1px solid #1e4a3a', padding: '1.5rem'
+            }}>
               <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Hírlevél</h4>
               <p style={{ color: '#bbb', fontSize: '0.85rem', marginTop: 0 }}>
                 Akciók, új termékek, kuponok — havonta max. 2 email, spam nélkül.
@@ -1528,10 +1574,10 @@ const WorkwearShop = () => {
               {newsletterDone ? (
                 <p style={{ color: '#C9A961', fontWeight: 'bold' }}>✔ Feliratkoztál, köszönjük!</p>
               ) : (
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
                   <input type="email" placeholder="Email-címed" value={newsletterEmail}
                     onChange={e => setNewsletterEmail(e.target.value)}
-                    style={{ flex: 1, minWidth: 0, padding: '0.5rem', borderRadius: '4px', border: '1px solid #555', backgroundColor: '#1a3f33', color: 'white', fontSize: '0.85rem' }} />
+                    style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid #555', backgroundColor: '#1a3f33', color: 'white', fontSize: '0.85rem', boxSizing: 'border-box' }} />
                   <button onClick={async () => {
                     if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(newsletterEmail)) { alert('Kérlek, érvényes email-címet adj meg.'); return; }
                     try {
@@ -1541,7 +1587,7 @@ const WorkwearShop = () => {
                       });
                     } catch (e) { /* offline dev: nem blokkolunk */ }
                     setNewsletterDone(true);
-                  }} style={{ backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.5rem 0.9rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}>
+                  }} style={{ width: '100%', backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.65rem 0.9rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}>
                     Feliratkozom
                   </button>
                 </div>
