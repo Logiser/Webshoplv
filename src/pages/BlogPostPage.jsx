@@ -172,8 +172,12 @@ const BlogPostPage = () => {
 
       <article style={{ maxWidth: '800px', margin: '2rem auto', padding: '0 1.5rem' }}>
         {post.image && (
-          <img src={post.image} alt={post.title}
-            style={{ width: '100%', maxHeight: '400px', objectFit: 'cover', borderRadius: '8px', marginBottom: '2rem' }} />
+          // objectFit: cover levágta a termékfotókat egy fix magasságú dobozban —
+          // most világosszürke hátterű, contain-es doboz, a teljes kép látszik
+          <div style={{ backgroundColor: '#f5f5f5', borderRadius: '8px', marginBottom: '2rem', display: 'flex', alignItems: 'center', justifyContent: 'center', height: '340px' }}>
+            <img src={post.image} alt={post.title}
+              style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+          </div>
         )}
 
         <div style={{ display: 'flex', gap: '1rem', color: '#999', marginBottom: '1rem', fontSize: '0.9rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -286,7 +290,7 @@ const BlogPostPage = () => {
 
       {otherPosts.length > 0 && (
         <div style={{ maxWidth: '900px', margin: '3rem auto 2rem', padding: '0 1.5rem' }}>
-          <h2 style={{ color: '#0F2A1D' }}>📚 Kapcsolódó cikkek</h2>
+          <h2 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', textTransform: 'uppercase' }}>Kapcsolódó cikkek</h2>
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '1.5rem',
@@ -294,12 +298,11 @@ const BlogPostPage = () => {
           }}>
             {otherPosts.map(p => (
               <Link key={p.id} to={`/blog/${p.slug}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                <div style={{
-                  backgroundColor: 'white', borderRadius: '8px', overflow: 'hidden',
-                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)'
-                }}>
+                <div style={{ backgroundColor: 'white', border: '1px solid #eee' }}>
                   {p.image && (
-                    <img src={p.image} alt={p.title} loading="lazy" style={{ width: '100%', height: '120px', objectFit: 'cover' }} />
+                    <div style={{ backgroundColor: '#f5f5f5', padding: '0.75rem', height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <img src={p.image} alt={p.title} loading="lazy" style={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+                    </div>
                   )}
                   <div style={{ padding: '1rem' }}>
                     <h3 style={{ color: '#0F2A1D', fontSize: '1rem', margin: 0 }}>{p.title}</h3>

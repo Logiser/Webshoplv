@@ -696,7 +696,7 @@ const defaultBlogPosts = [
 <p>Az új cipő bejáratása minimum 1 hét. Mindennapi viseléshez vegyél 2 párat, és váltogasd! Tisztítsd rendszeresen, kezeld bőrápolóval.</p>`,
     author: 'TridentShop',
     date: '2024-11-15',
-    image: 'https://images.unsplash.com/photo-1512374382149-233c42b6a83b?w=800&h=400&fit=crop',
+    image: '/images/products/ft15_bg.jpg',
     tags: ['munkacipo', 'utmutato', 'tanacsok']
   },
   {
@@ -720,7 +720,7 @@ const defaultBlogPosts = [
 <p>Konvektív hideg + kontakthideg + vízhatlanság jelölése. Téli kültéri munkához.</p>`,
     author: 'TridentShop',
     date: '2024-11-22',
-    image: 'https://images.unsplash.com/photo-1584634731339-252c581abfc5?w=800&h=400&fit=crop',
+    image: '/images/products/a120_bk.jpg',
     tags: ['kesztyu', 'szabvany', 'utmutato']
   },
   {
@@ -938,7 +938,7 @@ const defaultBlogPosts = [
 <p><em>Tipp: cégünk, a Trident Shield Group Kft. munkavédelmi szolgáltatásként EV juttatási rend készítésében is segít — keress minket elérhetőségeinken!</em></p>`,
     author: 'TridentShop',
     date: '2026-01-20',
-    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
+    image: '/images/products/pw90_ye.jpg',
     tags: ['jogszabaly', 'munkaltato', 'vedoeszkoz']
   },
   {
