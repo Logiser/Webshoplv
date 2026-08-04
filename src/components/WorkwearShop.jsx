@@ -903,8 +903,11 @@ const WorkwearShop = () => {
                     border: '3px solid #C9A961', position: 'relative', overflow: 'hidden'
                   }}>
                     {rep && (
+                      // boxSizing: border-box nélkül a padding a 100%-hoz adódott hozzá,
+                      // ami kilógatta és a kör overflow:hidden-je levágta a kép szélét
                       <img src={rep.image} alt="" loading="lazy" style={{
-                        position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', padding: '0.85rem'
+                        position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain',
+                        padding: '0.6rem', boxSizing: 'border-box'
                       }} />
                     )}
                   </div>
