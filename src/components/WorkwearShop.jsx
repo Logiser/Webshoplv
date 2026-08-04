@@ -864,10 +864,11 @@ const WorkwearShop = () => {
             position: 'absolute', bottom: 0, left: 0, right: 0, height: '14px',
             backgroundColor: '#C9A961', clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)'
           }} />
-          <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative' }}>
+          <div style={{ maxWidth: '1000px', margin: '0 auto', position: 'relative' }}>
+            {/* whiteSpace nowrap + vw-alapú betűméret: mindig EGY sorban marad, kis képernyőn is */}
             <h3 style={{
-              fontFamily: 'Georgia, serif', fontSize: 'clamp(2.2rem, 6vw, 3.6rem)', color: 'white',
-              margin: '0 0 1rem 0', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.01em'
+              fontFamily: 'Georgia, serif', fontSize: 'clamp(1.4rem, 4.2vw, 3.2rem)', color: 'white',
+              margin: '0 0 1rem 0', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.01em', whiteSpace: 'nowrap'
             }}>
               A HAMISÍTVÁNY NEM VÉD.
             </h3>
