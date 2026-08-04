@@ -840,6 +840,44 @@ const WorkwearShop = () => {
         </div>
       )}
 
+      {/* Akciós ajánlatok sáv — az 1. és 2. hely mindig a két legjobb akció, a 3. hely egy 1+1 ajánlat */}
+      {!selectedCategory && !searchTerm && (() => {
+        const saleItems = products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
+          .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)
+          .slice(0, 10);
+        if (saleItems.length === 0) return null;
+        const bundleProduct = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).find(p => p && p.stock > 1);
+        const items = [...saleItems];
+        if (bundleProduct) items.splice(2, 0, { ...bundleProduct, isBundleSlot: true });
+        return <SaleCarouselRow items={items} />;
+      })()}
+
+      {/* Bátor állítás-sáv (Liquid Death "misszió" minta): nagy, kövér claim + ferde
+          vágású arany csík — ugyanaz a diagonál-motívum, mint a heróban */}
+      {!selectedCategory && !searchTerm && (
+        <div style={{ position: 'relative', backgroundColor: '#0F2A1D', padding: isMobile ? '3.5rem 1.5rem' : '5rem 1.5rem', textAlign: 'center', overflow: 'hidden' }}>
+          <div style={{
+            position: 'absolute', top: 0, left: 0, right: 0, height: '14px',
+            backgroundColor: '#C9A961', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 40%)'
+          }} />
+          <div style={{
+            position: 'absolute', bottom: 0, left: 0, right: 0, height: '14px',
+            backgroundColor: '#C9A961', clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)'
+          }} />
+          <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative' }}>
+            <h3 style={{
+              fontFamily: 'Georgia, serif', fontSize: 'clamp(2.2rem, 6vw, 3.6rem)', color: 'white',
+              margin: '0 0 1rem 0', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.01em'
+            }}>
+              A HAMISÍTVÁNY NEM VÉD.
+            </h3>
+            <p style={{ color: '#C9A961', fontSize: '1.15rem', fontWeight: 700, margin: 0, letterSpacing: '0.03em' }}>
+              100% EREDETI PORTWEST — CE-TANÚSÍTVÁNNYAL, NEM UTÁNZAT.
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* Kategória-ikonok — Uniqlo "Search by category" mintája, Liquid Death-es kontraszttal:
           arany gyűrűs kör-ikonok, nagybetűs, kövér feliratok — fehér alapon (a sötétzöld
           sávok a hero és a misszió-sáv körül maradnak, hogy megmaradjon a ritmus) */}
@@ -878,44 +916,6 @@ const WorkwearShop = () => {
           </div>
         </div>
       )}
-
-      {/* Bátor állítás-sáv (Liquid Death "misszió" minta): nagy, kövér claim + ferde
-          vágású arany csík — ugyanaz a diagonál-motívum, mint a heróban */}
-      {!selectedCategory && !searchTerm && (
-        <div style={{ position: 'relative', backgroundColor: '#0F2A1D', padding: isMobile ? '3.5rem 1.5rem' : '5rem 1.5rem', textAlign: 'center', overflow: 'hidden' }}>
-          <div style={{
-            position: 'absolute', top: 0, left: 0, right: 0, height: '14px',
-            backgroundColor: '#C9A961', clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 40%)'
-          }} />
-          <div style={{
-            position: 'absolute', bottom: 0, left: 0, right: 0, height: '14px',
-            backgroundColor: '#C9A961', clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)'
-          }} />
-          <div style={{ maxWidth: '820px', margin: '0 auto', position: 'relative' }}>
-            <h3 style={{
-              fontFamily: 'Georgia, serif', fontSize: 'clamp(2.2rem, 6vw, 3.6rem)', color: 'white',
-              margin: '0 0 1rem 0', fontWeight: 700, lineHeight: 1.05, letterSpacing: '-0.01em'
-            }}>
-              A HAMISÍTVÁNY NEM VÉD.
-            </h3>
-            <p style={{ color: '#C9A961', fontSize: '1.15rem', fontWeight: 700, margin: 0, letterSpacing: '0.03em' }}>
-              100% EREDETI PORTWEST — CE-TANÚSÍTVÁNNYAL, NEM UTÁNZAT.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Akciós ajánlatok sáv — az 1. és 2. hely mindig a két legjobb akció, a 3. hely egy 1+1 ajánlat */}
-      {!selectedCategory && !searchTerm && (() => {
-        const saleItems = products.filter(p => p.sale && p.sale.active && p.sale.price < p.price)
-          .sort((a, b) => (b.price - b.sale.price) / b.price - (a.price - a.sale.price) / a.price)
-          .slice(0, 10);
-        if (saleItems.length === 0) return null;
-        const bundleProduct = BUNDLE_1PLUS1_IDS.map(id => products.find(p => p.id === id)).find(p => p && p.stock > 1);
-        const items = [...saleItems];
-        if (bundleProduct) items.splice(2, 0, { ...bundleProduct, isBundleSlot: true });
-        return <SaleCarouselRow items={items} />;
-      })()}
 
       {/* Breadcrumb */}
       {(selectedCategory || searchTerm) && (
