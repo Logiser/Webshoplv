@@ -192,7 +192,7 @@ const OrderTrackingPage = () => {
         <div style={{ backgroundColor: '#0F2A1D', color: 'white', padding: '1.25rem', borderRadius: '8px', marginTop: '2rem', textAlign: 'center' }}>
           <p style={{ margin: '0 0 0.4rem 0', fontWeight: 'bold' }}>Nem találod a rendelésed?</p>
           <p style={{ margin: 0, opacity: 0.9, fontSize: '0.92rem' }}>
-            Hívj minket: <strong style={{ color: '#C9A961' }}>+36 30 272 2571</strong> · iroda@tuz-munkavedelmiszaki.com
+            Hívj minket: <strong style={{ color: '#C9A961' }}>+36 30 272 2571</strong> · iroda@tuz-munkavedelmiszaki.hu
           </p>
         </div>
       </div>

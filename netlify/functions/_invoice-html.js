@@ -18,7 +18,7 @@ const CEG = {
   telephely: '4030 Debrecen, Keleti Ipartelep utca 4.',
   cegjegyzek: '15-09-093902',
   adoszam: '32873537-1-15',
-  email: 'iroda@tuz-munkavedelmiszaki.com',
+  email: 'iroda@tuz-munkavedelmiszaki.hu',
   telefon: '+36 30 272 2571',
   web: 'tridentshop.hu'
 };

@@ -160,7 +160,7 @@ export const generateInvoiceHTML = (order) => {
     <p><strong>Trident Shield Group Kft.</strong></p>
     <p>4030 Debrecen, Keleti Ipartelep utca 4.</p>
     <p>Adószám: 12345678-2-06</p>
-    <p>Email: iroda@tuz-munkavedelmiszaki.com</p>
+    <p>Email: iroda@tuz-munkavedelmiszaki.hu</p>
     <p>Tel: +36 30 272 2571</p>
   </div>
   <div class="party">
@@ -242,7 +242,7 @@ export const generateInvoiceHTML = (order) => {
 
 <div class="footer">
   <p><strong>Köszönjük a megrendelést!</strong></p>
-  <p>Kapcsolat: iroda@tuz-munkavedelmiszaki.com | +36 30 272 2571 | www.tuz-munkavedelmiszaki.hu</p>
+  <p>Kapcsolat: iroda@tuz-munkavedelmiszaki.hu | +36 30 272 2571 | www.tuz-munkavedelmiszaki.hu</p>
   <p style="margin-top: 0.5rem; font-size: 0.75rem;">
     Az ÁSZF letölthető a webshopon. A számla a 2007. évi CXXVII. törvény szerint került kiállításra.
   </p>

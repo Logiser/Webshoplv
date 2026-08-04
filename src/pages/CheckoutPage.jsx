@@ -295,7 +295,7 @@ const CheckoutPage = () => {
           <Check size={64} style={{ color: '#4CAF50', margin: '0 auto 1rem' }} />
           <h1 style={{ color: '#0F2A1D' }}>Rendelés sikeresen elküldve!</h1>
           <p style={{ color: '#666', marginBottom: '1rem' }}>
-            Köszönjük a rendelésedért! Az iroda@tuz-munkavedelmiszaki.com email címre elküldtük a rendelés részleteit.
+            Köszönjük a rendelésedért! Az iroda@tuz-munkavedelmiszaki.hu email címre elküldtük a rendelés részleteit.
           </p>
           <p style={{ color: '#999', marginBottom: '2rem' }}>
             Rövid időn belül felveszik veled a kapcsolatot.

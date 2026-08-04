@@ -13,11 +13,11 @@ exports.handler = async (event) => {
   }
 
   const RESEND_API_KEY = process.env.RESEND_API_KEY;
-  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iroda@tuz-munkavedelmiszaki.com';
+  const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'iroda@tuz-munkavedelmiszaki.hu';
   const FROM_EMAIL = process.env.FROM_EMAIL || 'onboarding@resend.dev';
   const SITE_URL = process.env.SITE_URL || process.env.URL || 'https://tridentshop.hu';
   // Megjegyzés: amíg nincs igazolt saját domain, FROM_EMAIL = onboarding@resend.dev
-  // Saját domain után: FROM_EMAIL = noreply@tuz-munkavedelmiszaki.com
+  // Saját domain után: FROM_EMAIL = noreply@tuz-munkavedelmiszaki.hu
 
   if (!RESEND_API_KEY) {
     console.error('RESEND_API_KEY hiányzik!');
@@ -201,7 +201,7 @@ exports.handler = async (event) => {
     <div style="margin-top: 24px; padding: 16px; background: #fff9e6; border-left: 4px solid #FF9800; border-radius: 4px;">
       <p style="margin: 0; font-size: 0.9rem;">
         💡 <strong>Kérdésed van?</strong> Bátran írj nekünk: 
-        <a href="mailto:iroda@tuz-munkavedelmiszaki.com" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.com</a>
+        <a href="mailto:iroda@tuz-munkavedelmiszaki.hu" style="color: #0F2A1D;">iroda@tuz-munkavedelmiszaki.hu</a>
         vagy hívj: +36 30 272 2571
       </p>
     </div>

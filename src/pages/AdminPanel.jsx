@@ -2513,7 +2513,7 @@ Kérjük, küldjenek visszaigazolást az árról és a szállítási határidőr
 
 Üdvözlettel,
 Trident Shield Group Kft.
-iroda@tuz-munkavedelmiszaki.com
+iroda@tuz-munkavedelmiszaki.hu
 +36 30 272 2571`;
 
     window.location.href = `mailto:?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
@@ -3170,7 +3170,7 @@ const ContentManager = () => {
         </FormField>
         <FormField label="Email">
           <input type="text" value={form.topBarEmail} onChange={e => setForm({ ...form, topBarEmail: e.target.value })}
-            placeholder="iroda@tuz-munkavedelmiszaki.com" style={inputStyle} />
+            placeholder="iroda@tuz-munkavedelmiszaki.hu" style={inputStyle} />
         </FormField>
       </div>
 

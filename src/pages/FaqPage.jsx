@@ -31,7 +31,7 @@ const FAQS = [
   },
   {
     q: 'Nagyobb tételben, céges beszerzésként is rendelhetek?',
-    a: 'Természetesen — céges és intézményi megrendeléseket is kiszolgálunk, nagyobb tételnél egyedi árajánlatot adunk. Írj az iroda@tuz-munkavedelmiszaki.com címre vagy hívd a +36 30 272 2571 számot.'
+    a: 'Természetesen — céges és intézményi megrendeléseket is kiszolgálunk, nagyobb tételnél egyedi árajánlatot adunk. Írj az iroda@tuz-munkavedelmiszaki.hu címre vagy hívd a +36 30 272 2571 számot.'
   },
   {
     q: 'Eredeti Portwest termékeket forgalmaztok?',
@@ -119,7 +119,7 @@ const FaqPage = () => {
         <div style={{ backgroundColor: '#0F2A1D', color: 'white', padding: '1.5rem', borderRadius: '8px', marginTop: '2rem', textAlign: 'center' }}>
           <p style={{ margin: '0 0 0.5rem 0', fontWeight: 'bold' }}>Nem találod a választ?</p>
           <p style={{ margin: 0, opacity: 0.9 }}>
-            Hívj minket: <strong style={{ color: '#C9A961' }}>+36 30 272 2571</strong> · iroda@tuz-munkavedelmiszaki.com
+            Hívj minket: <strong style={{ color: '#C9A961' }}>+36 30 272 2571</strong> · iroda@tuz-munkavedelmiszaki.hu
           </p>
         </div>
       </div>
