@@ -1506,10 +1506,11 @@ const WorkwearShop = () => {
       {/* Footer */}
       <footer style={{ backgroundColor: '#0a1f19', color: '#bbb', padding: '3rem 1.5rem 1rem', fontSize: '0.9rem' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap', marginBottom: '2rem', alignItems: 'flex-start' }}>
-            {/* Bal oldal: link-oszlopok */}
+          <div style={{ marginBottom: '2rem' }}>
+            {/* Link-oszlopok — a hírlevél-feliratkozás korábban itt volt jobb oldalon,
+                a felhasználó kérésére eltávolítva */}
             <div style={{
-              flex: '3 1 480px', display: 'grid',
+              display: 'grid',
               gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem'
             }}>
               <div>
@@ -1560,38 +1561,6 @@ const WorkwearShop = () => {
                   <MapPin size={14} /> 4030 Debrecen, Keleti Ipartelep utca 4.
                 </p>
               </div>
-            </div>
-
-            {/* Jobb oldal: hírlevél, kiemelt, elkülönített doboz */}
-            <div style={{
-              flex: '1 1 280px', maxWidth: '340px', backgroundColor: '#12362a',
-              border: '1px solid #1e4a3a', padding: '1.5rem'
-            }}>
-              <h4 style={{ color: 'white', marginTop: 0, textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '0.85rem' }}>Hírlevél</h4>
-              <p style={{ color: '#bbb', fontSize: '0.85rem', marginTop: 0 }}>
-                Akciók, új termékek, kuponok — havonta max. 2 email, spam nélkül.
-              </p>
-              {newsletterDone ? (
-                <p style={{ color: '#C9A961', fontWeight: 'bold' }}>✔ Feliratkoztál, köszönjük!</p>
-              ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-                  <input type="email" placeholder="Email-címed" value={newsletterEmail}
-                    onChange={e => setNewsletterEmail(e.target.value)}
-                    style={{ width: '100%', padding: '0.6rem', borderRadius: '4px', border: '1px solid #555', backgroundColor: '#1a3f33', color: 'white', fontSize: '0.85rem', boxSizing: 'border-box' }} />
-                  <button onClick={async () => {
-                    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(newsletterEmail)) { alert('Kérlek, érvényes email-címet adj meg.'); return; }
-                    try {
-                      await fetch('/.netlify/functions/newsletter-api', {
-                        method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ op: 'subscribe', email: newsletterEmail, source: 'footer' })
-                      });
-                    } catch (e) { /* offline dev: nem blokkolunk */ }
-                    setNewsletterDone(true);
-                  }} style={{ width: '100%', backgroundColor: '#C9A961', color: '#0F2A1D', border: 'none', padding: '0.65rem 0.9rem', borderRadius: '4px', cursor: 'pointer', fontWeight: 'bold', fontSize: '0.85rem' }}>
-                    Feliratkozom
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 
