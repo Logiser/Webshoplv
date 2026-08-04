@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, User, ChevronRight, Clock, ShoppingCart, ChevronDown } from 'lucide-react';
+import { ArrowLeft, User, ChevronRight, Clock, ShoppingCart, ChevronDown } from 'lucide-react';
 import { getBlogPostBySlug, getBlogPosts, getVisibleProducts } from '../data/storage';
 import { readingTime } from './BlogPage';
 
@@ -187,10 +187,7 @@ const BlogPostPage = () => {
             </span>
           )}
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Calendar size={14} /> {new Date(post.date).toLocaleDateString('hu-HU')}
-          </span>
-          <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-            <Clock size={14} /> {readingTime(post.content)} perc olvasás
+            <Clock size={14} /> {readingTime(post)} perc olvasás
           </span>
           <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
             <User size={14} /> {post.author}
@@ -307,7 +304,7 @@ const BlogPostPage = () => {
                   <div style={{ padding: '1rem' }}>
                     <h3 style={{ color: '#0F2A1D', fontSize: '1rem', margin: 0 }}>{p.title}</h3>
                     <div style={{ color: '#999', fontSize: '0.78rem', marginTop: '0.4rem' }}>
-                      {readingTime(p.content)} perc olvasás
+                      {readingTime(p)} perc olvasás
                     </div>
                   </div>
                 </div>

@@ -1,12 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock } from 'lucide-react';
+import { ArrowLeft, Clock } from 'lucide-react';
 import { getBlogPosts } from '../data/storage';
 
-// Olvasási idő becslés a HTML-tartalomból (200 szó/perc)
-export const readingTime = (html) => {
-  const words = (html || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
-  return Math.max(1, Math.round(words / 200));
+// Olvasási idő: 1-3 perc között, cikkenként állandó (nem valódi becslés a
+// szöveghosszból — a cikk azonosítója alapján determinisztikusan "sorsolt",
+// hogy ne változzon újratöltésre)
+export const readingTime = (post) => {
+  const key = (post && (post.slug || post.id)) ? String(post.slug || post.id) : '';
+  let hash = 0;
+  for (let i = 0; i < key.length; i++) hash = (hash * 31 + key.charCodeAt(i)) >>> 0;
+  return 1 + (hash % 3);
 };
 
 const BlogPage = () => {
@@ -130,10 +134,7 @@ const BlogPage = () => {
                 </span>
                 <div style={{ display: 'flex', gap: '1rem', fontSize: '0.8rem', color: '#999', marginBottom: '0.6rem' }}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    <Calendar size={12} /> {new Date(featured.date).toLocaleDateString('hu-HU')}
-                  </span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                    <Clock size={12} /> {readingTime(featured.content)} perc olvasás
+                    <Clock size={12} /> {readingTime(featured)} perc olvasás
                   </span>
                 </div>
                 <h2 style={{ color: '#0F2A1D', fontSize: '1.6rem', margin: '0 0 0.75rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.25 }}>
@@ -172,10 +173,7 @@ const BlogPage = () => {
                 <div style={{ padding: '1.35rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                   <div style={{ display: 'flex', gap: '1rem', fontSize: '0.78rem', color: '#999', marginBottom: '0.6rem' }}>
                     <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Calendar size={12} /> {new Date(post.date).toLocaleDateString('hu-HU')}
-                    </span>
-                    <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-                      <Clock size={12} /> {readingTime(post.content)} perc
+                      <Clock size={12} /> {readingTime(post)} perc
                     </span>
                   </div>
                   <h2 style={{ color: '#0F2A1D', fontSize: '1.1rem', margin: '0 0 0.5rem 0', fontFamily: 'Georgia, serif', lineHeight: 1.3 }}>

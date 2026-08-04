@@ -6,6 +6,7 @@ import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackPro
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
 import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from './SizeChartModal';
+import { readingTime } from '../pages/BlogPage';
 import LanguageSwitcher from './LanguageSwitcher';
 import { useLang } from '../i18n/LanguageContext';
 
@@ -1423,7 +1424,7 @@ const WorkwearShop = () => {
                     </div>
                     <div style={{ padding: '1.25rem', display: 'flex', flexDirection: 'column', flex: 1 }}>
                       <p style={{ color: '#999', fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', margin: '0 0 0.5rem 0' }}>
-                        {(post.tags && post.tags[0]) || 'Szakmai tudás'} · {new Date(post.date).toLocaleDateString('hu-HU')}
+                        {(post.tags && post.tags[0]) || 'Szakmai tudás'} · {readingTime(post)} perc olvasás
                       </p>
                       <h4 style={{ color: '#0F2A1D', fontFamily: 'Georgia, serif', fontSize: '1.1rem', margin: '0 0 0.6rem 0', lineHeight: 1.3 }}>
                         {post.title}
