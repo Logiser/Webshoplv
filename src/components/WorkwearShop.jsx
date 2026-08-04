@@ -872,7 +872,7 @@ const WorkwearShop = () => {
               A HAMISÍTVÁNY NEM VÉD.
             </h3>
             <p style={{ color: '#C9A961', fontSize: '1.15rem', fontWeight: 700, margin: 0, letterSpacing: '0.03em' }}>
-              100% EREDETI PORTWEST — CE-TANÚSÍTVÁNNYAL, NEM UTÁNZAT.
+              NÁLUNK NINCS UTÁNZAT — EREDETI, CE-TANÚSÍTVÁNNYAL RENDELKEZŐ TERMÉKEK.
             </p>
           </div>
         </div>

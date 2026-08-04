@@ -726,28 +726,25 @@ const defaultBlogPosts = [
   {
     id: 3,
     slug: 'jol-lathatosagi-ruha-szabvany',
-    title: 'Jól láthatósági ruházat: mikor kötelező?',
-    excerpt: 'EN ISO 20471 szabvány a hi-vis munkaruhákról. Mit kell tudni.',
-    content: `<h2>Mikor kell hi-vis ruhát viselni?</h2>
-<p>Magyar jogszabály szerint kötelező:</p>
+    title: 'Hi-vis ruházat: mikor kötelező, és mit jelentenek az osztályok?',
+    excerpt: 'EN ISO 20471 érthetően: 1-2-3. osztály, fluoreszcens és retroreflektív felületek, mosási élettartam, tipikus munkakörök.',
+    content: `<h2>Mi számít jól láthatósági (hi-vis) ruhának?</h2>
+<p>Az <strong>EN ISO 20471</strong> szabvány szerinti ruházat két elemből áll: <strong>fluoreszcens háttéranyagból</strong> (sárga, narancs vagy piros — nappal ez „világít”) és <strong>retroreflektív csíkokból</strong> (éjjel a fényszóró fényét veri vissza). A kettő EGYÜTT ad védelmet: a fluoreszcens szín nappali és szürkületi, a reflexcsík éjszakai láthatóságot biztosít.</p>
+<h2>A három osztály — melyik mikor kell?</h2>
 <ul>
-<li>Útügyi munkáknál (KRESZ)</li>
-<li>Vasúti pályán</li>
-<li>Repülőtéri pályán</li>
-<li>Építőipari helyszíneken, ahol gépjárműforgalom van</li>
+<li><strong>1. osztály:</strong> a legkisebb előírt fluoreszcens és reflex felület. Csak alacsony kockázatú helyre: zárt telephely, parkoló, ahol a járműforgalom lassú.</li>
+<li><strong>2. osztály:</strong> közepes felület — tipikusan mellény vagy póló. Raktári targoncaforgalom, telephelyi rakodás, alacsonyabb sebességű (max. kb. 50 km/h) forgalom közelében.</li>
+<li><strong>3. osztály:</strong> a legnagyobb felület, és a szabvány szerint a törzset ÉS a végtagokat is fednie kell (hosszú ujjú kabát vagy kabát+nadrág együtt). Közút, autópálya, vasút, repülőtér — ahol gyors forgalom mellett dolgozol.</li>
 </ul>
-<h2>Osztályok</h2>
-<ul>
-<li><strong>1. osztály:</strong> Alacsony láthatóság (mellény) - parkolóhelyen, raktárban</li>
-<li><strong>2. osztály:</strong> Közepes láthatóság (mellény + nadrág VAGY kabát) - közúti munka 50 km/h alatt</li>
-<li><strong>3. osztály:</strong> Maximális láthatóság (komplett szett vagy egész testet fedő hi-vis) - autópálya, gyorsforgalmi út</li>
-</ul>
-<h2>Színek</h2>
-<p>Fluoreszcens sárga, narancs vagy piros háttér + retroreflektív (visszaverő) csíkok. A reflexcsík minimum 50 mm széles, és mosás után is meg kell őriznie funkcióját.</p>`,
+<p>Fontos: az osztály a TELJES viselt szettre értendő. Egy 2. osztályú kabát + 1. osztályú nadrág EGYÜTT elérheti a 3. osztályt — a gyártói tanúsítás ezt külön jelöli.</p>
+<h2>Kinek kötelező?</h2>
+<p>A munkáltató a kockázatértékelés alapján írja elő (Mvt. 56. §) — a gyakorlatban kötelező: közúton és út mellett végzett munkánál, vasúti pályán, repülőtéren, építkezésen ahol munkagép- vagy járműforgalom van, valamint hulladékszállításban és rakodásnál. A KRESZ a járművéből kiszálló sofőrnek is előírja lakott területen kívül.</p>
+<h2>Amire kevesen figyelnek: a mosási élettartam</h2>
+<p>A címkén jelölt <strong>maximális mosásszám</strong> (tipikusan 25-50×) után a fluoreszcens szín fakulása miatt a ruha már NEM számít szabványosnak — akkor sem, ha „még jól néz ki”. Kopott, olajos, kifakult hi-vis = nincs védelem, és ellenőrzésen hiányosságnak számít.</p>`,
     author: 'TridentShop',
-    date: '2024-12-01',
-    image: 'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?w=800&h=400&fit=crop',
-    tags: ['hi-vis', 'jogszabaly', 'kotelezo']
+    date: '2026-06-12',
+    image: '/images/products/c464_yn.jpg',
+    tags: ['hi-vis', 'szabvany', 'kotelezo', 'EN ISO 20471']
   },
   {
     id: 4,
@@ -971,13 +968,172 @@ const defaultBlogPosts = [
     date: '2026-03-08',
     image: '/images/products/fc17_br.jpg',
     tags: ['munkacipo', 'karbantartas', 'tippek']
+  },
+  {
+    id: 14,
+    slug: 'en-iso-21420-szabvany-magyarazat',
+    title: 'Mit jelent az EN ISO 21420 szabvány a védőkesztyűkön?',
+    excerpt: 'A védőkesztyűk „alapszabványa” érthetően: mit garantál, mit nem, és miért szerepel minden minőségi kesztyű címkéjén.',
+    content: `<h2>Mi az EN ISO 21420?</h2>
+<p>Az <strong>EN ISO 21420:2020</strong> a védőkesztyűk <strong>általános követelményeit</strong> rögzíti — 2020-ban váltotta a korábbi EN 420 szabványt. Minden CE-jelölésű védőkesztyűnek meg kell felelnie neki, függetlenül attól, milyen konkrét veszély ellen véd.</p>
+<h2>Mit garantál?</h2>
+<ul>
+<li><strong>Ártalmatlanság:</strong> a kesztyű anyaga maga nem károsíthatja a viselőt — szabályozott a pH-érték (3,5–9,5), bőr kesztyűnél a króm(VI)-tartalom (max. 3 mg/kg), és tiltottak bizonyos allergén azo-színezékek.</li>
+<li><strong>Méretezés és kényelem:</strong> egységes méretrendszer (6–11), minimális kézügyesség-követelmény, hogy a kesztyűben dolgozni is lehessen.</li>
+<li><strong>Jelölés és tájékoztató:</strong> a kesztyűn olvashatónak kell lennie a gyártónak, típusnak, méretnek és piktogramoknak; kötelező a magyar nyelvű tájékoztató.</li>
+</ul>
+<h2>Mit NEM garantál?</h2>
+<p>Fontos: az EN ISO 21420 <strong>önmagában nem jelent védelmi teljesítményt</strong>! Azt a specifikus szabványok adják hozzá: <strong>EN 388</strong> (mechanikai), <strong>EN 511</strong> (hideg), <strong>EN 407</strong> (hő), <strong>EN ISO 374</strong> (vegyi). Egy kesztyű címkéjén ezért mindig párban szerepelnek: az EN ISO 21420 az „alap”, a többi a konkrét védelem.</p>
+<h2>Mire figyelj vásárláskor?</h2>
+<p>Ha egy kesztyűn csak „EN 420” szerepel régi jelöléssel, az még a korábbi tanúsítás — nem hibás, de az újabb gyártásoknál már az EN ISO 21420-nak kell szerepelnie. A TridentShop kínálatában minden Portwest kesztyű az új szabvány szerint tanúsított.</p>`,
+    author: 'TridentShop',
+    date: '2026-07-02',
+    image: '/images/products/a140_bk.jpg',
+    tags: ['kesztyu', 'szabvany', 'EN ISO 21420']
+  },
+  {
+    id: 15,
+    slug: 'kinek-kotelezo-s1-src-munkavedelmi-cipo',
+    title: 'Kinek kötelező az S1-es munkavédelmi cipő, és mit jelent az SRC?',
+    excerpt: 'S1, S1P, S2, S3 és az SRA/SRB/SRC csúszásállósági osztályok — ki írja elő, és melyik munkakörbe melyik kell.',
+    content: `<h2>Ki írja elő a munkavédelmi cipőt?</h2>
+<p>Nem jogszabály sorolja fel tételesen, hanem a <strong>munkáltató kockázatértékelése</strong> (Mvt. 56. §): ahol lábsérülés-veszély van — leeső tárgy, átszúrás, csúszós padló, targoncaforgalom —, ott a munkáltató KÖTELES előírni és <strong>ingyenesen biztosítani</strong> a megfelelő védőlábbelit. A dolgozó pedig köteles viselni.</p>
+<h2>Az S-kategóriák (EN ISO 20345)</h2>
+<ul>
+<li><strong>S1:</strong> 200 J orrmerevítő + zárt sarok + antisztatikus + energiaelnyelő sarok + olajálló talp. Beltéri, száraz munkára: raktár, üzem, szerelde.</li>
+<li><strong>S1P:</strong> S1 + átszúrás elleni talplemez. Műhely, építkezés beltere, ahol szög/forgács kerülhet a talp alá.</li>
+<li><strong>S2:</strong> S1 + vízfelvétel-gátló felsőrész. Nedves környezet: konyha, élelmiszeripar, kültér.</li>
+<li><strong>S3:</strong> S2 + átszúrásgátló + profilos talp. Építőipar, kültéri terep — a legteljesebb védelem.</li>
+</ul>
+<h2>Mit jelent az SRA / SRB / SRC?</h2>
+<p>Ez a talp <strong>csúszásállósági</strong> minősítése — a kategóriától FÜGGETLEN jelölés:</p>
+<ul>
+<li><strong>SRA:</strong> kerámia padlón, mosószeres vízzel tesztelve — beltéri, nedves padlóra (pl. konyha).</li>
+<li><strong>SRB:</strong> acél padlón, glicerinnel tesztelve — ipari, olajos felületre.</li>
+<li><strong>SRC:</strong> MINDKÉT teszten megfelelt — a legbiztonságosabb választás, vegyes környezetbe.</li>
+</ul>
+<h2>Gyakorlati ökölszabály</h2>
+<p>Konyha, vendéglátás, élelmiszeripar: <strong>S2 + SRC</strong>. Raktár, összeszerelés: <strong>S1/S1P + SRC</strong>. Építkezés, kültér: <strong>S3 + SRC</strong>. Ha bizonytalan vagy, a kockázatértékelést végző munkavédelmi szakember tud pontos kategóriát mondani — vagy kérdezz minket.</p>`,
+    author: 'TridentShop',
+    date: '2026-07-10',
+    image: '/images/products/ft16_bb.jpg',
+    tags: ['munkacipo', 'szabvany', 'SRC', 'kotelezo']
+  },
+  {
+    id: 16,
+    slug: 'vendeglatas-egyeni-vedoeszkozok',
+    title: 'Milyen egyéni védőeszközök kellenek a vendéglátásban?',
+    excerpt: 'Konyhai csúszás, vágás, forrázás, forró zsiradék — a vendéglátós munkahelyek kötelező és ajánlott védőeszközei egy helyen.',
+    content: `<h2>Miért kiemelt terület a vendéglátás?</h2>
+<p>A konyhai munkabalesetek túlnyomó része három forrásból jön: <strong>csúszós padló</strong> (zsír + víz), <strong>vágás</strong> (kés, szeletelőgép) és <strong>égés/forrázás</strong>. Mindhárom ellen létezik szabványos védőeszköz — és a munkáltatónak írásos <strong>EV juttatási rendben</strong> kell rögzítenie, kinek mi jár (2024-től kötelezően írásban).</p>
+<h2>Lábbeli: az első számú tétel</h2>
+<p>Konyhába <strong>S2 kategóriájú, SRC csúszásállóságú</strong> cipő való: vízfelvétel-gátló felsőrész + a kerámia/mosószeres teszten is megfelelt talp. A hagyományos „konyhai klumpa” csak akkor elég, ha zárt sarkú és SRC minősítésű.</p>
+<h2>Kézvédelem</h2>
+<ul>
+<li><strong>Vágásálló kesztyű (EN 388, Cut C vagy magasabb):</strong> csontozáshoz, szeletelőgép tisztításához. A fém láncing kesztyű a hentesmunka klasszikusa.</li>
+<li><strong>Hőálló kesztyű/fogókesztyű (EN 407):</strong> sütőből kivételhez — a konyharuha nem védőeszköz!</li>
+<li><strong>Egyszer használatos nitril kesztyű:</strong> hidegkonyhai, higiéniai feladatokhoz (a latex allergén lehet).</li>
+</ul>
+<h2>Testvédelem</h2>
+<p>A klasszikus <strong>dupla mellrészes séfkabát</strong> nem hagyomány, hanem védelem: a forró fröccsenés ellen véd, és gyorsan lerántható, ha forró folyadék ömlik rá. Hozzá hosszú, elöl zárt kötény — olajsütőnél vízhatlan változat.</p>
+<h2>Checklist egy átlagos konyhára</h2>
+<ul>
+<li>S2 SRC cipő — minden konyhai dolgozónak</li>
+<li>Vágásálló kesztyű — előkészítő/hentes feladatkörben</li>
+<li>Hőálló fogókesztyű — sütő-főző poszton</li>
+<li>Séfkabát + kötény — a hőterhelésnek kitett posztokon</li>
+<li>Csúszásmentes padlóra figyelmeztető tábla takarításkor</li>
+</ul>`,
+    author: 'TridentShop',
+    date: '2026-07-18',
+    image: '/images/products/s822.webp',
+    tags: ['vendeglatas', 'vedoeszkoz', 'utmutato']
+  },
+  {
+    id: 17,
+    slug: 'epitoipar-kotelezo-vedoeszkozok',
+    title: 'Építőipari védőeszköz-csomag: mi kötelező a munkaterületen?',
+    excerpt: 'Sisaktól a leesés elleni védelemig — az építőipari munkahelyek tipikus védőeszköz-előírásai és a mögöttük álló szabványok.',
+    content: `<h2>Az építőipari „alapfelszerelés”</h2>
+<p>Építési munkaterületen a kockázatértékelés szinte mindig előírja az alábbiakat:</p>
+<ul>
+<li><strong>Védősisak (EN 397):</strong> leeső tárgy ellen. A gyártástól számított kihordási ideje véges (tipikusan 3-5 év) — a sisak belsejében lévő dátumot ellenőrizd!</li>
+<li><strong>S3 védőbakancs:</strong> orrmerevítő + átszúrásgátló talp + profilos, terepre való talp.</li>
+<li><strong>Jól láthatósági ruházat (EN ISO 20471):</strong> gép- és járműforgalom mellett 2., közút mellett 3. osztály.</li>
+<li><strong>Védőkesztyű (EN 388):</strong> anyagmozgatáshoz mechanikai védelem; zsaluzáshoz, vasszereléshez magasabb vágásállóság.</li>
+</ul>
+<h2>Munkafüggő kiegészítők</h2>
+<ul>
+<li><strong>Szemvédelem (EN 166):</strong> vágás, csiszolás, vésés — a szilánk ellen a dioptriás szemüveg NEM véd.</li>
+<li><strong>Hallásvédelem (EN 352):</strong> 85 dB felett kötelező a viselés (bontás, betonvágás szinte mindig felette van).</li>
+<li><strong>Légzésvédelem (EN 149):</strong> por ellen FFP2, kvarcpor/azbesztgyanús bontás FFP3.</li>
+<li><strong>Leesés elleni védelem (EN 361 teljes testheveder):</strong> 2 méter feletti, védőkorlát nélküli munkavégzésnél kötelező — a derékövhöz rögzített kötél NEM helyettesíti.</li>
+</ul>
+<h2>A leggyakoribb ellenőrzési hiányosságok</h2>
+<p>Hatósági ellenőrzésen tipikusan ezekbe kötnek bele: lejárt kihordású sisak, kifakult hi-vis, hiányzó írásos EV juttatási rend, valamint az, hogy a védőeszköz „ki van adva”, de senki nem viseli. A védőeszköz viselése a dolgozó KÖTELESSÉGE is (Mvt. 60. §) — a munkáltatónak ezt számon is kell kérnie.</p>`,
+    author: 'TridentShop',
+    date: '2026-07-24',
+    image: '/images/products/s427yer2.webp',
+    tags: ['epitoipar', 'vedoeszkoz', 'kotelezo', 'utmutato']
+  },
+  {
+    id: 18,
+    slug: 'ffp1-ffp2-ffp3-maszk-kulonbsegek',
+    title: 'FFP1, FFP2 vagy FFP3? Légzésvédő maszkok érthetően',
+    excerpt: 'Az EN 149 szerinti részecskeszűrő maszkok osztályai, az NR/R és D jelölések, és hogy melyik munkához melyik kell.',
+    content: `<h2>Mit szűr egy FFP maszk?</h2>
+<p>Az <strong>EN 149</strong> szerinti részecskeszűrő félálarcok <strong>szilárd és folyékony részecskék</strong> (por, füst, aeroszol) ellen védenek — gázok és gőzök ellen NEM! Utóbbihoz szűrőbetétes félálarc kell (EN 140 + gázszűrő).</p>
+<h2>A három osztály</h2>
+<ul>
+<li><strong>FFP1:</strong> a munkahelyi határérték legfeljebb 4-szereséig. Durva, nem mérgező por: takarítás, kézi csiszolás puhafán.</li>
+<li><strong>FFP2:</strong> a határérték 10-szereséig. Finompor, fémpor, betonpor, fapor — az ipari felhasználás leggyakoribb osztálya.</li>
+<li><strong>FFP3:</strong> a határérték 20-szorosáig. Mérgező porok, kvarcpor, rozsdamentes hegesztési füst, penész-spórák. Bontási munkáknál ez a minimum.</li>
+</ul>
+<h2>A kiegészítő jelölések</h2>
+<ul>
+<li><strong>NR</strong> (non-reusable): egy műszakra való — 8 óra után dobd el.</li>
+<li><strong>R</strong> (reusable): tisztítható, több műszakban használható.</li>
+<li><strong>D:</strong> kiállta a dolomitpor-eltömődési tesztet — poros környezetben tovább marad kényelmes a légzés.</li>
+<li><strong>Szelepes változat:</strong> a kilégzést könnyíti (a szelep KIFELÉ enged) — melegben, hosszú viselésnél sokkal komfortosabb.</li>
+</ul>
+<h2>A leggyakoribb hiba</h2>
+<p>A maszk csak akkor véd, ha <strong>zár az arcon</strong>: borosta, rossz méret vagy lazán viselt pánt mellett az osztály mit sem ér. Illeszkedés-ellenőrzés: tenyérrel fedd le a maszkot és fújj ki — ha a széleknél érzed a levegőt, állítsd újra a pántokat.</p>`,
+    author: 'TridentShop',
+    date: '2026-07-29',
+    image: 'https://d11ak7fd9ypfb7.cloudfront.net/styles1100px/P210WHR.jpg',
+    tags: ['legzesvedelem', 'szabvany', 'FFP2', 'utmutato']
+  },
+  {
+    id: 19,
+    slug: 'hallasvedelem-mikor-kotelezo-en352',
+    title: 'Hallásvédelem: mikortól kötelező, és füldugó vagy fültok?',
+    excerpt: 'A 80 és 85 dB szabály, az SNR érték jelentése, és a füldugó kontra fültok döntés szempontjai az EN 352 alapján.',
+    content: `<h2>A két bűvös szám: 80 és 85 dB</h2>
+<p>A magyar szabályozás (66/2005. EüM rendelet) két beavatkozási szintet határoz meg napi zajexpozícióra:</p>
+<ul>
+<li><strong>80 dB felett:</strong> a munkáltatónak hallásvédő eszközt kell <strong>biztosítania</strong> — a viselés még választható.</li>
+<li><strong>85 dB felett:</strong> a hallásvédő <strong>viselése kötelező</strong>, a zajos zónát jelölni kell.</li>
+</ul>
+<p>Viszonyításképp: sarokcsiszoló ~100 dB, láncfűrész ~110 dB, betonvágó ~105 dB — ezek mellett percek alatt kimeríthető a napi „zajkeret”.</p>
+<h2>Mit jelent az SNR érték?</h2>
+<p>Az EN 352 szerinti hallásvédőkön szereplő <strong>SNR</strong> (Single Number Rating) az átlagos zajcsillapítás dB-ben. Egy SNR 30-as füldugó a ~100 dB-es környezetet kb. 70 dB-re csillapítja. Cél: a fülnél maradó zaj 70-80 dB közé kerüljön — a TÚLcsillapítás is veszélyes, mert nem hallod a figyelmeztető jelzéseket.</p>
+<h2>Füldugó vagy fültok?</h2>
+<ul>
+<li><strong>Füldugó:</strong> olcsó, könnyű, melegben kényelmesebb, sisakkal/szemüveggel jól kombinálható. Hátránya: helyes behelyezést igényel, koszos kézzel higiéniai kockázat.</li>
+<li><strong>Fültok:</strong> gyorsan fel-le vehető (szakaszos zajnál ideális), egyszerű ellenőrizni a viselését. Hátránya: melegben izzaszt, szemüvegszárral résveszteség.</li>
+</ul>
+<p>Ökölszabály: <strong>egész napos folyamatos zaj → füldugó; szakaszos, ki-be járkálós zaj → fültok.</strong> 100 dB feletti környezetben a kettő kombinálható is.</p>`,
+    author: 'TridentShop',
+    date: '2026-08-01',
+    image: '/images/products/ep17_ye.jpg',
+    tags: ['hallasvedelem', 'szabvany', 'kotelezo', 'utmutato']
   }
 ];
 
 // Az alapcikkek verziója: emeld, ha a defaultBlogPosts bővül/változik!
 // A régebbi verzióval mentett localStorage-ból automatikusan migrálunk:
 // az alapcikkek frissülnek, az admin által létrehozott cikkek megmaradnak.
-const BLOG_SEED_VERSION = 2;
+const BLOG_SEED_VERSION = 3;
 const BLOG_SEED_VERSION_KEY = 'ms_blog_seed_version';
 
 export const getBlogPosts = () => {
@@ -1002,6 +1158,14 @@ export const getBlogPosts = () => {
       safeSet(STORAGE_KEYS.BLOG_POSTS, posts);
       localSet(BLOG_SEED_VERSION_KEY, BLOG_SEED_VERSION);
     }
+  } else {
+    // Supabase mód, létező mentett lista: az alapcikkek MEGJELENÍTÉSKOR mindig a
+    // kódban lévő friss változatból jönnek, a mentett listából csak az admin által
+    // létrehozott (nem alap-id-jú) cikkeket vesszük át. Írás nem történik — a
+    // látogató nem írhat KV-t; az admin következő blog-mentése rögzíti véglegesen.
+    const defaultIds = new Set(defaultBlogPosts.map(p => p.id));
+    const customPosts = posts.filter(p => p.isCustom || !defaultIds.has(p.id));
+    posts = [...defaultBlogPosts, ...customPosts];
   }
   // GYIK hozzáfűzése slug alapján (a régebben mentett cikkekhez is)
   return posts
@@ -1075,6 +1239,36 @@ const BLOG_FAQS = {
     { q: 'Hogyan szárítsam a beázott munkavédelmi bakancsot?', a: 'Szobahőmérsékleten, kitömve (újságpapír) és a talpbetétet kivéve — soha ne radiátoron vagy kályha mellett, mert a bőr kiszárad és a ragasztás enged.' },
     { q: 'Mikor kell cserélni a munkavédelmi cipőt?', a: 'Ha a talpprofil 1,5 mm alá kopott, az orrmerevítő ütést kapott, vagy a talp-felsőrész ragasztás enged. Ilyenkor munkavédelmi szempontból elhasználódott, akkor is, ha még hordható.' },
     { q: 'Megéri két pár cipőt váltogatni?', a: 'Igen — a bőr és a bélés így ki tud száradni két viselés között, ami mindkét pár élettartamát jelentősen (akár másfélszeresére) növeli, és a lábgomba kockázatát is csökkenti.' }
+  ],
+  'en-iso-21420-szabvany-magyarazat': [
+    { q: 'Mi a különbség az EN 420 és az EN ISO 21420 között?', a: 'Az EN ISO 21420:2020 a korábbi EN 420 utódja: ugyanazt a szerepet tölti be (a védőkesztyűk általános követelményei), de szigorúbb ártalmatlansági előírásokkal — pl. a króm(VI)- és allergén azo-színezék határértékekkel. Az újonnan tanúsított kesztyűkön már az új jelölés szerepel.' },
+    { q: 'Elég, ha egy kesztyűn csak EN ISO 21420 jelölés van?', a: 'Nem — ez csak az alapkövetelményeket (ártalmatlanság, méretezés, jelölés) igazolja. A konkrét védelmet a mellette szereplő specifikus szabvány adja: EN 388 mechanikai, EN 511 hideg, EN 407 hő, EN ISO 374 vegyi védelemhez.' },
+    { q: 'Mit jelentenek a kesztyűméretek (6-11)?', a: 'A kézkörméreten alapuló egységes EU-méretezés: a 6-os a legkisebb (kb. 152 mm kézkörméret), a 11-es a legnagyobb. Jól illeszkedő kesztyűvel a kézügyesség is megmarad — a túl nagy kesztyű önmagában baleseti kockázat.' }
+  ],
+  'kinek-kotelezo-s1-src-munkavedelmi-cipo': [
+    { q: 'Ki dönti el, hogy kell-e munkavédelmi cipő?', a: 'A munkáltató, a munkavédelmi kockázatértékelés alapján (Mvt. 56. §). Ahol lábsérülés-veszély áll fenn, ott köteles ingyenesen biztosítani a megfelelő kategóriájú védőlábbelit, a munkavállaló pedig köteles viselni.' },
+    { q: 'Mit jelent az SRC jelölés a munkacipőn?', a: 'A talp csúszásállósági minősítését: az SRC azt jelenti, hogy a cipő a kerámia+mosószeres (SRA) ÉS az acél+glicerines (SRB) csúszásteszten is megfelelt — vagyis vegyes, nedves és olajos padlón is a legjobb tapadást adja.' },
+    { q: 'Konyhába milyen munkavédelmi cipő kell?', a: 'S2 kategóriájú, SRC csúszásállóságú, zárt sarkú cipő: az S2 vízfelvétel-gátló felsőrészt ad a nedves környezethez, az SRC pedig a zsíros-vizes padlón is csúszásbiztos talpat.' }
+  ],
+  'vendeglatas-egyeni-vedoeszkozok': [
+    { q: 'Kötelező a csúszásmentes cipő a konyhában?', a: 'Ha a kockázatértékelés csúszásveszélyt állapít meg — konyhában gyakorlatilag mindig —, akkor igen: a munkáltatónak S2/SRC minősítésű lábbelit kell biztosítania, és a viselése kötelező.' },
+    { q: 'A konyharuha használható edényfogásra?', a: 'Nem — a konyharuha nem védőeszköz, nedvesen pedig kifejezetten átvezeti a hőt. Sütőből kivételhez EN 407 szerinti hőálló fogókesztyű való.' },
+    { q: 'Milyen kesztyű kell csontozáshoz?', a: 'EN 388 szerinti, legalább Cut C vágásállóságú kesztyű; intenzív hentesmunkához a fém láncing kesztyű az iparági standard.' }
+  ],
+  'epitoipar-kotelezo-vedoeszkozok': [
+    { q: 'Meddig használható egy védősisak?', a: 'A gyártó által megadott kihordási ideig — tipikusan a gyártástól számított 3-5 évig (a dátum a sisak belsejében található). UV-fénynek kitett, repedt vagy ütést kapott sisakot azonnal cserélni kell.' },
+    { q: 'Mikor kötelező a leesés elleni védelem?', a: '2 méter feletti, védőkorlát nélküli munkavégzésnél: EN 361 szerinti teljes testheveder a hozzá tartozó rögzítéssel. A deréköv önmagában nem minősül leesés elleni védelemnek.' },
+    { q: 'Hányas osztályú hi-vis kell építkezésre?', a: 'Telephelyen belüli gép-/járműforgalom mellett 2. osztály, közút mellett vagy gyorsforgalmi útnál 3. osztály (hosszú ujjú, törzset és végtagokat is fedő szett).' }
+  ],
+  'ffp1-ffp2-ffp3-maszk-kulonbsegek': [
+    { q: 'Véd az FFP maszk gázok és gőzök ellen?', a: 'Nem — az EN 149 szerinti FFP maszkok csak szilárd és folyékony részecskék (por, füst, aeroszol) ellen védenek. Gázokhoz, gőzökhöz szűrőbetétes álarc kell megfelelő gázszűrővel.' },
+    { q: 'Mit jelent a maszkon az NR és az R jelölés?', a: 'NR (non-reusable): egy műszakra való, 8 óra használat után eldobandó. R (reusable): tisztítható és több műszakban is használható.' },
+    { q: 'Betonvágáshoz milyen maszk kell?', a: 'A kvarcport tartalmazó betonpor miatt legalább FFP3 — a keletkező finompor rákkeltő kvarctartalma miatt az FFP2 nem elegendő.' }
+  ],
+  'hallasvedelem-mikor-kotelezo-en352': [
+    { q: 'Hány decibeltől kötelező a hallásvédő?', a: '85 dB napi zajexpozíció felett a viselés kötelező; már 80 dB felett biztosítania kell a munkáltatónak (66/2005. EüM rendelet).' },
+    { q: 'Mit jelent az SNR érték a füldugón?', a: 'Az átlagos zajcsillapítást dB-ben: egy SNR 30-as eszköz a 100 dB-es zajt kb. 70 dB-re csökkenti. A cél a 70-80 dB közötti maradó zajszint — a túlcsillapítás is kerülendő.' },
+    { q: 'Füldugó vagy fültok a jobb?', a: 'Folyamatos, egész napos zajnál a füldugó kényelmesebb; szakaszos, ki-be járkálós munkánál a gyorsan le-fel vehető fültok praktikusabb. 100 dB felett a kettő kombinálható.' }
   ]
 };
 
