@@ -20,6 +20,9 @@ const ProductDetailPage = () => {
   const [reviews, setReviews] = useState([]);
   const [revForm, setRevForm] = useState({ name: '', stars: 5, text: '' });
   const [revSent, setRevSent] = useState(false);
+  // Bazaarvoice-stílusú összegző: csillag-szűrő + rendezés
+  const [revFilterStars, setRevFilterStars] = useState(null);
+  const [revSort, setRevSort] = useState('top');
   const [imgIdx, setImgIdx] = useState(0);
   const [selectedColor, setSelectedColor] = useState(null);
   const touchStartX = useRef(null);
@@ -219,10 +222,11 @@ const ProductDetailPage = () => {
 
       <div style={{ maxWidth: '1200px', margin: '2rem auto', padding: '0 1.5rem' }}>
         
-        {/* Termék részletek */}
-        <div style={{ 
-          backgroundColor: 'white', borderRadius: '8px', boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
-          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', overflow: 'hidden'
+        {/* Termék részletek — Liquid Death-minta: infó BALRA, nagy kép JOBBRA,
+            kártya-keret nélkül, a kép a világos oldal-háttéren lebeg */}
+        <div style={{
+          display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+          gap: '2.5rem', alignItems: 'start'
         }}>
           
           {/* Kép galéria - szín választásakor csak az adott szín nézetei */}
@@ -230,16 +234,18 @@ const ProductDetailPage = () => {
             const images = getProductImages(product, selectedColor);
             const prevImg = () => setImgIdx(i => (i - 1 + images.length) % images.length);
             const nextImg = () => setImgIdx(i => (i + 1) % images.length);
+            // LD-minta: minimál, háttér nélküli vékony nyilak — a kép az oldal
+            // világos hátterén lebeg, nincs külön kártya-mező körülötte
             const arrowStyle = {
               position: 'absolute', top: '50%', transform: 'translateY(-50%)',
-              backgroundColor: 'rgba(15,42,29,0.75)', color: 'white', border: 'none',
-              borderRadius: '50%', width: '40px', height: '40px', cursor: 'pointer',
+              backgroundColor: 'transparent', color: '#0F2A1D', border: 'none',
+              width: '44px', height: '44px', cursor: 'pointer',
               display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 2
             };
             return (
-              <div style={{ padding: '2rem', backgroundColor: '#f9f9f9' }}>
+              <div style={{ padding: '1rem 0', order: 2 }}>
                 <div
-                  style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '350px' }}
+                  style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '420px' }}
                   onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
                   onTouchEnd={(e) => {
                     if (touchStartX.current === null) return;
@@ -249,14 +255,14 @@ const ProductDetailPage = () => {
                     touchStartX.current = null;
                   }}
                 >
-                  <img src={images[imgIdx]} alt={`${product.name} - ${imgIdx + 1}. kép`} style={{ maxWidth: '100%', maxHeight: '420px', objectFit: 'contain' }} />
+                  <img src={images[imgIdx]} alt={`${product.name} - ${imgIdx + 1}. kép`} style={{ maxWidth: '100%', maxHeight: '520px', objectFit: 'contain', mixBlendMode: 'multiply' }} />
                   {images.length > 1 && (
                     <>
-                      <button onClick={prevImg} aria-label="Előző kép" style={{ ...arrowStyle, left: '0.5rem' }}>
-                        <ChevronLeft size={22} />
+                      <button onClick={prevImg} aria-label="Előző kép" style={{ ...arrowStyle, left: 0 }}>
+                        <ChevronLeft size={30} />
                       </button>
-                      <button onClick={nextImg} aria-label="Következő kép" style={{ ...arrowStyle, right: '0.5rem' }}>
-                        <ChevronRight size={22} />
+                      <button onClick={nextImg} aria-label="Következő kép" style={{ ...arrowStyle, right: 0 }}>
+                        <ChevronRight size={30} />
                       </button>
                     </>
                   )}
@@ -288,9 +294,9 @@ const ProductDetailPage = () => {
             );
           })()}
 
-          {/* Részletek */}
-          <div style={{ padding: '2rem' }}>
-            <p style={{ color: '#999', fontSize: '0.85rem', margin: 0, textTransform: 'uppercase' }}>
+          {/* Részletek — infó-oszlop balra (LD-minta) */}
+          <div style={{ padding: '1rem 0', order: 1 }}>
+            <p style={{ color: '#999', fontSize: '0.85rem', margin: 0, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               {cat?.name} → {subcat?.name}
             </p>
             <h1 style={{
@@ -318,33 +324,24 @@ const ProductDetailPage = () => {
               </div>
             )}
 
-            {/* Ár */}
-            <div style={{ backgroundColor: '#f9f9f9', padding: '1rem', borderRadius: '4px', marginBottom: '1.5rem', borderLeft: '4px solid #C9A961' }}>
-              {product.sale && product.sale.active ? (
-                <>
-                  <p style={{ textDecoration: 'line-through', color: '#999', fontSize: '1.1rem', margin: 0 }}>
-                    {product.price.toLocaleString('hu-HU')} Ft
-                  </p>
-                  <p style={{ color: '#d32f2f', fontSize: '2rem', fontWeight: 'bold', margin: '0.25rem 0 0 0' }}>
-                    {product.sale.price.toLocaleString('hu-HU')} Ft
-                  </p>
-                </>
-              ) : (
-                <p style={{ color: '#C9A961', fontSize: '2rem', fontWeight: 'bold', margin: 0 }}>
-                  {product.price.toLocaleString('hu-HU')} Ft
-                </p>
-              )}
-              <p style={{ color: '#666', fontSize: '0.85rem', margin: '0.5rem 0 0 0' }}>
-                📦 Raktáron: <strong style={{ color: product.stock < 20 ? '#FF9800' : '#4CAF50' }}>{product.stock} db</strong>
-                {product.stock < 20 && product.stock > 0 && <span style={{ color: '#FF9800', marginLeft: '0.5rem' }}>(kifutó!)</span>}
-              </p>
-            </div>
+            {/* Leírás + tény-pontlista felül (LD-minta), az ár lejjebb, a CTA fölé kerül */}
+            <p style={{ color: '#333', margin: '0 0 1rem 0', lineHeight: 1.65, fontSize: '0.95rem' }}>{product.description}</p>
+            <ul style={{ margin: '0 0 1.75rem 0', padding: '0 0 0 1.2rem', color: '#333', fontSize: '0.92rem', lineHeight: 1.9 }}>
+              {product.articleNo && <li>Cikkszám: <strong>{product.articleNo}</strong></li>}
+              {product.brand && product.brand !== 'Generic' && <li>100% eredeti <strong>{product.brand}</strong> termék</li>}
+              <li>CE-tanúsítvány, EU-szabványok szerint</li>
+              <li>Raktáron: <strong style={{ color: product.stock < 20 ? '#FF9800' : '#2e7d32' }}>{product.stock} db</strong>{product.stock < 20 && product.stock > 0 ? ' (kifutó!)' : ''}</li>
+              <li>Kiszállítás 2-3 munkanapon belül</li>
+            </ul>
 
-            {/* Méret választás */}
+            {/* Szín választás — LD "SELECT FLAVOR" minta: képes csempék névvel */}
             {product.variants && product.variants.length > 1 && (
-              <div style={{ marginBottom: '1rem' }}>
-                <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                  Szín:{selectedColor ? ` ${(product.variants.find(v => v.code === selectedColor) || {}).color || ''}` : ''}
+              <div style={{ marginBottom: '1.5rem' }}>
+                <label style={{
+                  display: 'block', marginBottom: '0.65rem', fontWeight: 700, color: '#0F2A1D',
+                  textTransform: 'uppercase', fontSize: '0.82rem', letterSpacing: '0.08em'
+                }}>
+                  Válassz színt
                 </label>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
                   {product.variants.map(v => (
@@ -354,14 +351,20 @@ const ProductDetailPage = () => {
                         setImgIdx(0);   // a galéria innentől csak ezt a színt mutatja
                       }}
                       style={{
-                        padding: '0.5rem 0.75rem', borderRadius: '4px',
-                        border: `2px solid ${selectedColor === v.code ? '#C9A961' : '#ddd'}`,
-                        backgroundColor: selectedColor === v.code ? '#0F2A1D' : 'white',
-                        color: v.stock === 0 ? '#bbb' : (selectedColor === v.code ? 'white' : '#0F2A1D'),
-                        cursor: v.stock === 0 ? 'not-allowed' : 'pointer', fontWeight: 'bold', fontSize: '0.85rem',
-                        textDecoration: v.stock === 0 ? 'line-through' : 'none'
+                        width: '92px', padding: '0.5rem 0.35rem 0.6rem', borderRadius: 0,
+                        border: selectedColor === v.code ? '2px solid #0F2A1D' : '1px solid #ddd',
+                        backgroundColor: 'white', cursor: v.stock === 0 ? 'not-allowed' : 'pointer',
+                        opacity: v.stock === 0 ? 0.4 : 1,
+                        display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.4rem'
                       }}>
-                      {v.color}{v.stock > 0 && v.stock < 10 ? ` (${v.stock} db)` : ''}
+                      <img src={v.image || product.image} alt={v.color} loading="lazy"
+                        style={{ width: '56px', height: '56px', objectFit: 'contain' }} />
+                      <span style={{
+                        fontSize: '0.72rem', fontWeight: selectedColor === v.code ? 700 : 500,
+                        color: '#0F2A1D', lineHeight: 1.2, textAlign: 'center'
+                      }}>
+                        {v.color}{v.stock > 0 && v.stock < 10 ? ` (${v.stock})` : ''}
+                      </span>
                     </button>
                   ))}
                 </div>
@@ -379,10 +382,13 @@ const ProductDetailPage = () => {
               // minden render-nél élőben újraszámol, így készletváltozásra frissül.
               const visibleSizes = sizeStock ? product.sizes.filter(size => (sizeStock[size] || 0) > 0) : product.sizes;
               return (
-                <div style={{ marginBottom: '1rem' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem', flexWrap: 'wrap', gap: '0.5rem' }}>
-                    <label style={{ fontWeight: 'bold', color: '#0F2A1D' }}>
-                      Méret:
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.65rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+                    <label style={{
+                      fontWeight: 700, color: '#0F2A1D',
+                      textTransform: 'uppercase', fontSize: '0.82rem', letterSpacing: '0.08em'
+                    }}>
+                      Válassz méretet
                     </label>
                     {sizeChart && (
                       <button onClick={() => setShowSizeChart(true)} style={{
@@ -398,19 +404,22 @@ const ProductDetailPage = () => {
                     <p style={{ color: '#c62828', fontSize: '0.85rem', margin: 0 }}>Ebből a színből minden méret elfogyott.</p>
                   ) : (
                     <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+                      {/* LD "SELECT SIZE" minta: nagyobb dobozok, kövér méret-felirat,
+                          alatta kis készlet-alcím, ha kevés van */}
                       {visibleSizes.map(size => {
                         const qty = sizeStock ? sizeStock[size] : null;
                         return (
                           <button key={size} onClick={() => setSelectedSize(size)}
-                            title={qty !== null && qty < 10 ? `${qty} db raktáron` : ''}
                             style={{
-                              padding: '0.5rem 0.85rem', borderRadius: '4px',
-                              border: `2px solid ${selectedSize === size ? '#0F2A1D' : '#ddd'}`,
-                              backgroundColor: selectedSize === size ? '#0F2A1D' : 'white',
-                              color: selectedSize === size ? 'white' : '#0F2A1D',
-                              cursor: 'pointer', fontWeight: 'bold'
+                              minWidth: '76px', padding: '0.7rem 0.9rem', borderRadius: 0,
+                              border: selectedSize === size ? '2px solid #0F2A1D' : '1px solid #ddd',
+                              backgroundColor: 'white', color: '#0F2A1D', cursor: 'pointer',
+                              display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.15rem'
                             }}>
-                            {size}{qty !== null && qty > 0 && qty < 10 ? ` (${qty})` : ''}
+                            <span style={{ fontWeight: 700, fontSize: '1.05rem', fontFamily: 'Georgia, serif' }}>{size}</span>
+                            {qty !== null && qty > 0 && qty < 10 && (
+                              <span style={{ fontSize: '0.7rem', color: '#888' }}>{qty} db</span>
+                            )}
                           </button>
                         );
                       })}
@@ -420,28 +429,41 @@ const ProductDetailPage = () => {
               );
             })()}
 
-            {/* Mennyiség */}
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', marginBottom: '0.5rem', fontWeight: 'bold', color: '#0F2A1D' }}>
-                Mennyiség:
-              </label>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '40px', height: '40px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', backgroundColor: 'white' }}>−</button>
+            {/* Ár + mennyiség egy sorban, közvetlenül a CTA fölött (LD-minta) */}
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', flexWrap: 'wrap', margin: '0 0 1rem 0' }}>
+              <div>
+                {product.sale && product.sale.active ? (
+                  <>
+                    <span style={{ textDecoration: 'line-through', color: '#999', fontSize: '1rem', marginRight: '0.6rem' }}>
+                      {product.price.toLocaleString('hu-HU')} Ft
+                    </span>
+                    <span style={{ color: '#d32f2f', fontSize: '1.9rem', fontWeight: 700, fontFamily: 'Georgia, serif' }}>
+                      {product.sale.price.toLocaleString('hu-HU')} Ft
+                    </span>
+                  </>
+                ) : (
+                  <span style={{ color: '#0F2A1D', fontSize: '1.9rem', fontWeight: 700, fontFamily: 'Georgia, serif' }}>
+                    {product.price.toLocaleString('hu-HU')} Ft
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <button onClick={() => setQuantity(Math.max(1, quantity - 1))} style={{ width: '42px', height: '42px', border: '1px solid #ddd', borderRight: 'none', borderRadius: 0, cursor: 'pointer', backgroundColor: 'white', fontSize: '1.1rem' }}>−</button>
                 <input type="number" min="1" value={quantity} onChange={e => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                  style={{ width: '80px', padding: '0.6rem', border: '1px solid #ddd', borderRadius: '4px', textAlign: 'center' }} />
-                <button onClick={() => setQuantity(quantity + 1)} style={{ width: '40px', height: '40px', border: '1px solid #ddd', borderRadius: '4px', cursor: 'pointer', backgroundColor: 'white' }}>+</button>
+                  style={{ width: '56px', height: '42px', padding: 0, border: '1px solid #ddd', borderRadius: 0, textAlign: 'center', boxSizing: 'border-box' }} />
+                <button onClick={() => setQuantity(quantity + 1)} style={{ width: '42px', height: '42px', border: '1px solid #ddd', borderLeft: 'none', borderRadius: 0, cursor: 'pointer', backgroundColor: 'white', fontSize: '1.1rem' }}>+</button>
               </div>
             </div>
 
-            {/* Gombok — Uniqlo-minta: teljes szélességű, nagybetűs elsődleges CTA */}
-            <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1.5rem' }}>
+            {/* Gombok — LD-minta: egymás alatt, teljes szélességű tömör CTA + körvonalas másodlagos */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', marginBottom: '1.5rem' }}>
               <button onClick={handleAddToCart} disabled={product.stock === 0}
                 style={{
-                  flex: 1, padding: '1.05rem',
-                  backgroundColor: product.stock === 0 ? '#ccc' : '#C9A961',
-                  color: '#0F2A1D', border: 'none', borderRadius: 0,
+                  width: '100%', padding: '1.05rem',
+                  backgroundColor: product.stock === 0 ? '#ccc' : '#0F2A1D',
+                  color: 'white', border: 'none', borderRadius: 0,
                   cursor: product.stock === 0 ? 'not-allowed' : 'pointer',
-                  fontWeight: 'bold', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.04em',
+                  fontWeight: 'bold', fontSize: '1rem', textTransform: 'uppercase', letterSpacing: '0.06em',
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
                 }}>
                 <ShoppingCart size={20} />
@@ -451,26 +473,17 @@ const ProductDetailPage = () => {
               <button onClick={handleWishlist}
                 title={wished ? 'Eltávolítás kedvencekből' : 'Kedvencekhez adás'}
                 style={{
-                  padding: '1.05rem',
-                  backgroundColor: wished ? '#d32f2f' : 'white',
-                  color: wished ? 'white' : '#d32f2f',
-                  border: `2px solid #d32f2f`, borderRadius: 0, cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center'
+                  width: '100%', padding: '1rem',
+                  backgroundColor: wished ? '#0F2A1D' : 'white',
+                  color: wished ? 'white' : '#0F2A1D',
+                  border: '2px solid #0F2A1D', borderRadius: 0, cursor: 'pointer',
+                  fontWeight: 'bold', fontSize: '0.95rem', textTransform: 'uppercase', letterSpacing: '0.06em',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem'
                 }}>
-                <Heart size={20} fill={wished ? 'white' : 'none'} />
+                <Heart size={18} fill={wished ? 'white' : 'none'} />
+                {wished ? 'Kedvencekben' : 'Kedvencekhez'}
               </button>
             </div>
-
-            {/* Leírás + szállítás — Uniqlo-stílusú lenyíló (accordion) szekciók */}
-            <details open style={{ borderTop: '1px solid #e5e5e5' }}>
-              <summary style={{
-                cursor: 'pointer', padding: '0.9rem 0', fontWeight: 700, color: '#0F2A1D',
-                textTransform: 'uppercase', fontSize: '0.88rem', letterSpacing: '0.04em', listStyle: 'none'
-              }}>
-                Leírás
-              </summary>
-              <p style={{ color: '#444', margin: '0 0 1rem 0', lineHeight: 1.65, fontSize: '0.95rem' }}>{product.description}</p>
-            </details>
             <details style={{ borderTop: '1px solid #e5e5e5' }}>
               <summary style={{
                 cursor: 'pointer', padding: '0.9rem 0', fontWeight: 700, color: '#0F2A1D',
@@ -499,22 +512,124 @@ const ProductDetailPage = () => {
           </div>
         </div>
 
-        {/* Vásárlói értékelések */}
-        <div style={{ backgroundColor: 'white', borderRadius: '8px', padding: '1.5rem', marginTop: '2rem', boxShadow: '0 2px 8px rgba(0,0,0,0.05)' }}>
-          <h2 style={{ color: '#0F2A1D', marginTop: 0, fontFamily: 'Georgia, serif', fontWeight: 700, textTransform: 'uppercase', fontSize: '1.3rem' }}>Vásárlói értékelések</h2>
-          {reviews.length === 0 && (
-            <p style={{ color: '#888' }}>Erről a termékről még nincs értékelés — legyél te az első!</p>
-          )}
-          {reviews.map((r, i) => (
-            <div key={i} style={{ borderBottom: '1px solid #f0f0f0', padding: '0.75rem 0' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ color: '#FFB800' }}>{'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}</span>
-                <strong style={{ color: '#0F2A1D', fontSize: '0.92rem' }}>{r.name}</strong>
-                <span style={{ color: '#aaa', fontSize: '0.78rem' }}>{new Date(r.ts).toLocaleDateString('hu-HU')}</span>
-              </div>
-              <p style={{ color: '#444', margin: '0.4rem 0 0 0', fontSize: '0.92rem', lineHeight: 1.55 }}>{r.text}</p>
-            </div>
-          ))}
+        {/* Vásárlói értékelések — Bazaarvoice-minta: bal oldalt csillag-eloszlás sávdiagram,
+            középen nagy átlag, jobbra "Értékeld a terméket" csillagok; alatta rendezhető lista */}
+        <div style={{ backgroundColor: 'white', borderRadius: 0, border: '1px solid #eee', padding: '1.75rem', marginTop: '2rem' }}>
+          <h2 style={{ color: '#0F2A1D', marginTop: 0, fontFamily: 'Georgia, serif', fontWeight: 700, fontSize: '1.4rem' }}>Értékelések</h2>
+
+          {(() => {
+            const counts = [5, 4, 3, 2, 1].map(s => reviews.filter(r => r.stars === s).length);
+            const maxCount = Math.max(...counts, 1);
+            const avg = reviews.length > 0 ? reviews.reduce((s, r) => s + r.stars, 0) / reviews.length : 0;
+            const shown = [...reviews]
+              .filter(r => revFilterStars === null || r.stars === revFilterStars)
+              .sort((a, b) => revSort === 'top' ? (b.stars - a.stars) : (new Date(b.ts) - new Date(a.ts)));
+            return (
+              <>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '2rem', marginBottom: '1.5rem' }}>
+                  {/* Csillag-eloszlás sávdiagram — sorra kattintva szűr */}
+                  <div>
+                    <p style={{ fontWeight: 700, color: '#0F2A1D', margin: '0 0 0.35rem 0', fontSize: '0.92rem' }}>Értékelés-összegzés</p>
+                    <p style={{ color: '#777', fontSize: '0.8rem', margin: '0 0 0.75rem 0' }}>Kattints egy sorra a szűréshez.</p>
+                    {[5, 4, 3, 2, 1].map((s, i) => (
+                      <button key={s} onClick={() => setRevFilterStars(revFilterStars === s ? null : s)} style={{
+                        display: 'flex', alignItems: 'center', gap: '0.6rem', width: '100%',
+                        background: 'none', border: 'none', cursor: 'pointer', padding: '0.22rem 0',
+                        opacity: revFilterStars !== null && revFilterStars !== s ? 0.45 : 1
+                      }}>
+                        <span style={{ fontSize: '0.85rem', color: '#333', width: '64px', textAlign: 'left', whiteSpace: 'nowrap' }}>{s} csillag</span>
+                        <span style={{ flex: 1, height: '12px', border: '1px solid #ddd', borderRadius: '999px', overflow: 'hidden', backgroundColor: 'white' }}>
+                          <span style={{ display: 'block', height: '100%', width: `${(counts[i] / maxCount) * 100}%`, backgroundColor: '#C9A961' }} />
+                        </span>
+                        <span style={{ fontSize: '0.85rem', color: '#333', width: '24px', textAlign: 'right' }}>{counts[i]}</span>
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Összesített értékelés — nagy átlagszám */}
+                  <div>
+                    <p style={{ fontWeight: 700, color: '#0F2A1D', margin: '0 0 0.75rem 0', fontSize: '0.92rem' }}>Összesített értékelés</p>
+                    {reviews.length > 0 ? (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                        <span style={{ fontSize: '3rem', fontWeight: 700, color: '#0F2A1D', fontFamily: 'Georgia, serif', lineHeight: 1 }}>
+                          {avg.toFixed(1)}
+                        </span>
+                        <div>
+                          <div style={{ color: '#C9A961', fontSize: '1.1rem', letterSpacing: '0.1em' }}>
+                            {'★'.repeat(Math.round(avg))}{'☆'.repeat(5 - Math.round(avg))}
+                          </div>
+                          <div style={{ color: '#666', fontSize: '0.85rem' }}>{reviews.length} értékelés</div>
+                        </div>
+                      </div>
+                    ) : (
+                      <p style={{ color: '#888', fontSize: '0.9rem', margin: 0 }}>Még nincs értékelés — legyél te az első!</p>
+                    )}
+                  </div>
+
+                  {/* Értékeld a terméket — csillag-dobozok, kattintásra kitölti az űrlapot */}
+                  <div>
+                    <p style={{ fontWeight: 700, color: '#0F2A1D', margin: '0 0 0.75rem 0', fontSize: '0.92rem' }}>Értékeld a terméket</p>
+                    <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.6rem' }}>
+                      {[1, 2, 3, 4, 5].map(s => (
+                        <button key={s} onClick={() => setRevForm({ ...revForm, stars: s })} aria-label={`${s} csillag`} style={{
+                          width: '48px', height: '48px', border: '1px solid #ccc', borderRadius: 0,
+                          backgroundColor: 'white', cursor: 'pointer', fontSize: '1.3rem',
+                          color: s <= revForm.stars ? '#C9A961' : '#bbb'
+                        }}>
+                          {s <= revForm.stars ? '★' : '☆'}
+                        </button>
+                      ))}
+                    </div>
+                    <p style={{ color: '#777', fontSize: '0.8rem', margin: 0, lineHeight: 1.45 }}>
+                      Az értékeléseket moderáljuk — jóváhagyás után jelennek meg.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Rendezés-sor */}
+                {reviews.length > 0 && (
+                  <div style={{
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem',
+                    borderTop: '1px solid #e5e5e5', borderBottom: '1px solid #e5e5e5', padding: '0.85rem 0', marginBottom: '0.5rem'
+                  }}>
+                    <span style={{ color: '#333', fontSize: '0.9rem' }}>
+                      1–{shown.length} / {reviews.length} értékelés{revFilterStars !== null ? ` (${revFilterStars} csillagos szűrő)` : ''}
+                    </span>
+                    <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.9rem', color: '#333' }}>
+                      Rendezés
+                      <select value={revSort} onChange={e => setRevSort(e.target.value)}
+                        style={{ padding: '0.45rem 0.6rem', border: '1px solid #ccc', borderRadius: 0, backgroundColor: 'white', fontSize: '0.88rem' }}>
+                        <option value="top">Legjobb értékelés elöl</option>
+                        <option value="new">Legújabb elöl</option>
+                      </select>
+                    </label>
+                  </div>
+                )}
+
+                {/* Értékelés-lista: bal meta-oszlop + jobb tartalom (Bazaarvoice-elrendezés) */}
+                {shown.map((r, i) => (
+                  <div key={i} style={{
+                    display: 'grid', gridTemplateColumns: 'minmax(120px, 180px) 1fr', gap: '1.25rem',
+                    borderBottom: '1px solid #f0f0f0', padding: '1.1rem 0'
+                  }}>
+                    <div>
+                      <strong style={{ color: '#0F2A1D', fontSize: '0.92rem', display: 'block' }}>{r.name}</strong>
+                      <span style={{ color: '#999', fontSize: '0.78rem' }}>{new Date(r.ts).toLocaleDateString('hu-HU')}</span>
+                    </div>
+                    <div>
+                      <div style={{ color: '#C9A961', letterSpacing: '0.08em', marginBottom: '0.35rem' }}>
+                        {'★'.repeat(r.stars)}{'☆'.repeat(5 - r.stars)}
+                      </div>
+                      <p style={{ color: '#444', margin: 0, fontSize: '0.92rem', lineHeight: 1.6 }}>{r.text}</p>
+                    </div>
+                  </div>
+                ))}
+                {reviews.length > 0 && shown.length === 0 && (
+                  <p style={{ color: '#888', fontSize: '0.9rem' }}>Nincs a szűrőnek megfelelő értékelés.</p>
+                )}
+              </>
+            );
+          })()}
 
           {revSent ? (
             <p style={{ color: '#4CAF50', fontWeight: 'bold', marginTop: '1rem' }}>
