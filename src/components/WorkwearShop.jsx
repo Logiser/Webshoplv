@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ShoppingCart, X, Search, Phone, Mail, MapPin, Truck, Shield, Award, ChevronLeft, ChevronRight, ChevronDown, Home, Filter, Star, Heart, User, Menu, PackageCheck } from 'lucide-react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams, useLocation } from 'react-router-dom';
+import { setMetaTag, setCanonical } from '../utils/seo';
 import { productCategories, productSubcategories, getProductImages } from '../data/productData';
 import { getVisibleProducts, getAllBrands, getWishlist, toggleWishlist, trackProductOpen, getBlogPosts, getHomepageContent } from '../data/storage';
 import { trackAddToCart, trackAddToWishlist } from '../utils/analytics';
@@ -162,6 +163,65 @@ const WorkwearShop = () => {
   const [selectedSubcategory, setSelectedSubcategory] = useState(null);
   const [openMegaMenu, setOpenMegaMenu] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // Kategória-URL kétirányú szinkron. Az App.js-ben a "/", "/kategoria/:catSlug" és
+  // "/kategoria/:catSlug/:subSlug" route mind ezt a komponenst rendereli - korábban
+  // a kategória-választás CSAK kliens-oldali state volt, semmilyen valódi URL nem
+  // tartozott hozzá, így a Google sosem tudott önálló, indexelhető oldalként
+  // felfedezni/rangsorolni egyetlen kategóriát sem (pl. "munkavédelmi cipő").
+  const routeParams = useParams();
+  const location = useLocation();
+  // Amikor az (1) effect az URL-ből állítja be a state-et, ugyanabban a React
+  // commit-fázisban a (2) effect is lefutna MÉG A RÉGI (frissítés előtti)
+  // selectedCategory-vel — ez a "/kategoria/x"-re navigálva egy pillanat alatt
+  // visszanavigált volna "/"-re, ami újra kiváltotta (1)-et, végtelen
+  // render-hurkot okozva ("Maximum update depth exceeded"). Ez a ref jelzi (2)-nek,
+  // hogy a következő state-változás (1)-ből ered, ne navigáljon rá újra.
+  const urlDrivenChangeRef = useRef(false);
+
+  // 1) URL -> state: route-váltáskor (link, előre/hátra gomb, közvetlen belépés)
+  // a slugekből feloldjuk a kategóriát/alkategóriát, és csak akkor állítjuk be,
+  // ha valóban eltér a jelenlegitől.
+  useEffect(() => {
+    const catSlug = routeParams.catSlug || null;
+    const subSlug = routeParams.subSlug || null;
+    if (!catSlug) {
+      if (selectedCategory !== null) {
+        urlDrivenChangeRef.current = true;
+        setSelectedCategory(null);
+        setSelectedSubcategory(null);
+      }
+      return;
+    }
+    const cat = productCategories.find(c => c.slug === catSlug);
+    if (!cat) return; // ismeretlen slug — nem törünk semmit, a szűrő egyszerűen üresen marad
+    const sub = subSlug ? productSubcategories.find(s => s.slug === subSlug && s.categoryId === cat.id) : null;
+    const subId = sub ? sub.id : null;
+    if (cat.id !== selectedCategory || subId !== selectedSubcategory) {
+      urlDrivenChangeRef.current = true;
+      setSelectedCategory(cat.id);
+      setSelectedSubcategory(subId);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeParams.catSlug, routeParams.subSlug]);
+
+  // 2) state -> URL: kattintással (mega-menü, kategória-korongok, footer stb.)
+  // történő váltásnál az URL-t is frissítjük, hogy a böngésző címsora, a canonical
+  // és a megosztott link mind a ténylegesen látott kategóriára mutasson. Ha a
+  // változás (1)-ből ered (urlDrivenChangeRef), kihagyjuk - az URL már helyes.
+  useEffect(() => {
+    if (urlDrivenChangeRef.current) {
+      urlDrivenChangeRef.current = false;
+      return;
+    }
+    const cat = selectedCategory ? productCategories.find(c => c.id === selectedCategory) : null;
+    const sub = cat && selectedSubcategory ? productSubcategories.find(s => s.id === selectedSubcategory) : null;
+    const expectedPath = cat ? `/kategoria/${cat.slug}${sub ? `/${sub.slug}` : ''}` : '/';
+    if (location.pathname !== expectedPath) {
+      navigate(expectedPath, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedCategory, selectedSubcategory]);
   const megaMenuCloseTimer = useRef(null);
   const [cart, setCart] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -236,27 +296,35 @@ const WorkwearShop = () => {
 
   const getEffectivePrice = (p) => (p.sale && p.sale.active) ? p.sale.price : p.price;
 
-  // SEO
+  // SEO — kategóriánként/alkategóriánként egyedi cím, leírás és canonical URL.
+  // Korábban ez a blokk csak egyszer futott ([] deps), mindig a főoldal adataival -
+  // minden kategória-nézet (pl. "Munkavédelmi Cipők") ugyanazt a title/description/
+  // canonical-t kapta, mint a főoldal, holott most már saját /kategoria/... URL-je is
+  // van (ld. App.js route + a lenti URL-szinkron effect).
   useEffect(() => {
-    document.title = 'TridentShop - Munkaruházat és Munkavédelmi Felszerelés Webshop';
+    const cat = selectedCategory ? productCategories.find(c => c.id === selectedCategory) : null;
+    const sub = selectedSubcategory ? productSubcategories.find(s => s.id === selectedSubcategory) : null;
 
-    const setMeta = (name, content, isProperty = false) => {
-      const attr = isProperty ? 'property' : 'name';
-      let tag = document.querySelector(`meta[${attr}="${name}"]`);
-      if (!tag) {
-        tag = document.createElement('meta');
-        tag.setAttribute(attr, name);
-        document.head.appendChild(tag);
-      }
-      tag.content = content;
-    };
-
-    setMeta('description', `1800+ eredeti, CE-tanúsítvánnyal rendelkező Portwest munkaruha, biztonsági cipő, bakancs, kesztyű és védőfelszerelés — gyors kiszállítás, kedvező árak.`);
-    setMeta('keywords', 'munkaruha, munkavédelmi ruházat, munkavédelmi cipő, bakancs, kesztyű, sisak, munkaruházat webshop, TridentShop, Portwest');
-    setMeta('og:title', 'TridentShop - Eredeti Portwest Munkaruházat Webshop', true);
-    setMeta('og:type', 'website', true);
-    setMeta('og:locale', 'hu_HU', true);
-  }, []);
+    if (cat && sub) {
+      document.title = `${sub.name} | ${cat.name} | TridentShop`;
+      setMetaTag('description', `${sub.name} — eredeti, CE-tanúsítvánnyal rendelkező Portwest termékek a ${cat.name.toLowerCase()} kategórián belül. Gyors kiszállítás, kedvező árak a TridentShop webshopban.`);
+      setMetaTag('og:title', `${sub.name} | TridentShop`, true);
+      setCanonical(`/kategoria/${cat.slug}/${sub.slug}`);
+    } else if (cat) {
+      document.title = `${cat.name} | TridentShop`;
+      setMetaTag('description', `${cat.description || cat.name}. Eredeti Portwest termékek, CE-tanúsítvánnyal, gyors kiszállítással.`);
+      setMetaTag('og:title', `${cat.name} | TridentShop`, true);
+      setCanonical(`/kategoria/${cat.slug}`);
+    } else {
+      document.title = 'TridentShop - Munkaruházat és Munkavédelmi Felszerelés Webshop';
+      setMetaTag('description', `1800+ eredeti, CE-tanúsítvánnyal rendelkező Portwest munkaruha, biztonsági cipő, bakancs, kesztyű és védőfelszerelés — gyors kiszállítás, kedvező árak.`);
+      setMetaTag('og:title', 'TridentShop - Eredeti Portwest Munkaruházat Webshop', true);
+      setCanonical('/');
+    }
+    setMetaTag('keywords', 'munkaruha, munkavédelmi ruházat, munkavédelmi cipő, bakancs, kesztyű, sisak, munkaruházat webshop, TridentShop, Portwest');
+    setMetaTag('og:type', 'website', true);
+    setMetaTag('og:locale', 'hu_HU', true);
+  }, [selectedCategory, selectedSubcategory]);
 
   const allBrands = getAllBrands();
 
@@ -503,14 +571,16 @@ const WorkwearShop = () => {
             <Menu size={26} />
           </button>
 
+          {/* p, nem h1 - az oldal egyetlen h1-je legyen a hero cime (fooldalon)
+              vagy a kategoria/termek neve, ne a fejlecben ismetlodo logo (SEO) */}
           <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-            <h1 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <p style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span style={{
                 display: 'inline-flex', width: '2.1rem', height: '2.1rem', borderRadius: '8px',
                 backgroundColor: '#0F2A1D', color: '#C9A961', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem'
               }}>🛡️</span>
               <span style={{ display: isMobile ? 'none' : 'inline' }}>TridentShop</span>
-            </h1>
+            </p>
           </Link>
 
           <div style={{
@@ -1179,6 +1249,21 @@ const WorkwearShop = () => {
 
           {/* Termékek lista */}
           <div>
+            {/* Kategoria-nezet egyetlen h1-je - a hero (aminek h1-je van) ilyenkor
+                nem renderel (!selectedCategory), igy nincs h1-utkozes. Kereses-nezetnel
+                (nincs kategoria) szandekosan nincs h1 itt sem - az a kereses-URL
+                (?search=) amugy sem canonical/indexelt nezet. */}
+            {selectedCategory && (
+              <h1 style={{
+                color: '#0F2A1D', fontFamily: 'Georgia, serif', fontWeight: 700,
+                fontSize: 'clamp(1.5rem, 3vw, 2.1rem)', textTransform: 'uppercase',
+                margin: '0 0 1rem 0'
+              }}>
+                {selectedSubcategory
+                  ? productSubcategories.find(s => s.id === selectedSubcategory)?.name
+                  : productCategories.find(c => c.id === selectedCategory)?.name}
+              </h1>
+            )}
             <div style={{
               backgroundColor: 'white', padding: '1rem 1.5rem', borderRadius: '10px',
               marginBottom: activeChips.length > 0 ? '0.75rem' : '1.5rem', display: 'flex',
@@ -1674,7 +1759,10 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
         }}>
           {slide.kicker}
         </span>
-        <h2 style={{
+        {/* h1: a HeroCarousel csak a tiszta fooldalon (nincs kategoria/kereses) renderel,
+            igy ez biztonsagosan az oldal egyetlen h1-je lehet - korabban csak a fejlec
+            logoja volt h1, ami se nem egyedi, se nem kulcsszavas cim volt */}
+        <h1 style={{
           // A szövegoszlop ~560px széles — az alap címméret úgy van belőve, hogy a
           // címek 2 sorban maradjanak (a leghosszabb címû első dia még kisebbet kap)
           fontSize: isMobile ? '1.8rem' : (slide.titleSize || 'clamp(1.9rem, 3vw, 3rem)'),
@@ -1682,7 +1770,7 @@ const HeroCarousel = ({ t, productCount, isMobile, bestSaleProduct, content = {}
           fontWeight: 700, lineHeight: 1.02, letterSpacing: '-0.02em'
         }}>
           {slide.title}
-        </h2>
+        </h1>
         <p style={{ fontSize: '1.15rem', margin: '0 0 2.25rem 0', opacity: 0.92, maxWidth: '460px' }}>
           {slide.text}
         </p>

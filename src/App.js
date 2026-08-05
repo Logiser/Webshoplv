@@ -1,24 +1,44 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+// A WorkwearShop marad eager import: ez a leggyakrabban elért belépési pont
+// (fő- és kategória-oldalak), a lazy-loading itt csak felesleges késleltető
+// kört adna hozzá az első betöltéshez. Minden más route lazy — korábban az
+// egész app (admin panel is!) egyetlen ~610 kB-os JS-bundle-ben ment ki
+// MINDEN látogatónak, ami feleslegesen lassítja a betöltést (Core Web Vitals).
 import WorkwearShop from './components/WorkwearShop';
-import AdminPanel from './pages/AdminPanel';
-import CheckoutPage from './pages/CheckoutPage';
-import WishlistPage from './pages/WishlistPage';
-import ProductDetailPage from './pages/ProductDetailPage';
-import BlogPage from './pages/BlogPage';
-import BlogPostPage from './pages/BlogPostPage';
-import NotFoundPage from './pages/NotFoundPage';
-import { TermsPage, PrivacyPage, ImpressumPage, ShippingPage, ContactPage, AboutPage } from './pages/StaticPages';
 import CookieConsent from './components/CookieConsent';
-import FaqPage from './pages/FaqPage';
-import OrderTrackingPage from './pages/OrderTrackingPage';
-import PaymentResultPage from './pages/PaymentResultPage';
-import AccountPage from './pages/AccountPage';
 import { LanguageProvider } from './i18n/LanguageContext';
 import { Lock } from 'lucide-react';
 import { initAnalytics, trackPageView } from './utils/analytics';
 import { initStorage } from './data/storage';
 import { isSupabaseEnabled, adminApi, setAdminPassword, setAdminRole, clearAdminRole } from './data/supabaseClient';
+
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
+const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const ProductDetailPage = lazy(() => import('./pages/ProductDetailPage'));
+const BlogPage = lazy(() => import('./pages/BlogPage'));
+const BlogPostPage = lazy(() => import('./pages/BlogPostPage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
+const FaqPage = lazy(() => import('./pages/FaqPage'));
+const OrderTrackingPage = lazy(() => import('./pages/OrderTrackingPage'));
+const PaymentResultPage = lazy(() => import('./pages/PaymentResultPage'));
+const AccountPage = lazy(() => import('./pages/AccountPage'));
+// A StaticPages.jsx névvel exportál (nem default), ezért a lazy()-nek magunk
+// csomagoljuk { default } alakúra importáláskor.
+const TermsPage = lazy(() => import('./pages/StaticPages').then(m => ({ default: m.TermsPage })));
+const PrivacyPage = lazy(() => import('./pages/StaticPages').then(m => ({ default: m.PrivacyPage })));
+const ImpressumPage = lazy(() => import('./pages/StaticPages').then(m => ({ default: m.ImpressumPage })));
+const ShippingPage = lazy(() => import('./pages/StaticPages').then(m => ({ default: m.ShippingPage })));
+const ContactPage = lazy(() => import('./pages/StaticPages').then(m => ({ default: m.ContactPage })));
+const AboutPage = lazy(() => import('./pages/StaticPages').then(m => ({ default: m.AboutPage })));
+
+// Suspense fallback route-váltáskor - rövid, márkázott betöltő, nem üres villanás
+const RouteLoading = () => (
+  <div style={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f5f5f5', color: '#0F2A1D', fontFamily: 'Arial, sans-serif' }}>
+    <div style={{ fontSize: '1.5rem' }}>🛡️</div>
+  </div>
+);
 
 // Route változás követése GA4 + FB Pixel számára
 const RouteTracker = () => {
@@ -95,6 +115,7 @@ function App() {
     <BrowserRouter>
       <RouteTracker />
       <CookieConsent />
+      <Suspense fallback={<RouteLoading />}>
       <Routes>
         {/* Admin Login */}
         <Route path="/admin-login" element={
@@ -199,12 +220,19 @@ function App() {
         <Route path="/blog" element={<BlogPage />} />
         <Route path="/blog/:slug" element={<BlogPostPage />} />
 
+        {/* Kategória-oldalak — ugyanazt a WorkwearShop komponenst renderelik, mint a
+            főoldal, de valódi, saját canonical URL-lel/címmel (SEO: korábban a
+            kategória-szűrés csak kliens-oldali state volt, nem lehetett indexelni) */}
+        <Route path="/kategoria/:catSlug" element={<WorkwearShop />} />
+        <Route path="/kategoria/:catSlug/:subSlug" element={<WorkwearShop />} />
+
         {/* Főoldal */}
         <Route path="/" element={<WorkwearShop />} />
 
         {/* Ismeretlen URL — minden más útvonal után! */}
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      </Suspense>
     </BrowserRouter>
     </LanguageProvider>
   );

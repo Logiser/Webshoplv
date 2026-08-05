@@ -63,15 +63,39 @@ const blogBlockMatch = storageSrc.match(/const defaultBlogPosts = \[([\s\S]*?)\n
 if (!blogBlockMatch) throw new Error('defaultBlogPosts tömb nem található a storage.js-ben — sitemap blog-URL-ek nélkül maradnának');
 const blogSlugs = [...blogBlockMatch[1].matchAll(/slug: '([^']+)'/g)].map(m => m[1]);
 if (blogSlugs.length === 0) throw new Error('Nulla blog-slug lett kiolvasva a storage.js-ből — ellenőrizd a regex mintát');
+
+// Kategória/alkategória slugek — ugyanígy szövegesen a productData.js-ből (nem
+// importáljuk modulként: JSON-import kellene hozzá Node alól, ami verzió-
+// függő attribútum-szintaxist igényelne — a regex-kiolvasás ettől független és
+// már bevált mintázat ebben a fájlban a blog-slugeknél).
+const productDataSrc = readFileSync(join(_root, 'src', 'data', 'productData.js'), 'utf8');
+const catBlockMatch = productDataSrc.match(/export const productCategories = \[([\s\S]*?)\n\];/);
+const subBlockMatch = productDataSrc.match(/export const productSubcategories = \[([\s\S]*?)\n\];/);
+if (!catBlockMatch || !subBlockMatch) throw new Error('productCategories/productSubcategories tömb nem található a productData.js-ben — sitemap kategória-URL-ek nélkül maradnának');
+// Kategóriánként { id, slug } párokat gyűjtünk, hogy az alkategóriákat a sajátjukhoz
+// tudjuk kötni (a subcategory slug önmagában nem egyedi kategóriák között).
+const categoryEntries = [...catBlockMatch[1].matchAll(/id: '([^']+)'[\s\S]*?slug: '([^']+)'/g)].map(m => ({ id: m[1], slug: m[2] }));
+const subcategoryEntries = [...subBlockMatch[1].matchAll(/\{ id: '([^']+)', categoryId: '([^']+)', name: '[^']*', slug: '([^']+)' \}/g)]
+  .map(m => ({ id: m[1], categoryId: m[2], slug: m[3] }));
+if (categoryEntries.length === 0) throw new Error('Nulla kategória lett kiolvasva a productData.js-ből — ellenőrizd a regex mintát');
+
 const urlXml = (loc, freq, pri, lastmod) =>
   `  <url>\n    <loc>${SITE}${loc}</loc>\n${lastmod ? `    <lastmod>${lastmod}</lastmod>\n` : ''}    <changefreq>${freq}</changefreq>\n    <priority>${pri}</priority>\n  </url>`;
+const categoryUrls = categoryEntries.map(c => urlXml(`/kategoria/${c.slug}`, 'weekly', '0.9', null));
+const subcategoryUrls = subcategoryEntries.map(s => {
+  const cat = categoryEntries.find(c => c.id === s.categoryId);
+  return cat ? urlXml(`/kategoria/${cat.slug}/${s.slug}`, 'weekly', '0.75', null) : null;
+}).filter(Boolean);
+
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${[
   ...staticUrls.map(u => urlXml(u.loc, u.freq, u.pri, u.loc === '/' ? today : null)),
+  ...categoryUrls,
+  ...subcategoryUrls,
   ...blogSlugs.map(s => urlXml(`/blog/${s}`, 'monthly', '0.7', null)),
   ...snapshot.map(p => urlXml(`/termek/${p.slug}`, 'weekly', '0.8', today))
 ].join('\n')}\n</urlset>\n`;
 writeFileSync(join(root, 'public', 'sitemap.xml'), sitemap);
-console.log(`✅ sitemap.xml generálva (${staticUrls.length + blogSlugs.length + snapshot.length} URL)`);
+console.log(`✅ sitemap.xml generálva (${staticUrls.length + categoryUrls.length + subcategoryUrls.length + blogSlugs.length + snapshot.length} URL, ebből ${categoryUrls.length} kategória + ${subcategoryUrls.length} alkategória)`);
 
 // ============ llms-full.txt: teljes katalógus AI-keresőknek (GEO) ============
 const catNames = {

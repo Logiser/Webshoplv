@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Clock } from 'lucide-react';
 import { getBlogPosts } from '../data/storage';
+import { setMetaTag, setCanonical } from '../utils/seo';
 
 // Olvasási idő: 1-3 perc között, cikkenként állandó (nem valódi becslés a
 // szöveghosszból — a cikk azonosítója alapján determinisztikusan "sorsolt",
@@ -20,17 +21,8 @@ const BlogPage = () => {
   useEffect(() => {
     document.title = 'Szakértői blog - TridentShop';
     setPosts(getBlogPosts());
-
-    const setMeta = (name, content) => {
-      let tag = document.querySelector(`meta[name="${name}"]`);
-      if (!tag) {
-        tag = document.createElement('meta');
-        tag.name = name;
-        document.head.appendChild(tag);
-      }
-      tag.content = content;
-    };
-    setMeta('description', 'Munkavédelmi szakértői blog: szabványok, útmutatók, vásárlási tanácsok. Hogyan válassz munkacipőt, kesztyűt, láthatósági ruhát.');
+    setMetaTag('description', 'Munkavédelmi szakértői blog: szabványok, útmutatók, vásárlási tanácsok. Hogyan válassz munkacipőt, kesztyűt, láthatósági ruhát.');
+    setCanonical('/blog');
   }, []);
 
   // Szűrő-címkék a cikkek tagjeiből (előfordulás szerint, max 8)

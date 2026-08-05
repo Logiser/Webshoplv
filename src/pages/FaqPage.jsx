@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ChevronDown } from 'lucide-react';
+import { setMetaTag, setCanonical } from '../utils/seo';
 
 // GYIK oldal - GEO/SEO: FAQPage schema.org markup-pal, hogy a keresok es
 // AI-asszisztensek strukturaltan ertelmezzek a valaszokat
@@ -52,13 +53,8 @@ const FaqPage = () => {
 
   useEffect(() => {
     document.title = 'Gyakori kérdések (GYIK) | TridentShop';
-    let descTag = document.querySelector('meta[name="description"]');
-    if (!descTag) {
-      descTag = document.createElement('meta');
-      descTag.name = 'description';
-      document.head.appendChild(descTag);
-    }
-    descTag.content = 'Szállítás, méretválasztás, munkacipő-kategóriák, számlázás és csere-visszaküldés — a TridentShop leggyakoribb vásárlói kérdései egy helyen.';
+    setMetaTag('description', 'Szállítás, méretválasztás, munkacipő-kategóriák, számlázás és csere-visszaküldés — a TridentShop leggyakoribb vásárlói kérdései egy helyen.');
+    setCanonical('/gyik');
     const schema = {
       '@context': 'https://schema.org',
       '@type': 'FAQPage',

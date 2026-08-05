@@ -1,25 +1,22 @@
 import React, { useEffect } from 'react';
+import { setMetaTag, setCanonical } from '../utils/seo';
 
-// Statikus oldalak közös SEO-effektje: cím + meta description beállítása.
-// Korábban egyik statikus oldal (ÁSZF/Adatvédelem/Impresszum/Szállítás/
-// Kapcsolat/Rólunk) sem állított be saját <title>-t vagy leírást — a böngésző
-// fül és a keresőtalálat mindig azt mutatta, amit az előzőleg meglátogatott
-// oldal hagyott ott.
-const usePageMeta = (title, description) => {
+// Statikus oldalak közös SEO-effektje: cím + meta description + canonical URL
+// beállítása. Korábban egyik statikus oldal (ÁSZF/Adatvédelem/Impresszum/
+// Szállítás/Kapcsolat/Rólunk) sem állított be saját <title>-t vagy leírást —
+// a böngésző fül és a keresőtalálat mindig azt mutatta, amit az előzőleg
+// meglátogatott oldal hagyott ott; a canonical pedig a statikus index.html-ből
+// öröklött "/" maradt minden aloldalon.
+const usePageMeta = (title, description, path) => {
   useEffect(() => {
     document.title = `${title} | TridentShop`;
-    let tag = document.querySelector('meta[name="description"]');
-    if (!tag) {
-      tag = document.createElement('meta');
-      tag.name = 'description';
-      document.head.appendChild(tag);
-    }
-    tag.content = description;
-  }, [title, description]);
+    setMetaTag('description', description);
+    setCanonical(path);
+  }, [title, description, path]);
 };
 
 export const TermsPage = () => {
-  usePageMeta('Általános Szerződési Feltételek', 'A TridentShop webshop általános szerződési feltételei: megrendelés, szállítás, fizetés, elállási jog és jogvita-rendezés.');
+  usePageMeta('Általános Szerződési Feltételek', 'A TridentShop webshop általános szerződési feltételei: megrendelés, szállítás, fizetés, elállási jog és jogvita-rendezés.', '/terms');
   return (
     <div style={{ backgroundColor: '#fafaf8', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1.5rem' }}>
@@ -112,7 +109,7 @@ export const TermsPage = () => {
 };
 
 export const PrivacyPage = () => {
-  usePageMeta('Adatvédelmi Nyilatkozat', 'A TridentShop adatvédelmi tájékoztatója: milyen személyes adatokat kezelünk, milyen célból, és milyen jogok illetnek meg a GDPR alapján.');
+  usePageMeta('Adatvédelmi Nyilatkozat', 'A TridentShop adatvédelmi tájékoztatója: milyen személyes adatokat kezelünk, milyen célból, és milyen jogok illetnek meg a GDPR alapján.', '/privacy');
   return (
     <div style={{ backgroundColor: '#fafaf8', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1.5rem' }}>
@@ -208,7 +205,7 @@ export const PrivacyPage = () => {
 };
 
 export const ImpressumPage = () => {
-  usePageMeta('Impresszum', 'A TridentShop webshopot üzemeltető Trident Shield Group Kft. cégadatai, elérhetőségei és a felügyeleti hatóságok.');
+  usePageMeta('Impresszum', 'A TridentShop webshopot üzemeltető Trident Shield Group Kft. cégadatai, elérhetőségei és a felügyeleti hatóságok.', '/impressum');
   return (
     <div style={{ backgroundColor: '#fafaf8', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1.5rem' }}>
@@ -269,7 +266,7 @@ export const ImpressumPage = () => {
 };
 
 export const ShippingPage = () => {
-  usePageMeta('Szállítási Feltételek', 'Szállítási költségek, határidők és módok a TridentShop webshopban: futárszolgálat, Foxpost csomagautomata, 30 000 Ft felett ingyenes kiszállítás.');
+  usePageMeta('Szállítási Feltételek', 'Szállítási költségek, határidők és módok a TridentShop webshopban: futárszolgálat, Foxpost csomagautomata, 30 000 Ft felett ingyenes kiszállítás.', '/shipping');
   return (
     <div style={{ backgroundColor: '#fafaf8', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1.5rem' }}>
@@ -345,7 +342,7 @@ export const ShippingPage = () => {
 };
 
 export const ContactPage = () => {
-  usePageMeta('Kapcsolat', 'Vedd fel velünk a kapcsolatot: telefon, email és kapcsolatfelvételi űrlap. A TridentShop ügyfélszolgálata 24 órán belül válaszol.');
+  usePageMeta('Kapcsolat', 'Vedd fel velünk a kapcsolatot: telefon, email és kapcsolatfelvételi űrlap. A TridentShop ügyfélszolgálata 24 órán belül válaszol.', '/contact');
   const [form, setForm] = React.useState({ name: '', email: '', subject: '', message: '', company: '' });
   const [status, setStatus] = React.useState(null); // null | 'sending' | 'ok' | hibaszöveg
 
@@ -506,7 +503,7 @@ export const ContactPage = () => {
 };
 
 export const AboutPage = () => {
-  usePageMeta('Rólunk', 'Ismerd meg a TridentShop-ot: a Trident Shield Group Kft. munkavédelmi e-commerce üzletága, amely eredeti Portwest munkaruházatot és felszerelést forgalmaz országos kiszállítással.');
+  usePageMeta('Rólunk', 'Ismerd meg a TridentShop-ot: a Trident Shield Group Kft. munkavédelmi e-commerce üzletága, amely eredeti Portwest munkaruházatot és felszerelést forgalmaz országos kiszállítással.', '/about');
   return (
     <div style={{ backgroundColor: '#fafaf8', minHeight: '100vh' }}>
       <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '3rem 1.5rem' }}>

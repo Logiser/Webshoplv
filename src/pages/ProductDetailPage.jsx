@@ -8,6 +8,7 @@ import { getSizeChart } from '../data/sizeCharts';
 import SizeChartModal from '../components/SizeChartModal';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { useLang } from '../i18n/LanguageContext';
+import { setMetaTag, setCanonical } from '../utils/seo';
 
 const headerIconBtn = {
   padding: '0.5rem 0.65rem', backgroundColor: 'transparent', border: 'none',
@@ -87,26 +88,19 @@ const ProductDetailPage = () => {
     const cat = productCategories.find(c => c.id === p.categoryId);
     document.title = `${p.name} | TridentShop`;
 
-    const setMeta = (name, content, isProperty = false) => {
-      const attr = isProperty ? 'property' : 'name';
-      let tag = document.querySelector(`meta[${attr}="${name}"]`);
-      if (!tag) {
-        tag = document.createElement('meta');
-        tag.setAttribute(attr, name);
-        document.head.appendChild(tag);
-      }
-      tag.content = content;
-    };
-
     const desc = p.description ? p.description.substring(0, 160) : `${p.name} - ${cat?.name || ''} - TridentShop webshopjából`;
-    setMeta('description', desc);
-    setMeta('keywords', `${p.name}, ${p.brand || ''}, ${cat?.name || ''}, munkavédelem`);
+    setMetaTag('description', desc);
+    setMetaTag('keywords', `${p.name}, ${p.brand || ''}, ${cat?.name || ''}, munkavédelem`);
     // Relatív képútvonal abszolúttá alakítása (OG + schema.org kötelező)
     const absImage = (p.image || '').startsWith('http') ? p.image : `${window.location.origin}${p.image}`;
-    setMeta('og:title', p.name, true);
-    setMeta('og:description', desc, true);
-    setMeta('og:image', absImage, true);
-    setMeta('og:type', 'product', true);
+    setMetaTag('og:title', p.name, true);
+    setMetaTag('og:description', desc, true);
+    setMetaTag('og:image', absImage, true);
+    setMetaTag('og:type', 'product', true);
+    // canonical + og:url — korábban ez az oldal (mint minden más) a statikus
+    // index.html-ben rögzített "/" canonical-t örökölte, ami duplikált-tartalom
+    // jelzést küldött a Google-nek minden egyes termékoldalról.
+    setCanonical(`/termek/${p.slug}`);
 
     return () => {
       const schemaScript = document.querySelector('script[type="application/ld+json"][data-product]');

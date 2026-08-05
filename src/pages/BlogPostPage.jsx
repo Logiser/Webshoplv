@@ -3,6 +3,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { ArrowLeft, User, ChevronRight, Clock, ShoppingCart, ChevronDown } from 'lucide-react';
 import { getBlogPostBySlug, getBlogPosts, getVisibleProducts } from '../data/storage';
 import { readingTime } from './BlogPage';
+import { setMetaTag, setCanonical } from '../utils/seo';
 
 // Ékezetek eltávolítása egyeztetés előtt — enélkül pl. "fültok"/"légzésvédő" a
 // kulcsszavas "fultok"/"legzesvedo" bejegyzésekre sosem illeszkedett (ez volt az
@@ -80,24 +81,14 @@ const BlogPostPage = () => {
 
     document.title = `${p.title} | TridentShop Blog`;
 
-    const setMeta = (name, content, isProperty = false) => {
-      const attr = isProperty ? 'property' : 'name';
-      let tag = document.querySelector(`meta[${attr}="${name}"]`);
-      if (!tag) {
-        tag = document.createElement('meta');
-        tag.setAttribute(attr, name);
-        document.head.appendChild(tag);
-      }
-      tag.content = content;
-    };
-
     // Relatív képútvonal abszolúttá alakítása (OG + schema.org kötelező)
     const absImage = p.image ? ((p.image.startsWith('http') ? p.image : `${window.location.origin}${p.image}`)) : null;
-    setMeta('description', p.excerpt);
-    setMeta('og:title', p.title, true);
-    setMeta('og:description', p.excerpt, true);
-    if (absImage) setMeta('og:image', absImage, true);
-    setMeta('og:type', 'article', true);
+    setMetaTag('description', p.excerpt);
+    setMetaTag('og:title', p.title, true);
+    setMetaTag('og:description', p.excerpt, true);
+    if (absImage) setMetaTag('og:image', absImage, true);
+    setMetaTag('og:type', 'article', true);
+    setCanonical(`/blog/${p.slug}`);
 
     // Schema.org Article (+ FAQPage, ha a cikknek van GYIK-je)
     const wordCount = (p.content || '').replace(/<[^>]+>/g, ' ').split(/\s+/).filter(Boolean).length;
