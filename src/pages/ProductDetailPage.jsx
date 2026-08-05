@@ -82,7 +82,7 @@ const ProductDetailPage = () => {
 
     // Kapcsolódó termékek (azonos alkategória)
     const allVisible = getVisibleProducts();
-    setRelated(allVisible.filter(prod => prod.subcategoryId === p.subcategoryId && prod.id !== p.id).slice(0, 4));
+    setRelated(allVisible.filter(prod => prod.subcategoryId === p.subcategoryId && prod.id !== p.id).slice(0, 5));
 
     // SEO meta tagok
     const cat = productCategories.find(c => c.id === p.categoryId);
