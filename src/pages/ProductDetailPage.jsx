@@ -268,14 +268,16 @@ const ProductDetailPage = () => {
           maxWidth: '1400px', margin: '0 auto', display: 'flex',
           justifyContent: 'space-between', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap'
         }}>
+          {/* p, nem h1 — a termékoldal egyetlen h1-je a termék neve legyen lentebb;
+              a logó h1-ként duplikált címsort adott volna minden termékoldalon (SEO-hiba) */}
           <Link to="/" style={{ textDecoration: 'none', flexShrink: 0 }}>
-            <h1 style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <p style={{ margin: 0, fontSize: '1.4rem', fontFamily: 'Georgia, serif', color: '#0F2A1D', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
               <span style={{
                 display: 'inline-flex', width: '2.1rem', height: '2.1rem', borderRadius: '8px',
                 backgroundColor: '#0F2A1D', color: '#C9A961', alignItems: 'center', justifyContent: 'center', fontSize: '1.1rem'
               }}>🛡️</span>
               <span>TridentShop</span>
-            </h1>
+            </p>
           </Link>
 
           <form onSubmit={handleHeaderSearch} style={{
